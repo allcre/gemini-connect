@@ -1,36 +1,18 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProfileCard } from "./ProfileCard";
-import { useProfiles, useCreateMatch, Profile } from "@/hooks/useProfiles";
+import { mockProfiles, Profile } from "@/data/mockData";
 import { toast } from "sonner";
-import { Heart, Sparkles, Loader2 } from "lucide-react";
-
-// Import profile images
-import profile1 from "@/assets/profile-1.jpg";
-import profile2 from "@/assets/profile-2.jpg";
-import profile3 from "@/assets/profile-3.jpg";
-
-// Map profile names to images
-const profileImages: Record<string, string> = {
-  "Maya Chen": profile1,
-  "Jordan Rivera": profile2,
-  "Alex Kim": profile3,
-};
+import { Heart, Sparkles } from "lucide-react";
 
 export const DiscoveryFeed = () => {
-  const { data: profiles, isLoading, error } = useProfiles();
-  const createMatch = useCreateMatch();
+  const [profiles, setProfiles] = useState<Profile[]>(mockProfiles);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [liked, setLiked] = useState(false);
-  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
 
-  // Filter out skipped profiles
-  const availableProfiles = profiles?.filter(p => !skippedIds.has(p.id)) || [];
-  const currentProfile = availableProfiles[currentIndex];
+  const currentProfile = profiles[currentIndex];
 
-  const handleLike = async () => {
-    if (!currentProfile) return;
-    
+  const handleLike = () => {
     setLiked(true);
     toast.success(
       <div className="flex items-center gap-2">
@@ -39,44 +21,25 @@ export const DiscoveryFeed = () => {
       </div>
     );
     
-    // Create match in database
-    try {
-      await createMatch.mutateAsync({
-        userId: "00000000-0000-0000-0000-000000000000", // Placeholder since no auth
-        matchedUserId: currentProfile.id,
-      });
-    } catch (error) {
-      console.error("Failed to create match:", error);
-    }
-    
     setTimeout(() => {
       setLiked(false);
-      if (currentIndex < availableProfiles.length - 1) {
+      if (currentIndex < profiles.length - 1) {
         setCurrentIndex((prev) => prev + 1);
       } else {
-        setCurrentIndex(0);
-        toast.info("You've seen all profiles! Starting over 💫");
+        toast.info("You've seen all profiles! More coming soon 💫");
       }
     }, 500);
   };
 
   const handleSkip = () => {
-    if (!currentProfile) return;
-    
-    setSkippedIds(prev => new Set([...prev, currentProfile.id]));
-    
-    if (currentIndex >= availableProfiles.length - 1) {
-      setCurrentIndex(0);
-      if (availableProfiles.length <= 1) {
-        toast.info("You've seen all profiles! Refreshing... 💫");
-        setSkippedIds(new Set());
-      }
+    if (currentIndex < profiles.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    } else {
+      toast.info("You've seen all profiles! More coming soon 💫");
     }
   };
 
-  const handleComment = async (feature: string) => {
-    if (!currentProfile) return;
-    
+  const handleComment = (feature: string) => {
     if (feature) {
       toast.success(
         <div className="flex items-center gap-2">
@@ -84,37 +47,8 @@ export const DiscoveryFeed = () => {
           <span>You liked "{feature}"</span>
         </div>
       );
-      
-      // Create match with liked feature
-      try {
-        await createMatch.mutateAsync({
-          userId: "00000000-0000-0000-0000-000000000000",
-          matchedUserId: currentProfile.id,
-          likedFeature: feature,
-        });
-      } catch (error) {
-        console.error("Failed to create match:", error);
-      }
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[600px] p-8">
-        <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Loading profiles...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[600px] p-8 text-center">
-        <p className="text-destructive mb-2">Failed to load profiles</p>
-        <p className="text-muted-foreground text-sm">{String(error)}</p>
-      </div>
-    );
-  }
 
   if (!currentProfile) {
     return (
@@ -131,9 +65,6 @@ export const DiscoveryFeed = () => {
       </div>
     );
   }
-
-  // Get image for profile
-  const profileImage = profileImages[currentProfile.name] || profile1;
 
   return (
     <div className="relative">
@@ -156,7 +87,6 @@ export const DiscoveryFeed = () => {
         <ProfileCard
           key={currentProfile.id}
           profile={currentProfile}
-          photoUrl={profileImage}
           onLike={handleLike}
           onSkip={handleSkip}
           onComment={handleComment}

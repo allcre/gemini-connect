@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, Bot, User, Loader2 } from "lucide-react";
+import { Send, Sparkles, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { sendChatMessage, saveChatMessage, loadChatHistory } from "@/lib/geminiCoach";
-import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -14,51 +12,33 @@ interface Message {
 }
 
 interface GeminiCoachProps {
-  sessionId?: string;
-  yellowcakeData?: Record<string, unknown>;
   onProfileGenerated?: (bio: string, features: string[]) => void;
 }
 
-const initialMessage: Message = {
-  id: "1",
-  role: "assistant",
-  content: "Hey there! 👋 I'm your Data-Driven Wingman. I've analyzed your digital footprint and I'm ready to craft the perfect profile for you. First question: Who are you trying to attract? (e.g., 'Introverted gamers', 'Creative entrepreneurs', 'Outdoor adventurers')",
-};
+const initialMessages: Message[] = [
+  {
+    id: "1",
+    role: "assistant",
+    content: "Hey there! 👋 I'm your Data-Driven Wingman. I've analyzed your digital footprint and I'm ready to craft the perfect profile for you. First question: Who are you trying to attract? (e.g., 'Introverted gamers', 'Creative entrepreneurs', 'Outdoor adventurers')",
+  },
+];
 
-export const GeminiCoach = ({ sessionId = "default", yellowcakeData }: GeminiCoachProps) => {
-  const [messages, setMessages] = useState<Message[]>([initialMessage]);
+export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Load chat history on mount
-  useEffect(() => {
-    const loadHistory = async () => {
-      try {
-        const history = await loadChatHistory(sessionId);
-        if (history.length > 0) {
-          setMessages(history);
-        }
-      } catch (error) {
-        console.error("Failed to load chat history:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadHistory();
-  }, [sessionId]);
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!input.trim() || isTyping) return;
+    if (!input.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -70,53 +50,26 @@ export const GeminiCoach = ({ sessionId = "default", yellowcakeData }: GeminiCoa
     setInput("");
     setIsTyping(true);
 
-    // Save user message
-    await saveChatMessage(sessionId, "user", input);
+    // Simulate AI response
+    setTimeout(() => {
+      const responses = [
+        "Perfect! Based on your Letterboxd reviews and GitHub activity, I can see you have a thoughtful, introspective side. Let me craft something special...",
+        "Love it! 🎯 I'm seeing some patterns in your data that would resonate perfectly with that audience. Your indie film taste + coding projects = unique combo!",
+        "Here's what I've generated:\n\n**Bio:** \"Code by day, cinema by night. My Letterboxd is basically my love language. Looking for someone to debug life's edge cases with.\"\n\n**Highlighted Features:**\n• A24 film connoisseur\n• Open source contributor\n• Cozy coffee shop energy\n\nWhat do you think? Want me to adjust anything?",
+      ];
 
-    try {
-      // Prepare messages for API (exclude IDs)
-      const apiMessages = [...messages, userMessage].map(({ role, content }) => ({
-        role,
-        content,
-      }));
-
-      const response = await sendChatMessage(apiMessages, yellowcakeData);
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: response,
+        content: randomResponse,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-      
-      // Save assistant message
-      await saveChatMessage(sessionId, "assistant", response);
-    } catch (error) {
-      console.error("Chat error:", error);
-      toast.error("Failed to get AI response. Please try again.");
-      
-      // Add error message
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: "Sorry, I'm having trouble connecting right now. Please try again in a moment! 🙏",
-        },
-      ]);
-    } finally {
       setIsTyping(false);
-    }
+    }, 1500);
   };
-
-  if (isLoading) {
-    return (
-      <Card variant="elevated" className="flex items-center justify-center h-[500px] max-w-md mx-auto">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </Card>
-    );
-  }
 
   return (
     <Card variant="elevated" className="flex flex-col h-[500px] max-w-md mx-auto">
@@ -209,14 +162,9 @@ export const GeminiCoach = ({ sessionId = "default", yellowcakeData }: GeminiCoa
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1"
-            disabled={isTyping}
           />
           <Button type="submit" size="icon" disabled={!input.trim() || isTyping}>
-            {isTyping ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
+            <Send className="w-4 h-4" />
           </Button>
         </form>
       </div>
