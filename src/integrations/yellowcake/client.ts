@@ -5,6 +5,11 @@
  * The API uses Server-Sent Events (SSE) for streaming responses.
  */
 
+import {
+  SPOTIFY_PLAYLIST_LINKS_PROMPT,
+  SPOTIFY_PLAYLIST_SONGS_PROMPT,
+} from '@/prompts';
+
 // Use Supabase Edge Function as proxy to avoid CORS issues
 // The API key is stored on the server side in the Edge Function
 const YELLOWCAKE_API_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/yellowcake-proxy`;
@@ -279,7 +284,7 @@ export async function extractSpotifyPlaylistLinks(
   const result = await extractWithYellowcake(
     {
       url: spotifyUserURL,
-      prompt: 'Extract all links to playlists on this page. Return each playlist link as a URL with the key "playlist_url".',
+      prompt: SPOTIFY_PLAYLIST_LINKS_PROMPT,
     },
     onProgress
   );
@@ -337,7 +342,7 @@ export async function extractPlaylistInfo(
   const result = await extractWithYellowcake(
     {
       url: playlistURL,
-      prompt: 'All songs and their artists from this playlist ',
+      prompt: SPOTIFY_PLAYLIST_SONGS_PROMPT,
     },
     onProgress
   );

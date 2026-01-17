@@ -1,5 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+/**
+ * Generate Profile Edge Function
+ *
+ * This function generates/tweaks dating profiles using AI.
+ *
+ * PROMPT REFERENCE: The prompts used here are defined in:
+ * - src/prompts/ai-prompts.ts (PROFILE_GENERATOR_SYSTEM_PROMPT, buildProfileGeneratePrompt, buildProfileTweakPrompt)
+ *
+ * If you update prompts here, please also update the centralized versions
+ * in the prompts folder to keep documentation in sync.
+ */
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
