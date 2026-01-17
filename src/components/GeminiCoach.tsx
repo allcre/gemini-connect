@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, Bot, User, Wand2 } from "lucide-react";
+import { Send, Sparkles, Bot, User, Wand2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -59,8 +59,8 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     return { text: content, update: null };
   };
 
-  const applyProfileUpdate = (update: any) => {
-    if (!profile || !update) return;
+  const getPreviewProfile = (update: any): UserProfile | null => {
+    if (!profile || !update) return null;
     
     const updated = { ...profile };
     
@@ -98,8 +98,31 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
       updated.funFacts = [...updated.funFacts, newFact];
     }
     
-    onProfileUpdate(updated);
-    toast.success("Profile updated!");
+    return updated;
+  };
+
+  const applyProfileUpdate = (update: any) => {
+    const updatedProfile = getPreviewProfile(update);
+    if (updatedProfile) {
+      onProfileUpdate(updatedProfile);
+      toast.success("Profile updated!");
+      // Clear the profileUpdate from the last message
+      setMessages((prev) => {
+        return prev.map((m, i) =>
+          i === prev.length - 1 ? { ...m, profileUpdate: undefined } : m
+        );
+      });
+    }
+  };
+
+  const declineProfileUpdate = () => {
+    // Remove the profileUpdate from the last message
+    setMessages((prev) => {
+      return prev.map((m, i) =>
+        i === prev.length - 1 ? { ...m, profileUpdate: undefined } : m
+      );
+    });
+    toast.info("Changes declined");
   };
 
   const sendMessage = async () => {
@@ -228,6 +251,95 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
 
   const lastMessage = messages[messages.length - 1];
   const hasProfileUpdate = lastMessage?.role === "assistant" && lastMessage?.profileUpdate;
+  const previewProfile = hasProfileUpdate ? getPreviewProfile(lastMessage.profileUpdate) : null;
+
+  const renderPreview = () => {
+    if (!previewProfile || !lastMessage?.profileUpdate) return null;
+    
+    const update = lastMessage.profileUpdate;
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={{ opacity: 1, height: "auto" }}
+        className="px-4 pb-2 space-y-2"
+      >
+        <Card className="p-4 space-y-3 border-primary/30 bg-primary/5">
+          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+            <Sparkles className="w-4 h-4" />
+            Preview Changes
+          </div>
+          
+          {update.field === "bio" && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Bio:</p>
+              <p className="text-sm text-foreground whitespace-pre-wrap bg-background/50 p-3 rounded-lg border border-border">
+                {previewProfile.bio}
+              </p>
+            </div>
+          )}
+          
+          {update.field === "promptAnswers" && update.action === "add" && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Prompt:</p>
+              <div className="bg-background/50 p-3 rounded-lg border border-border space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">{update.data.promptText}</p>
+                <p className="text-sm text-foreground whitespace-pre-wrap">{update.data.answerText}</p>
+              </div>
+            </div>
+          )}
+          
+          {update.field === "promptAnswers" && update.action === "replace" && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Updated Prompts ({update.data.length})
+              </p>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {update.data.map((prompt: any, i: number) => (
+                  <div key={i} className="bg-background/50 p-3 rounded-lg border border-border space-y-1">
+                    <p className="text-xs font-medium text-muted-foreground">{prompt.promptText}</p>
+                    <p className="text-sm text-foreground whitespace-pre-wrap">{prompt.answerText}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {update.field === "funFacts" && (
+            <div className="space-y-2">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Fun Fact:</p>
+              <div className="bg-background/50 p-3 rounded-lg border border-border">
+                <p className="text-sm text-foreground">
+                  <span className="font-semibold">{update.data.label}:</span> {update.data.value}
+                </p>
+              </div>
+            </div>
+          )}
+        </Card>
+        
+        {/* Apply/Decline Buttons */}
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => applyProfileUpdate(lastMessage.profileUpdate)}
+            className="flex-1"
+            size="lg"
+          >
+            <Check className="w-4 h-4 mr-2" />
+            Apply Changes
+          </Button>
+          <Button 
+            onClick={declineProfileUpdate}
+            variant="outline"
+            size="lg"
+            className="flex-1"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Decline
+          </Button>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <Card variant="elevated" className="flex flex-col h-[500px] max-w-md mx-auto">
@@ -305,19 +417,8 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Apply Update Button */}
-      {hasProfileUpdate && (
-        <div className="px-4 pb-2">
-          <Button 
-            onClick={() => applyProfileUpdate(lastMessage.profileUpdate)}
-            className="w-full"
-            variant="secondary"
-          >
-            <Wand2 className="w-4 h-4 mr-2" />
-            Apply Suggested Changes
-          </Button>
-        </div>
-      )}
+      {/* Preview Changes with Apply/Decline */}
+      {renderPreview()}
 
       {/* Input */}
       <div className="p-4 border-t border-border">
