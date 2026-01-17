@@ -9,12 +9,12 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, Settings, Code, Film, Music } from "lucide-react";
+import { Heart, MessageCircle, LogOut } from "lucide-react";
 import { useLocalProfile } from "@/hooks/useLocalProfile";
 import type { UserProfile } from "@/types/profile";
 
 const Index = () => {
-  const { profile, setProfile, updateProfile, isLoading, hasOnboarded, setOnboarded } = useLocalProfile();
+  const { profile, setProfile, updateProfile, isLoading, hasOnboarded, setOnboarded, resetProfile } = useLocalProfile();
   const [activeTab, setActiveTab] = useState("discover");
   const [showProfilePreview, setShowProfilePreview] = useState(false);
 
@@ -89,7 +89,7 @@ const Index = () => {
 
       case "profile":
         return (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 pb-24">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 pb-24 space-y-6">
             {profile && (
               <ProfilePreview 
                 profile={profile} 
@@ -98,6 +98,14 @@ const Index = () => {
                 isEditable={true}
               />
             )}
+            <Button 
+              variant="outline" 
+              className="w-full text-destructive border-destructive/30 hover:bg-destructive/10"
+              onClick={resetProfile}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out & Clear Data
+            </Button>
           </motion.div>
         );
 
