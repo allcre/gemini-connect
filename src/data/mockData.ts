@@ -1,37 +1,79 @@
 import profile1 from "@/assets/profile-1.jpg";
 import profile2 from "@/assets/profile-2.jpg";
 import profile3 from "@/assets/profile-3.jpg";
+import type { DiscoverProfile, YellowcakeData, PromptAnswer, FunFact, DataInsight, Photo } from "@/types/profile";
 
-// Mock profile data for the discovery feed
-export interface Profile {
-  id: string;
-  name: string;
-  age: number;
-  location: string;
-  photo: string;
-  bio: string;
-  targetAudience: string;
-  yellowcakeData: {
-    topRepos: { name: string; stars: number; language: string }[];
-    musicGenres: string[];
-    recentReviews: { title: string; rating: number; type: string }[];
-    sentimentAnalysis: { mood: string; score: number };
-    codingHours: number;
-    movieHours: number;
-  };
-  compatibilityScore: number;
-  bestFeatures: string[];
-}
-
-export const mockProfiles: Profile[] = [
+// Mock profiles using the new Hinge-style data model
+export const mockProfiles: DiscoverProfile[] = [
   {
     id: "1",
-    name: "Maya Chen",
+    displayName: "Maya Chen",
     age: 26,
     location: "San Francisco, CA",
-    photo: profile1,
-    bio: "Code by day, cinema by night. My Letterboxd is basically my love language. Looking for someone to debug life's edge cases with.",
+    gender: "female",
+    orientation: "straight",
+    photos: [
+      { id: "p1", url: profile1, isPrimary: true, sortOrder: 0 },
+    ],
+    lookingFor: "Something meaningful",
     targetAudience: "Thoughtful tech enthusiasts",
+    bio: "Code by day, cinema by night. My Letterboxd is basically my love language. Looking for someone to debug life's edge cases with.",
+    promptAnswers: [
+      {
+        id: "pa1",
+        promptId: "green-flag",
+        promptText: "A green flag I look for...",
+        answerText: "Someone who has strong opinions about movie endings and isn't afraid to defend them passionately.",
+        source: "llm",
+        sortOrder: 0,
+      },
+      {
+        id: "pa2",
+        promptId: "typical-sunday",
+        promptText: "My typical Sunday looks like...",
+        answerText: "Coffee, a Criterion film, and tweaking my dotfiles. In that order.",
+        source: "llm",
+        sortOrder: 1,
+      },
+      {
+        id: "pa3",
+        promptId: "nerd-about",
+        promptText: "I get way too nerdy about...",
+        answerText: "Film color grading. I will pause a movie to appreciate a well-composed shot.",
+        source: "llm",
+        sortOrder: 2,
+      },
+    ],
+    funFacts: [
+      { id: "f1", label: "Top language", value: "Python", source: "yellowcake", sortOrder: 0 },
+      { id: "f2", label: "Films this year", value: "142", source: "yellowcake", sortOrder: 1 },
+      { id: "f3", label: "Avg rating", value: "3.8 ⭐", source: "yellowcake", sortOrder: 2 },
+      { id: "f4", label: "Top artist", value: "Mitski", source: "yellowcake", sortOrder: 3 },
+    ],
+    dataInsights: [
+      {
+        id: "d1",
+        type: "chart",
+        title: "Weekly Activity",
+        description: "Coding vs Movie time",
+        metricKey: "activity",
+        metricValue: "32h coding / 14h films",
+        visualizationHint: "bar",
+        source: "yellowcake",
+        sortOrder: 0,
+      },
+      {
+        id: "d2",
+        type: "badge",
+        title: "A24 Enthusiast",
+        description: "8 of top 10 films are A24",
+        metricKey: "a24",
+        metricValue: "80%",
+        visualizationHint: "pill",
+        source: "llm",
+        sortOrder: 1,
+      },
+    ],
     yellowcakeData: {
       topRepos: [
         { name: "neural-art-generator", stars: 342, language: "Python" },
@@ -46,18 +88,64 @@ export const mockProfiles: Profile[] = [
       sentimentAnalysis: { mood: "Contemplative", score: 0.78 },
       codingHours: 32,
       movieHours: 14,
+      topArtists: ["Mitski", "Phoebe Bridgers", "Japanese Breakfast"],
+      avgLetterboxdRating: 3.8,
+      totalFilmsWatched: 142,
+      commitCount: 892,
     },
     compatibilityScore: 94,
     bestFeatures: ["A24 film connoisseur", "Open source contributor", "Cozy coffee shop energy"],
+    socialUsernames: { github: "mayachen", letterboxd: "maya.films", spotify: "mayac" },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: "2",
-    name: "Jordan Rivera",
+    displayName: "Jordan Rivera",
     age: 28,
     location: "Austin, TX",
-    photo: profile2,
-    bio: "Full-stack human. Building startups, playlists, and hopefully something real. My GitHub activity graph is greener than my thumb.",
+    photos: [
+      { id: "p1", url: profile2, isPrimary: true, sortOrder: 0 },
+    ],
+    lookingFor: "Creative connections",
     targetAudience: "Creative entrepreneurs",
+    bio: "Full-stack human. Building startups, playlists, and hopefully something real. My GitHub activity graph is greener than my thumb.",
+    promptAnswers: [
+      {
+        id: "pa1",
+        promptId: "shower-thought",
+        promptText: "A shower thought I recently had...",
+        answerText: "Why do we call it 'debugging' when we're really just arguing with our past selves?",
+        source: "llm",
+        sortOrder: 0,
+      },
+      {
+        id: "pa2",
+        promptId: "perfect-first-date",
+        promptText: "The perfect first date would be...",
+        answerText: "A vinyl shop crawl followed by tacos. I'll judge you gently by your music taste.",
+        source: "llm",
+        sortOrder: 1,
+      },
+    ],
+    funFacts: [
+      { id: "f1", label: "GitHub stars", value: "1.7k+", source: "yellowcake", sortOrder: 0 },
+      { id: "f2", label: "Top genre", value: "Synthwave", source: "yellowcake", sortOrder: 1 },
+      { id: "f3", label: "Commits/month", value: "120+", source: "yellowcake", sortOrder: 2 },
+    ],
+    dataInsights: [
+      {
+        id: "d1",
+        type: "stat",
+        title: "Open Source",
+        description: "Active contributor",
+        metricKey: "stars",
+        metricValue: "1,771",
+        visualizationHint: "simple",
+        source: "yellowcake",
+        sortOrder: 0,
+      },
+    ],
     yellowcakeData: {
       topRepos: [
         { name: "startup-boilerplate", stars: 1204, language: "TypeScript" },
@@ -71,18 +159,73 @@ export const mockProfiles: Profile[] = [
       sentimentAnalysis: { mood: "Energetic", score: 0.85 },
       codingHours: 45,
       movieHours: 8,
+      topArtists: ["The Midnight", "Gunship", "FM-84"],
+      commitCount: 1420,
     },
     compatibilityScore: 87,
     bestFeatures: ["1000+ GitHub stars", "Festival energy", "Actually replies to texts"],
+    socialUsernames: { github: "jordanr", spotify: "jrivera" },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     id: "3",
-    name: "Alex Kim",
+    displayName: "Alex Kim",
     age: 24,
     location: "Brooklyn, NY",
-    photo: profile3,
-    bio: "Pixel artist turned software engineer. My commit messages are poetry. Let's get lost in a museum or a really good README.",
+    photos: [
+      { id: "p1", url: profile3, isPrimary: true, sortOrder: 0 },
+    ],
+    lookingFor: "Creative partner in crime",
     targetAudience: "Art-loving introverts",
+    bio: "Pixel artist turned software engineer. My commit messages are poetry. Let's get lost in a museum or a really good README.",
+    promptAnswers: [
+      {
+        id: "pa1",
+        promptId: "hidden-talent",
+        promptText: "My hidden talent is...",
+        answerText: "I can recreate any album cover in pixel art. It takes hours. It's worth it.",
+        source: "llm",
+        sortOrder: 0,
+      },
+      {
+        id: "pa2",
+        promptId: "together-we-could",
+        promptText: "Together, we could...",
+        answerText: "Spend an entire rainy weekend building something beautiful—whether that's code, art, or just a really elaborate blanket fort.",
+        source: "llm",
+        sortOrder: 1,
+      },
+    ],
+    funFacts: [
+      { id: "f1", label: "Top project", value: "pixel-art-editor", source: "yellowcake", sortOrder: 0 },
+      { id: "f2", label: "GitHub stars", value: "2.3k", source: "yellowcake", sortOrder: 1 },
+      { id: "f3", label: "Vibe", value: "Museum regular", source: "llm", sortOrder: 2 },
+    ],
+    dataInsights: [
+      {
+        id: "d1",
+        type: "badge",
+        title: "Viral Creator",
+        description: "Pixel art editor hit front page",
+        metricKey: "viral",
+        metricValue: "2,341 ⭐",
+        visualizationHint: "pill",
+        source: "yellowcake",
+        sortOrder: 0,
+      },
+      {
+        id: "d2",
+        type: "stat",
+        title: "Creative Coder",
+        description: "Processing + Rust specialist",
+        metricKey: "languages",
+        metricValue: "2",
+        visualizationHint: "simple",
+        source: "yellowcake",
+        sortOrder: 1,
+      },
+    ],
     yellowcakeData: {
       topRepos: [
         { name: "pixel-art-editor", stars: 2341, language: "Rust" },
@@ -96,22 +239,12 @@ export const mockProfiles: Profile[] = [
       sentimentAnalysis: { mood: "Creative", score: 0.92 },
       codingHours: 28,
       movieHours: 18,
+      topArtists: ["Tycho", "Bonobo", "Explosions in the Sky"],
     },
     compatibilityScore: 91,
     bestFeatures: ["Viral pixel art creator", "Museum regular", "Makes the best playlists"],
+    socialUsernames: { github: "alexkim", letterboxd: "pixelalex" },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
 ];
-
-// Mock Yellowcake API response
-export const mockYellowcakeResponse = {
-  top_repos: [
-    { name: "my-awesome-project", stars: 45, language: "TypeScript" },
-    { name: "dotfiles", stars: 12, language: "Shell" },
-  ],
-  music_genres: ["Indie", "Electronic", "Hip-Hop"],
-  recent_reviews: [
-    { title: "Oppenheimer", rating: 4.5, type: "movie" },
-    { title: "Succession", rating: 5, type: "show" },
-  ],
-  sentiment_analysis: { mood: "Curious", score: 0.82 },
-};

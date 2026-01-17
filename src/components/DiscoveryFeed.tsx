@@ -1,23 +1,30 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProfileCard } from "./ProfileCard";
-import { mockProfiles, Profile } from "@/data/mockData";
+import { mockProfiles } from "@/data/mockData";
 import { toast } from "sonner";
 import { Heart, Sparkles } from "lucide-react";
+import type { DiscoverProfile } from "@/types/profile";
+import { useLocalMatches } from "@/hooks/useLocalProfile";
 
 export const DiscoveryFeed = () => {
-  const [profiles, setProfiles] = useState<Profile[]>(mockProfiles);
+  const [profiles] = useState<DiscoverProfile[]>(mockProfiles);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [liked, setLiked] = useState(false);
+  const { likeProfile, hasLiked } = useLocalMatches();
 
   const currentProfile = profiles[currentIndex];
 
-  const handleLike = () => {
+  const handleLike = (likedFeature?: string) => {
+    if (!currentProfile) return;
+    
     setLiked(true);
+    likeProfile(currentProfile.id, likedFeature);
+    
     toast.success(
       <div className="flex items-center gap-2">
         <Heart className="w-4 h-4 fill-current" />
-        <span>You liked {currentProfile.name}!</span>
+        <span>You liked {currentProfile.displayName}!</span>
       </div>
     );
     
@@ -39,7 +46,7 @@ export const DiscoveryFeed = () => {
     }
   };
 
-  const handleComment = (feature: string) => {
+  const handleLikeFeature = (feature: string) => {
     if (feature) {
       toast.success(
         <div className="flex items-center gap-2">
@@ -47,12 +54,13 @@ export const DiscoveryFeed = () => {
           <span>You liked "{feature}"</span>
         </div>
       );
+      handleLike(feature);
     }
   };
 
   if (!currentProfile) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+      <div className="flex flex-col items-center justify-center h-[60vh] p-8 text-center">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -87,9 +95,9 @@ export const DiscoveryFeed = () => {
         <ProfileCard
           key={currentProfile.id}
           profile={currentProfile}
-          onLike={handleLike}
+          onLike={() => handleLike()}
           onSkip={handleSkip}
-          onComment={handleComment}
+          onLikeFeature={handleLikeFeature}
         />
       </AnimatePresence>
     </div>

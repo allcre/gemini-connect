@@ -1,21 +1,41 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, X, MessageCircle, Star, Code, Film, Music } from "lucide-react";
+import { Heart, X, MessageCircle, Star, Code, Film, Music, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Profile } from "@/data/mockData";
+import type { DiscoverProfile } from "@/types/profile";
 
 interface ProfileCardProps {
-  profile: Profile;
+  profile: DiscoverProfile;
   onLike: () => void;
   onSkip: () => void;
-  onComment: (feature: string) => void;
+  onLikeFeature: (feature: string) => void;
 }
 
-export const ProfileCard = ({ profile, onLike, onSkip, onComment }: ProfileCardProps) => {
-  const maxCoding = Math.max(profile.yellowcakeData.codingHours, profile.yellowcakeData.movieHours);
-  const codingWidth = (profile.yellowcakeData.codingHours / maxCoding) * 100;
-  const movieWidth = (profile.yellowcakeData.movieHours / maxCoding) * 100;
+export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileCardProps) => {
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+  
+  const yellowcake = profile.yellowcakeData;
+  const hasActivityData = yellowcake && (yellowcake.codingHours || yellowcake.movieHours);
+  
+  const maxActivity = hasActivityData 
+    ? Math.max(yellowcake.codingHours || 0, yellowcake.movieHours || 0) 
+    : 1;
+  const codingWidth = hasActivityData ? ((yellowcake.codingHours || 0) / maxActivity) * 100 : 0;
+  const movieWidth = hasActivityData ? ((yellowcake.movieHours || 0) / maxActivity) * 100 : 0;
+
+  const nextPhoto = () => {
+    if (profile.photos.length > 1) {
+      setCurrentPhotoIndex((prev) => (prev + 1) % profile.photos.length);
+    }
+  };
+
+  const prevPhoto = () => {
+    if (profile.photos.length > 1) {
+      setCurrentPhotoIndex((prev) => (prev - 1 + profile.photos.length) % profile.photos.length);
+    }
+  };
 
   return (
     <motion.div
@@ -28,10 +48,38 @@ export const ProfileCard = ({ profile, onLike, onSkip, onComment }: ProfileCardP
         {/* Photo Section */}
         <div className="relative aspect-[4/5]">
           <img
-            src={profile.photo}
-            alt={profile.name}
+            src={profile.photos[currentPhotoIndex]?.url || "/placeholder.svg"}
+            alt={profile.displayName}
             className="w-full h-full object-cover"
           />
+          
+          {/* Photo Navigation */}
+          {profile.photos.length > 1 && (
+            <>
+              <button
+                onClick={prevPhoto}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-background/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-background/80 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={nextPhoto}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-background/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-background/80 transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-1">
+                {profile.photos.map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-8 h-1 rounded-full transition-colors ${
+                      i === currentPhotoIndex ? "bg-white" : "bg-white/40"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
           
           {/* Compatibility Badge */}
           <motion.div
@@ -49,47 +97,80 @@ export const ProfileCard = ({ profile, onLike, onSkip, onComment }: ProfileCardP
           {/* Name & Location */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent p-6 text-white">
             <h2 className="font-display text-2xl font-semibold">
-              {profile.name}, {profile.age}
+              {profile.displayName}{profile.age ? `, ${profile.age}` : ""}
             </h2>
-            <p className="text-white/80 text-sm">{profile.location}</p>
+            {profile.location && (
+              <p className="text-white/80 text-sm flex items-center gap-1">
+                <MapPin className="w-3 h-3" />
+                {profile.location}
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Content Section */}
-        <div className="p-6 space-y-6">
+        {/* Content Section - Interleaved */}
+        <div className="p-5 space-y-4">
           {/* Bio */}
           <p className="text-foreground leading-relaxed">{profile.bio}</p>
 
-          {/* Best Features - Likeable */}
-          <div className="space-y-3">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Best Features
-            </p>
+          {/* Fun Facts Pills */}
+          {profile.funFacts.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {profile.bestFeatures.map((feature, i) => (
+              {profile.funFacts.map((fact) => (
                 <motion.button
-                  key={i}
+                  key={fact.id}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => onComment(feature)}
+                  onClick={() => onLikeFeature(`${fact.label}: ${fact.value}`)}
                   className="group"
                 >
-                  <Badge variant="insight" className="cursor-pointer group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                    <Heart className="w-3 h-3 mr-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {feature}
+                  <Badge variant="outline" className="px-3 py-1.5 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
+                    <span className="font-medium">{fact.label}:</span>
+                    <span className="ml-1">{fact.value}</span>
                   </Badge>
                 </motion.button>
               ))}
             </div>
-          </div>
+          )}
+
+          {/* Prompt Answers */}
+          {profile.promptAnswers.slice(0, 2).map((prompt) => (
+            <motion.button
+              key={prompt.id}
+              whileHover={{ scale: 1.01 }}
+              onClick={() => onLikeFeature(prompt.answerText)}
+              className="w-full text-left"
+            >
+              <Card className="p-4 hover:shadow-soft transition-shadow cursor-pointer group">
+                <p className="text-sm font-medium text-muted-foreground mb-1">{prompt.promptText}</p>
+                <p className="text-foreground group-hover:text-primary transition-colors">{prompt.answerText}</p>
+              </Card>
+            </motion.button>
+          ))}
 
           {/* Data Insights */}
-          <div className="space-y-4">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Data Insights
-            </p>
+          {profile.dataInsights.length > 0 && (
+            <div className="grid grid-cols-2 gap-3">
+              {profile.dataInsights.map((insight) => (
+                <motion.button
+                  key={insight.id}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => onLikeFeature(insight.title)}
+                  className="text-left"
+                >
+                  <Card className="p-3 hover:shadow-soft transition-shadow cursor-pointer h-full">
+                    <p className="text-xl font-bold text-primary">{insight.metricValue}</p>
+                    <p className="text-sm font-medium">{insight.title}</p>
+                    <p className="text-xs text-muted-foreground">{insight.description}</p>
+                  </Card>
+                </motion.button>
+              ))}
+            </div>
+          )}
 
-            {/* Activity Chart */}
+          {/* Activity Chart */}
+          {hasActivityData && (
             <div className="bg-secondary/50 rounded-2xl p-4 space-y-3">
               <p className="text-sm font-medium">Weekly Activity</p>
               <div className="space-y-2">
@@ -104,7 +185,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onComment }: ProfileCardP
                     />
                   </div>
                   <span className="text-xs text-muted-foreground w-12 text-right">
-                    {profile.yellowcakeData.codingHours}h
+                    {yellowcake.codingHours}h
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -118,56 +199,58 @@ export const ProfileCard = ({ profile, onLike, onSkip, onComment }: ProfileCardP
                     />
                   </div>
                   <span className="text-xs text-muted-foreground w-12 text-right">
-                    {profile.yellowcakeData.movieHours}h
+                    {yellowcake.movieHours}h
                   </span>
                 </div>
               </div>
             </div>
+          )}
 
-            {/* Top Repos */}
-            <div className="space-y-2">
-              {profile.yellowcakeData.topRepos.slice(0, 1).map((repo, i) => (
+          {/* Best Features - Likeable */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Best Features
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {profile.bestFeatures.map((feature, i) => (
                 <motion.button
                   key={i}
-                  whileHover={{ scale: 1.02 }}
-                  onClick={() => onComment(repo.name)}
-                  className="w-full text-left"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => onLikeFeature(feature)}
+                  className="group"
                 >
-                  <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl hover:bg-secondary transition-colors">
-                    <Code className="w-5 h-5 text-primary" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{repo.name}</p>
-                      <p className="text-xs text-muted-foreground">{repo.language}</p>
-                    </div>
-                    <Badge variant="secondary" className="shrink-0">
-                      ⭐ {repo.stars}
-                    </Badge>
-                  </div>
+                  <Badge variant="insight" className="cursor-pointer group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    <Heart className="w-3 h-3 mr-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {feature}
+                  </Badge>
                 </motion.button>
               ))}
             </div>
+          </div>
 
-            {/* Music Genres */}
+          {/* Music Genres */}
+          {yellowcake?.musicGenres && yellowcake.musicGenres.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
               <Music className="w-4 h-4 text-accent" />
-              {profile.yellowcakeData.musicGenres.map((genre, i) => (
+              {yellowcake.musicGenres.map((genre, i) => (
                 <Badge key={i} variant="data" className="text-xs">
                   {genre}
                 </Badge>
               ))}
             </div>
-          </div>
+          )}
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center gap-6 p-6 pt-0">
+        <div className="flex items-center justify-center gap-6 p-5 pt-0">
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Button variant="skip" size="icon-lg" onClick={onSkip}>
               <X className="w-6 h-6" />
             </Button>
           </motion.div>
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-            <Button variant="glass" size="icon" onClick={() => onComment("")}>
+            <Button variant="glass" size="icon" onClick={() => {}}>
               <MessageCircle className="w-5 h-5" />
             </Button>
           </motion.div>
