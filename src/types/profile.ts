@@ -46,6 +46,11 @@ export interface YellowcakeData {
   movieHours: number;
   topArtists?: string[];
   playlistSongs?: Array<{ track_name: string; artist_name: string }>;
+  githubRepos?: Array<{ name: string; description: string }>;
+  tweets?: Array<{ text: string }>;
+  substackPosts?: Array<{ title: string; text: string }>;
+  steamGames?: Array<{ game_name: string; hours_played?: any }>;
+  letterboxdFilms?: Array<{ film_title: string; rating: string | number | null }>;
   avgLetterboxdRating?: number;
   totalFilmsWatched?: number;
   commitCount?: number;
