@@ -1,32 +1,40 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, Bot, User } from "lucide-react";
+import { Send, Sparkles, Bot, User, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import type { UserProfile } from "@/types/profile";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  profileUpdate?: any;
 }
 
 interface GeminiCoachProps {
-  onProfileGenerated?: (bio: string, features: string[]) => void;
+  profile: UserProfile | null;
+  onProfileUpdate: (profile: UserProfile) => void;
 }
 
-const initialMessages: Message[] = [
-  {
-    id: "1",
-    role: "assistant",
-    content: "Hey there! 👋 I'm your Data-Driven Wingman. I've analyzed your digital footprint and I'm ready to craft the perfect profile for you. First question: Who are you trying to attract? (e.g., 'Introverted gamers', 'Creative entrepreneurs', 'Outdoor adventurers')",
-  },
-];
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/coach-chat`;
 
-export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "1",
+      role: "assistant",
+      content: `Hey there! 👋 I'm your Data-Driven Wingman. ${
+        profile?.yellowcakeData 
+          ? "I've analyzed your digital footprint and I'm ready to help optimize your profile!" 
+          : "I'm here to help you craft the perfect profile."
+      }\n\nAsk me anything like:\n• "Make my bio more mysterious"\n• "Add something about my coding projects"\n• "What should I highlight for creative types?"`,
+    },
+  ]);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -37,8 +45,65 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
     scrollToBottom();
   }, [messages]);
 
+  const parseProfileUpdate = (content: string): { text: string; update: any | null } => {
+    const updateMatch = content.match(/```json:profile_update\s*([\s\S]*?)```/);
+    if (updateMatch) {
+      try {
+        const update = JSON.parse(updateMatch[1].trim());
+        const text = content.replace(/```json:profile_update[\s\S]*?```/g, "").trim();
+        return { text, update };
+      } catch (e) {
+        console.error("Failed to parse profile update:", e);
+      }
+    }
+    return { text: content, update: null };
+  };
+
+  const applyProfileUpdate = (update: any) => {
+    if (!profile || !update) return;
+    
+    const updated = { ...profile };
+    
+    if (update.field === "bio" && update.action === "replace") {
+      updated.bio = update.data.bio || update.data;
+    } else if (update.field === "promptAnswers") {
+      if (update.action === "replace" && Array.isArray(update.data)) {
+        updated.promptAnswers = update.data.map((p: any, i: number) => ({
+          id: `prompt-${i}`,
+          promptId: p.promptId || `prompt-${i}`,
+          promptText: p.promptText,
+          answerText: p.answerText,
+          source: "llm" as const,
+          sortOrder: i,
+        }));
+      } else if (update.action === "add" && update.data) {
+        const newPrompt = {
+          id: `prompt-${updated.promptAnswers.length}`,
+          promptId: update.data.promptId || `prompt-${updated.promptAnswers.length}`,
+          promptText: update.data.promptText,
+          answerText: update.data.answerText,
+          source: "llm" as const,
+          sortOrder: updated.promptAnswers.length,
+        };
+        updated.promptAnswers = [...updated.promptAnswers, newPrompt];
+      }
+    } else if (update.field === "funFacts" && update.action === "add") {
+      const newFact = {
+        id: `fact-${updated.funFacts.length}`,
+        label: update.data.label,
+        value: update.data.value,
+        source: "llm" as const,
+        sortOrder: updated.funFacts.length,
+      };
+      updated.funFacts = [...updated.funFacts, newFact];
+    }
+    
+    onProfileUpdate(updated);
+    toast.success("Profile updated!");
+  };
+
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -48,28 +113,121 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    setIsTyping(true);
+    setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "Perfect! Based on your Letterboxd reviews and GitHub activity, I can see you have a thoughtful, introspective side. Let me craft something special...",
-        "Love it! 🎯 I'm seeing some patterns in your data that would resonate perfectly with that audience. Your indie film taste + coding projects = unique combo!",
-        "Here's what I've generated:\n\n**Bio:** \"Code by day, cinema by night. My Letterboxd is basically my love language. Looking for someone to debug life's edge cases with.\"\n\n**Highlighted Features:**\n• A24 film connoisseur\n• Open source contributor\n• Cozy coffee shop energy\n\nWhat do you think? Want me to adjust anything?",
-      ];
+    let assistantContent = "";
 
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+          currentProfile: profile,
+          yellowcakeData: profile?.yellowcakeData,
+        }),
+      });
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: randomResponse,
+      if (!resp.ok) {
+        if (resp.status === 429) {
+          throw new Error("Rate limit exceeded. Please wait a moment and try again.");
+        }
+        if (resp.status === 402) {
+          throw new Error("API credits depleted.");
+        }
+        throw new Error("Failed to get response");
+      }
+
+      if (!resp.body) throw new Error("No response body");
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+
+      const upsertAssistant = (chunk: string) => {
+        assistantContent += chunk;
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant" && last.id.startsWith("streaming-")) {
+            return prev.map((m, i) =>
+              i === prev.length - 1 ? { ...m, content: assistantContent } : m
+            );
+          }
+          return [
+            ...prev,
+            { id: `streaming-${Date.now()}`, role: "assistant", content: assistantContent },
+          ];
+        });
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 1500);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) upsertAssistant(content);
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Parse final content for profile updates
+      const { text, update } = parseProfileUpdate(assistantContent);
+      
+      // Update the final message with cleaned text
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant") {
+          return prev.map((m, i) =>
+            i === prev.length - 1 ? { ...m, id: Date.now().toString(), content: text, profileUpdate: update } : m
+          );
+        }
+        return prev;
+      });
+
+    } catch (error) {
+      console.error("Coach chat error:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to get response");
+      
+      // Add error message
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again!",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const lastMessage = messages[messages.length - 1];
+  const hasProfileUpdate = lastMessage?.role === "assistant" && lastMessage?.profileUpdate;
 
   return (
     <Card variant="elevated" className="flex flex-col h-[500px] max-w-md mx-auto">
@@ -92,7 +250,6 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
               key={message.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
               className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
             >
               <div
@@ -109,7 +266,7 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
                 )}
               </div>
               <div
-                className={`max-w-[80%] p-4 rounded-2xl ${
+                className={`max-w-[80%] p-3 rounded-2xl ${
                   message.role === "assistant"
                     ? "bg-secondary text-secondary-foreground rounded-tl-sm"
                     : "gradient-primary text-primary-foreground rounded-tr-sm"
@@ -121,7 +278,7 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
           ))}
         </AnimatePresence>
 
-        {isTyping && (
+        {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -130,7 +287,7 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
             <div className="w-8 h-8 gradient-match rounded-full flex items-center justify-center">
               <Bot className="w-4 h-4 text-match-foreground" />
             </div>
-            <div className="bg-secondary p-4 rounded-2xl rounded-tl-sm">
+            <div className="bg-secondary p-3 rounded-2xl rounded-tl-sm">
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
                   <motion.div
@@ -148,6 +305,20 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Apply Update Button */}
+      {hasProfileUpdate && (
+        <div className="px-4 pb-2">
+          <Button 
+            onClick={() => applyProfileUpdate(lastMessage.profileUpdate)}
+            className="w-full"
+            variant="secondary"
+          >
+            <Wand2 className="w-4 h-4 mr-2" />
+            Apply Suggested Changes
+          </Button>
+        </div>
+      )}
+
       {/* Input */}
       <div className="p-4 border-t border-border">
         <form
@@ -158,12 +329,13 @@ export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
           className="flex gap-2"
         >
           <Input
-            placeholder="Type your response..."
+            placeholder="Ask me to tweak your profile..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1"
+            disabled={isLoading}
           />
-          <Button type="submit" size="icon" disabled={!input.trim() || isTyping}>
+          <Button type="submit" size="icon" disabled={!input.trim() || isLoading}>
             <Send className="w-4 h-4" />
           </Button>
         </form>
