@@ -26,27 +26,61 @@ export const SPOTIFY_PLAYLIST_SONGS_PROMPT =
   'All songs and their artists from this playlist';
 
 // =============================================================================
-// FUTURE EXTRACTION PROMPTS (PLACEHOLDERS)
+// LETTERBOXD EXTRACTION PROMPTS
 // =============================================================================
 
 /**
- * Prompt for extracting repository information from GitHub
- * Currently mocked - will be implemented when GitHub scraping is added
+ * Prompt for extracting films and ratings from a Letterboxd user's films page
+ *
+ * Used by: src/integrations/yellowcake/client.ts - extractLetterboxdFilms()
+ */
+export const LETTERBOXD_FILMS_PROMPT =
+  'Extract all films and their ratings from this Letterboxd page. For each film, extract the film title and rating (if rated). Return each film with keys "film_title" and "rating".';
+
+// =============================================================================
+// GITHUB EXTRACTION PROMPTS
+// =============================================================================
+
+/**
+ * Prompt for extracting repositories from a GitHub user's repositories page
+ *
+ * Used by: src/integrations/yellowcake/client.ts - extractGitHubRepos()
  */
 export const GITHUB_REPOS_PROMPT =
-  'Extract all public repositories with their name, description, primary language, and star count.';
+  'Extract all repositories from this GitHub page. For each repository, extract the repository name and description. Return each repository with keys "name" and "description".';
+
+// =============================================================================
+// TWITTER/X EXTRACTION PROMPTS
+// =============================================================================
 
 /**
- * Prompt for extracting film reviews from Letterboxd
- * Currently mocked - will be implemented when Letterboxd scraping is added
+ * Prompt for extracting tweets from an X (Twitter) user's profile page
+ *
+ * Used by: src/integrations/yellowcake/client.ts - extractTweets()
  */
-export const LETTERBOXD_REVIEWS_PROMPT =
-  'Extract recent film reviews including the film title, rating (out of 5), and review text if available.';
+export const TWITTER_TWEETS_PROMPT =
+  'Extract all tweets from this X (Twitter) profile page. For each tweet, extract the tweet text content. Return each tweet with key "text".';
+
+// =============================================================================
+// SUBSTACK EXTRACTION PROMPTS
+// =============================================================================
 
 /**
- * Prompt for extracting user stats from Letterboxd profile
- * Currently mocked - will be implemented when Letterboxd scraping is added
+ * Prompt for extracting posts from a Substack author's profile page
+ *
+ * Used by: src/integrations/yellowcake/client.ts - extractSubstackPosts()
  */
-export const LETTERBOXD_STATS_PROMPT =
-  'Extract user statistics including total films watched, average rating, and favorite genres.';
+export const SUBSTACK_POSTS_PROMPT =
+  'Extract all posts from this Substack profile page. For each post, extract the post title and text content. Return each post with keys "title" and "text".';
 
+// =============================================================================
+// STEAM EXTRACTION PROMPTS
+// =============================================================================
+
+/**
+ * Prompt for extracting recent games from a Steam user's profile page
+ *
+ * Used by: src/integrations/yellowcake/client.ts - extractSteamGames()
+ */
+export const STEAM_GAMES_PROMPT =
+  'Extract all recent games from this Steam profile page. For each game, extract the game name and hours played (if available). Return each game with keys "game_name" and "hours_played" (hours_played can be a number, string, or null if not available).';
