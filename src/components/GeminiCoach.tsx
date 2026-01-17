@@ -1,12 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, Bot, User, RefreshCw } from "lucide-react";
+import { Send, Sparkles, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { UserProfile, PromptAnswer } from "@/types/profile";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -15,30 +12,22 @@ interface Message {
 }
 
 interface GeminiCoachProps {
-  profile: UserProfile;
-  onProfileUpdate: (updates: Partial<UserProfile>) => void;
+  onProfileGenerated?: (bio: string, features: string[]) => void;
 }
 
-const getInitialMessage = (profile: UserProfile): Message => ({
-  id: "1",
-  role: "assistant",
-  content: `Hey ${profile.displayName || "there"}! 👋 I'm your Data-Driven Wingman. I've seen your profile and I think it's looking great! 
+const initialMessages: Message[] = [
+  {
+    id: "1",
+    role: "assistant",
+    content: "Hey there! 👋 I'm your Data-Driven Wingman. I've analyzed your digital footprint and I'm ready to craft the perfect profile for you. First question: Who are you trying to attract? (e.g., 'Introverted gamers', 'Creative entrepreneurs', 'Outdoor adventurers')",
+  },
+];
 
-Here's what I can help you with:
-• Tweak your bio to attract a different audience
-• Generate new prompt answers
-• Make your profile more witty/serious/playful
-• Highlight different aspects of your data
-
-Just tell me what you'd like to change!`,
-});
-
-export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
-  const [messages, setMessages] = useState<Message[]>([getInitialMessage(profile)]);
+export const GeminiCoach = ({ onProfileGenerated }: GeminiCoachProps) => {
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -49,7 +38,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!input.trim() || isTyping) return;
+    if (!input.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -61,90 +50,25 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     setInput("");
     setIsTyping(true);
 
-    try {
-      const { data, error } = await supabase.functions.invoke("generate-profile", {
-        body: {
-          type: "update-profile",
-          userInfo: {
-            displayName: profile.displayName,
-            targetAudience: profile.targetAudience,
-          },
-          yellowcakeData: profile.yellowcakeData,
-          existingProfile: {
-            bio: profile.bio,
-            promptAnswers: profile.promptAnswers.map(p => ({
-              promptText: p.promptText,
-              answerText: p.answerText,
-            })),
-          },
-          chatMessage: input,
-        },
-      });
+    // Simulate AI response
+    setTimeout(() => {
+      const responses = [
+        "Perfect! Based on your Letterboxd reviews and GitHub activity, I can see you have a thoughtful, introspective side. Let me craft something special...",
+        "Love it! 🎯 I'm seeing some patterns in your data that would resonate perfectly with that audience. Your indie film taste + coding projects = unique combo!",
+        "Here's what I've generated:\n\n**Bio:** \"Code by day, cinema by night. My Letterboxd is basically my love language. Looking for someone to debug life's edge cases with.\"\n\n**Highlighted Features:**\n• A24 film connoisseur\n• Open source contributor\n• Cozy coffee shop energy\n\nWhat do you think? Want me to adjust anything?",
+      ];
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      // Apply updates to profile
-      const updates: Partial<UserProfile> = {};
-      
-      if (data.bio && data.bio !== profile.bio) {
-        updates.bio = data.bio;
-      }
-      
-      if (data.promptAnswers && Array.isArray(data.promptAnswers)) {
-        const newPromptAnswers: PromptAnswer[] = data.promptAnswers.map(
-          (p: { promptId: string; promptText: string; answerText: string }, i: number) => ({
-            id: crypto.randomUUID(),
-            promptId: p.promptId,
-            promptText: p.promptText,
-            answerText: p.answerText,
-            source: "llm" as const,
-            sortOrder: (i + 1) * 10 + 5,
-          })
-        );
-        updates.promptAnswers = newPromptAnswers;
-      }
-
-      if (Object.keys(updates).length > 0) {
-        onProfileUpdate(updates);
-      }
-
-      // Generate assistant response
-      const changesSummary = [];
-      if (updates.bio) changesSummary.push("updated your bio");
-      if (updates.promptAnswers) changesSummary.push("refreshed your prompts");
-
-      const assistantContent = changesSummary.length > 0
-        ? `Done! I've ${changesSummary.join(" and ")}. Check out your profile to see the changes! 
-
-Anything else you'd like me to tweak?`
-        : `I've reviewed your profile based on your request. Let me know if you'd like any specific changes!`;
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: assistantContent,
+        content: randomResponse,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (err) {
-      console.error("Coach error:", err);
-      toast({
-        title: "Oops!",
-        description: "Couldn't process your request. Try again?",
-        variant: "destructive",
-      });
-
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Sorry, I hit a snag there! 😅 Could you try asking again?",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
       setIsTyping(false);
-    }
+    }, 1500);
   };
 
   return (
@@ -154,18 +78,10 @@ Anything else you'd like me to tweak?`
         <div className="w-10 h-10 gradient-match rounded-full flex items-center justify-center shadow-soft">
           <Sparkles className="w-5 h-5 text-match-foreground" />
         </div>
-        <div className="flex-1">
+        <div>
           <h3 className="font-semibold">Gemini Coach</h3>
           <p className="text-xs text-muted-foreground">Your Data-Driven Wingman</p>
         </div>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => setMessages([getInitialMessage(profile)])}
-          title="Reset conversation"
-        >
-          <RefreshCw className="w-4 h-4" />
-        </Button>
       </div>
 
       {/* Messages */}
@@ -242,7 +158,7 @@ Anything else you'd like me to tweak?`
           className="flex gap-2"
         >
           <Input
-            placeholder="Ask me to update your profile..."
+            placeholder="Type your response..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1"

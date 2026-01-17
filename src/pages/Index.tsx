@@ -1,62 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
 import { BottomNav } from "@/components/BottomNav";
 import { DiscoveryFeed } from "@/components/DiscoveryFeed";
 import { GeminiCoach } from "@/components/GeminiCoach";
-import { OnboardingWizard } from "@/components/OnboardingWizard";
-import { ProfilePreview } from "@/components/ProfilePreview";
-import { useProfile } from "@/hooks/useProfile";
+import { OnboardingWizard, OnboardingData } from "@/components/OnboardingWizard";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Heart, MessageCircle, Loader2 } from "lucide-react";
-import { UserProfile } from "@/types/profile";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Heart, MessageCircle, Settings, Camera, Edit2, Code, Film, Music } from "lucide-react";
 
 const Index = () => {
-  const { 
-    profile, 
-    isLoading, 
-    hasOnboarded, 
-    saveProfile, 
-    updateProfile,
-    completeOnboarding 
-  } = useProfile();
-  
+  const [hasOnboarded, setHasOnboarded] = useState(false);
   const [activeTab, setActiveTab] = useState("discover");
 
-  const handleOnboardingComplete = (completedProfile: UserProfile) => {
-    saveProfile(completedProfile);
-    completeOnboarding();
-    setActiveTab("profile"); // Go to profile preview after onboarding
+  const handleOnboardingComplete = (data: OnboardingData) => {
+    console.log("Onboarding complete:", data);
+    setHasOnboarded(true);
   };
 
-  const handleProfileUpdate = (updates: Partial<UserProfile>) => {
-    updateProfile(updates);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!hasOnboarded && profile) {
-    return (
-      <OnboardingWizard 
-        onComplete={handleOnboardingComplete} 
-        initialProfile={profile}
-      />
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Something went wrong. Please refresh.</p>
-      </div>
-    );
+  if (!hasOnboarded) {
+    return <OnboardingWizard onComplete={handleOnboardingComplete} />;
   }
 
   const renderContent = () => {
@@ -79,10 +43,7 @@ const Index = () => {
             animate={{ opacity: 1 }}
             className="p-4 pb-24"
           >
-            <GeminiCoach 
-              profile={profile} 
-              onProfileUpdate={handleProfileUpdate}
-            />
+            <GeminiCoach />
           </motion.div>
         );
 
@@ -141,12 +102,83 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="p-4"
+            className="p-4 pb-24 space-y-6"
           >
-            <ProfilePreview 
-              profile={profile} 
-              onEdit={() => setActiveTab("coach")}
-            />
+            {/* Profile Header */}
+            <div className="text-center space-y-4">
+              <div className="relative inline-block">
+                <div className="w-28 h-28 rounded-full gradient-primary flex items-center justify-center text-5xl shadow-elevated">
+                  🧑‍💻
+                </div>
+                <button className="absolute bottom-0 right-0 w-10 h-10 gradient-primary rounded-full flex items-center justify-center shadow-soft">
+                  <Camera className="w-5 h-5 text-primary-foreground" />
+                </button>
+              </div>
+              <div>
+                <h2 className="font-display text-2xl font-semibold">Your Profile</h2>
+                <p className="text-muted-foreground">San Francisco, CA</p>
+              </div>
+            </div>
+
+            {/* Bio Card */}
+            <Card className="p-4">
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="font-semibold">Bio</h3>
+                <Button variant="ghost" size="icon-sm">
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+              </div>
+              <p className="text-muted-foreground">
+                Code by day, cinema by night. My Letterboxd is basically my love language. 
+                Looking for someone to debug life's edge cases with.
+              </p>
+            </Card>
+
+            {/* Data Insights Card */}
+            <Card className="p-4 space-y-4">
+              <h3 className="font-semibold">Your Data Insights</h3>
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-chart-1/20 flex items-center justify-center">
+                    <Code className="w-5 h-5 text-chart-1" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">GitHub</p>
+                    <p className="text-sm text-muted-foreground">3 repos connected</p>
+                  </div>
+                  <Badge variant="insight">Active</Badge>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-chart-3/20 flex items-center justify-center">
+                    <Film className="w-5 h-5 text-chart-3" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">Letterboxd</p>
+                    <p className="text-sm text-muted-foreground">142 films logged</p>
+                  </div>
+                  <Badge variant="insight">Active</Badge>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                    <Music className="w-5 h-5 text-accent-foreground" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">Spotify</p>
+                    <p className="text-sm text-muted-foreground">Not connected</p>
+                  </div>
+                  <Button variant="outline" size="sm">Connect</Button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Settings */}
+            <Button variant="secondary" className="w-full">
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
           </motion.div>
         );
 

@@ -1,4 +1,0 @@
-project_id = "ctptnuvwnmplpkruuwce"
-
-[functions.generate-profile]
-verify_jwt = false
