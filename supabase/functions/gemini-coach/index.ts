@@ -68,49 +68,79 @@ ${JSON.stringify(yellowcakeData, null, 2)}`;
 
     console.log("Calling Gemini API...");
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: geminiMessages,
-          generationConfig: {
-            temperature: 0.9,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          },
-        }),
+    // Retry logic with exponential backoff
+    let lastError: Error | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt > 0) {
+        const delay = Math.pow(2, attempt) * 1000; // 2s, 4s
+        console.log(`Retry attempt ${attempt + 1}, waiting ${delay}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
-    );
 
-    if (!response.ok) {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: geminiMessages,
+            generationConfig: {
+              temperature: 0.9,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            },
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Gemini response received");
+
+        const assistantMessage = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+          "I'm having trouble thinking right now. Can you try again?";
+
+        return new Response(
+          JSON.stringify({ message: assistantMessage }),
+          {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
+      // Handle rate limiting specifically
+      if (response.status === 429) {
+        const errorText = await response.text();
+        console.error("Gemini API rate limited:", response.status, errorText);
+        lastError = new Error("API quota exceeded - please wait a moment and try again");
+        continue; // Retry
+      }
+
+      // Other errors - don't retry
       const errorText = await response.text();
       console.error("Gemini API error:", response.status, errorText);
       throw new Error(`Gemini API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log("Gemini response received");
-
-    const assistantMessage = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-      "I'm having trouble thinking right now. Can you try again?";
-
-    return new Response(
-      JSON.stringify({ message: assistantMessage }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    // All retries exhausted
+    throw lastError || new Error("Failed after retries");
   } catch (error) {
     console.error("Error in gemini-coach:", error);
+    
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const isQuotaError = errorMessage.includes("quota") || errorMessage.includes("429");
+    
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ 
+        error: isQuotaError 
+          ? "Your Gemini API quota is exceeded. Please wait a minute or update your API key in project secrets."
+          : errorMessage 
+      }),
       {
-        status: 500,
+        status: isQuotaError ? 429 : 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
