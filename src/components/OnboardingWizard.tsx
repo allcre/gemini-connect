@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Film, Music, Upload, ArrowRight, ArrowLeft, Sparkles, User, Target, X, MessageSquare, BookOpen, Gamepad2 } from "lucide-react";
+import { Github, Film, Music, Upload, ArrowRight, ArrowLeft, Sparkles, User, Target, X, MessageSquare, BookOpen, Gamepad2, Heart, Users, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { OnboardingSteps } from "./OnboardingSteps";
 import { Logo } from "./Logo";
 import type { UserProfile, YellowcakeData, Photo } from "@/types/profile";
@@ -29,6 +30,7 @@ interface OnboardingFormData {
   aboutMe: string;
   targetAudience: string;
   highlights: string;
+  lookingFor: string;
   photos: string[];
 }
 
@@ -115,6 +117,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     aboutMe: "",
     targetAudience: "",
     highlights: "",
+    lookingFor: "",
     photos: [],
   });
 
@@ -383,7 +386,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         age: formData.age ? parseInt(formData.age) : null,
         location: formData.location,
         photos,
-        lookingFor: "Something meaningful",
+        lookingFor: formData.lookingFor || "friend",
         targetAudience: formData.targetAudience,
         bio: generatedContent.bio || "",
         promptAnswers: (generatedContent.promptAnswers || []).map((p: any, i: number) => ({
@@ -557,6 +560,38 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         <div className="space-y-4">
           <div className="space-y-3">
             <div>
+              <label className="text-sm font-medium mb-2 block">
+                What are you looking for?
+              </label>
+              <RadioGroup
+                value={formData.lookingFor}
+                onValueChange={(value) => updateField("lookingFor", value)}
+                className="space-y-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="friend" id="friend" />
+                  <Label htmlFor="friend" className="flex items-center gap-2 cursor-pointer font-normal">
+                    <Users className="w-4 h-4" />
+                    Friend
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="romantic" id="romantic" />
+                  <Label htmlFor="romantic" className="flex items-center gap-2 cursor-pointer font-normal">
+                    <Heart className="w-4 h-4" />
+                    Romantic Partner
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="hackathon" id="hackathon" />
+                  <Label htmlFor="hackathon" className="flex items-center gap-2 cursor-pointer font-normal">
+                    <Code2 className="w-4 h-4" />
+                    Hackathon Buddy
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <div>
               <label className="text-sm font-medium mb-1.5 flex items-center gap-2">
                 <Target className="w-4 h-4 text-primary" />
                 Who are you trying to attract?
@@ -592,7 +627,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           </div>
         </div>
       ),
-      isValid: () => formData.targetAudience.length > 0,
+      isValid: () => formData.lookingFor.length > 0 && formData.targetAudience.length > 0,
     },
     {
       title: "Show Your Best Self",
