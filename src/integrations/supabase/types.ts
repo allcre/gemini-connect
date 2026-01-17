@@ -14,7 +14,179 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_history: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          profile_id: string | null
+          role: string
+          session_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          profile_id?: string | null
+          role: string
+          session_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          profile_id?: string | null
+          role?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_history_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matches: {
+        Row: {
+          created_at: string
+          id: string
+          liked_feature: string | null
+          matched_user_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          liked_feature?: string | null
+          matched_user_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          liked_feature?: string | null
+          matched_user_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_matched_user_id_fkey"
+            columns: ["matched_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          match_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          match_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          match_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          best_features: string[] | null
+          bio: string | null
+          compatibility_score: number | null
+          created_at: string
+          github_username: string | null
+          id: string
+          letterboxd_username: string | null
+          location: string | null
+          name: string
+          photo_url: string | null
+          spotify_username: string | null
+          target_audience: string | null
+          updated_at: string
+          username: string | null
+          yellowcake_data: Json | null
+        }
+        Insert: {
+          age?: number | null
+          best_features?: string[] | null
+          bio?: string | null
+          compatibility_score?: number | null
+          created_at?: string
+          github_username?: string | null
+          id?: string
+          letterboxd_username?: string | null
+          location?: string | null
+          name: string
+          photo_url?: string | null
+          spotify_username?: string | null
+          target_audience?: string | null
+          updated_at?: string
+          username?: string | null
+          yellowcake_data?: Json | null
+        }
+        Update: {
+          age?: number | null
+          best_features?: string[] | null
+          bio?: string | null
+          compatibility_score?: number | null
+          created_at?: string
+          github_username?: string | null
+          id?: string
+          letterboxd_username?: string | null
+          location?: string | null
+          name?: string
+          photo_url?: string | null
+          spotify_username?: string | null
+          target_audience?: string | null
+          updated_at?: string
+          username?: string | null
+          yellowcake_data?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
