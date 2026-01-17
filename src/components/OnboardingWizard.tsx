@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { OnboardingSteps } from "./OnboardingSteps";
 import { Logo } from "./Logo";
 import type { UserProfile, YellowcakeData, Photo } from "@/types/profile";
+import { extractSpotifyPlaylistsFromUsername, type PlaylistInfo } from "@/integrations/yellowcake/client";
 
 interface OnboardingWizardProps {
   onComplete: (profile: UserProfile) => void;
@@ -41,10 +42,31 @@ const slideVariants = {
   }),
 };
 
-// Mock Yellowcake API response (simulates data scraping)
+/**
+ * Transform PlaylistInfo[] from Yellowcake into YellowcakeData format
+ */
+const transformPlaylistsToYellowcakeData = (playlists: PlaylistInfo[]): Partial<YellowcakeData> => {
+  // Extract all songs and artists from all playlists
+  const playlistSongs: Array<{ track_name: string; artist_name: string }> = [];
+
+  for (const playlist of playlists) {
+    for (const track of playlist.tracks) {
+      playlistSongs.push({
+        track_name: track.track_name,
+        artist_name: track.artist_name,
+      });
+    }
+  }
+
+  return {
+    playlistSongs,
+  };
+};
+
+// Mock Yellowcake API response (fallback for GitHub/Letterboxd or when Spotify scraping fails)
 const mockYellowcakeAPI = async (usernames: { github?: string; letterboxd?: string; spotify?: string }): Promise<YellowcakeData> => {
   await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
-  
+
   return {
     topRepos: usernames.github ? [
       { name: "awesome-project", stars: 142, language: "TypeScript" },
@@ -72,7 +94,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [direction, setDirection] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+  const [scrapingProgress, setScrapingProgress] = useState<string | null>(null);
+
   const [formData, setFormData] = useState<OnboardingFormData>({
     displayName: "",
     age: "",
@@ -103,7 +126,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    
+
     // Convert files to data URLs for localStorage storage
     Array.from(files).forEach(file => {
       const reader = new FileReader();
@@ -128,16 +151,58 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const generateProfile = async () => {
     setIsGenerating(true);
     setError(null);
+    setScrapingProgress(null);
 
     try {
-      // 1. Call mock Yellowcake API
-      const yellowcakeData = await mockYellowcakeAPI({
+      // 1. Get Spotify playlist data using Yellowcake (if username provided)
+      let spotifyData: Partial<YellowcakeData> = {};
+
+      if (formData.spotifyUsername) {
+        try {
+          setScrapingProgress("Extracting playlist links...");
+          const playlists = await extractSpotifyPlaylistsFromUsername(
+            formData.spotifyUsername,
+            3, // Limit to first 3 playlists to avoid long scraping times
+            (stage, message, details) => {
+              if (stage === 'links') {
+                setScrapingProgress(message);
+              } else if (stage === 'playlists') {
+                const progress = details?.current && details?.total
+                  ? `Extracting songs from playlists (${details.current}/${details.total})...`
+                  : message;
+                setScrapingProgress(progress);
+              }
+            }
+          );
+
+          // Transform playlist data to YellowcakeData format
+          spotifyData = transformPlaylistsToYellowcakeData(playlists);
+          setScrapingProgress("Spotify data extracted!");
+        } catch (spotifyError) {
+          console.error("❌ Spotify scraping failed:", spotifyError);
+          if (spotifyError instanceof Error) {
+            console.error("Error message:", spotifyError.message);
+            console.error("Error stack:", spotifyError.stack);
+          }
+          // Continue with mock data instead of failing entirely
+          setScrapingProgress("Spotify scraping failed, using fallback data...");
+        }
+      }
+
+      // 2. Get mock data for GitHub/Letterboxd (or as fallback for Spotify)
+      const mockData = await mockYellowcakeAPI({
         github: formData.githubUsername,
         letterboxd: formData.letterboxdUsername,
-        spotify: formData.spotifyUsername,
+        spotify: formData.spotifyUsername && Object.keys(spotifyData).length === 0 ? formData.spotifyUsername : undefined,
       });
 
-      // 2. Call Gemini to generate profile content
+      // 3. Merge real Spotify data with mock data
+      const yellowcakeData: YellowcakeData = {
+        ...mockData,
+        ...spotifyData, // Override with real Spotify data if available
+      };
+
+      // 4. Call Gemini to generate profile content
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-profile`, {
         method: "POST",
         headers: {
@@ -357,8 +422,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               >
                 {formData.photos[i] ? (
                   <>
-                    <img 
-                      src={formData.photos[i]} 
+                    <img
+                      src={formData.photos[i]}
                       alt={`Photo ${i + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -414,7 +479,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           <div className="space-y-2">
             <h2 className="font-display text-2xl font-semibold">Creating Your Profile...</h2>
             <p className="text-muted-foreground">
-              Analyzing your data & crafting something special ✨
+              {scrapingProgress || "Analyzing your data & crafting something special ✨"}
             </p>
           </div>
           <motion.div
@@ -479,8 +544,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
               Back
             </Button>
             {step < 3 ? (
-              <Button 
-                onClick={nextStep} 
+              <Button
+                onClick={nextStep}
                 className="flex-1"
                 disabled={!steps[step].isValid()}
               >
@@ -488,8 +553,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             ) : (
-              <Button 
-                onClick={generateProfile} 
+              <Button
+                onClick={generateProfile}
                 className="flex-1"
                 disabled={!steps[step].isValid()}
               >
