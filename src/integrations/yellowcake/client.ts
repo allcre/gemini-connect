@@ -8,6 +8,11 @@
 import {
   SPOTIFY_PLAYLIST_LINKS_PROMPT,
   SPOTIFY_PLAYLIST_SONGS_PROMPT,
+  LETTERBOXD_FILMS_PROMPT,
+  GITHUB_REPOS_PROMPT,
+  TWITTER_TWEETS_PROMPT,
+  SUBSTACK_POSTS_PROMPT,
+  STEAM_GAMES_PROMPT,
 } from '@/prompts';
 
 // Use Supabase Edge Function as proxy to avoid CORS issues
@@ -508,7 +513,7 @@ export async function extractLetterboxdFilms(
   const result = await extractWithYellowcake(
     {
       url: letterboxdURL,
-      prompt: 'Extract all films and their ratings from this Letterboxd page. For each film, extract the film title and rating (if rated).  Return each film with keys "film_title" and "rating".',
+      prompt: LETTERBOXD_FILMS_PROMPT,
     },
     onProgress
   );
@@ -567,7 +572,7 @@ export async function extractGitHubRepos(
   const result = await extractWithYellowcake(
     {
       url: githubURL,
-      prompt: 'Extract all repositories from this GitHub page. For each repository, extract the repository name and description. Return each repository with keys "name" and "description".',
+      prompt: GITHUB_REPOS_PROMPT,
     },
     onProgress
   );
@@ -613,7 +618,7 @@ export async function extractTweets(
   const result = await extractWithYellowcake(
     {
       url: xURL,
-      prompt: 'Extract all tweets from this X (Twitter) profile page. For each tweet, extract the tweet text content. Return each tweet with key "text".',
+      prompt: TWITTER_TWEETS_PROMPT,
     },
     onProgress
   );
@@ -662,7 +667,7 @@ export async function extractSubstackPosts(
   const result = await extractWithYellowcake(
     {
       url: substackURL,
-      prompt: 'Extract all posts from this Substack profile page. For each post, extract the post title and text content. Return each post with keys "title" and "text".',
+      prompt: SUBSTACK_POSTS_PROMPT,
     },
     onProgress
   );
@@ -714,7 +719,7 @@ export async function extractSteamGames(
   const result = await extractWithYellowcake(
     {
       url: steamURL,
-      prompt: 'Extract all recent games from this Steam profile page. For each game, extract the game name and hours played (if available). Return each game with keys "game_name" and "hours_played" (hours_played can be a number, string, or null if not available).',
+      prompt: STEAM_GAMES_PROMPT,
     },
     onProgress
   );
