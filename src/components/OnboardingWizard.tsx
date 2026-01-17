@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Film, Music, Upload, ArrowRight, ArrowLeft, Sparkles, User, Target, X } from "lucide-react";
+import { Github, Film, Music, Upload, ArrowRight, ArrowLeft, Sparkles, User, Target, X, MessageSquare, BookOpen, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { OnboardingSteps } from "./OnboardingSteps";
 import { Logo } from "./Logo";
 import type { UserProfile, YellowcakeData, Photo } from "@/types/profile";
-import { extractSpotifyPlaylistsFromUsername, type PlaylistInfo } from "@/integrations/yellowcake/client";
+import { extractSpotifyPlaylistsFromUsername, extractLetterboxdFilms, extractGitHubRepos, extractTweets, extractSubstackPosts, extractSteamGames, type PlaylistInfo } from "@/integrations/yellowcake/client";
 
 interface OnboardingWizardProps {
   onComplete: (profile: UserProfile) => void;
@@ -21,6 +23,9 @@ interface OnboardingFormData {
   githubUsername: string;
   letterboxdUsername: string;
   spotifyUsername: string;
+  twitterUsername: string;
+  substackUsername: string;
+  steamUsername: string;
   aboutMe: string;
   targetAudience: string;
   highlights: string;
@@ -95,6 +100,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [scrapingProgress, setScrapingProgress] = useState<string | null>(null);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
 
   const [formData, setFormData] = useState<OnboardingFormData>({
     displayName: "",
@@ -103,6 +109,9 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     githubUsername: "",
     letterboxdUsername: "",
     spotifyUsername: "",
+    twitterUsername: "",
+    substackUsername: "",
+    steamUsername: "",
     aboutMe: "",
     targetAudience: "",
     highlights: "",
@@ -189,20 +198,155 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         }
       }
 
-      // 2. Get mock data for GitHub/Letterboxd (or as fallback for Spotify)
+      // 2. Get Letterboxd films and ratings using Yellowcake (if username provided)
+      let letterboxdData: Partial<YellowcakeData> = {};
+
+      if (formData.letterboxdUsername) {
+        try {
+          setScrapingProgress("Extracting Letterboxd films and ratings...");
+          const letterboxdURL = `https://letterboxd.com/${formData.letterboxdUsername}/films/`;
+          const films = await extractLetterboxdFilms(letterboxdURL, (progressEvent) => {
+            setScrapingProgress(progressEvent.message || "Extracting films...");
+          });
+
+          letterboxdData = {
+            letterboxdFilms: films,
+          };
+          setScrapingProgress("Letterboxd data extracted!");
+        } catch (letterboxdError) {
+          console.error("❌ Letterboxd scraping failed:", letterboxdError);
+          if (letterboxdError instanceof Error) {
+            console.error("Error message:", letterboxdError.message);
+            console.error("Error stack:", letterboxdError.stack);
+          }
+          // Continue with mock data instead of failing entirely
+          setScrapingProgress("Letterboxd scraping failed, using fallback data...");
+        }
+      }
+
+      // 3. Get GitHub repositories using Yellowcake (if username provided)
+      let githubData: Partial<YellowcakeData> = {};
+
+      if (formData.githubUsername) {
+        try {
+          setScrapingProgress("Extracting GitHub repositories...");
+          const githubURL = `https://github.com/${formData.githubUsername}?tab=repositories`;
+          const repos = await extractGitHubRepos(githubURL, (progressEvent) => {
+            setScrapingProgress(progressEvent.message || "Extracting repositories...");
+          });
+
+          githubData = {
+            githubRepos: repos,
+          };
+          setScrapingProgress("GitHub data extracted!");
+        } catch (githubError) {
+          console.error("❌ GitHub scraping failed:", githubError);
+          if (githubError instanceof Error) {
+            console.error("Error message:", githubError.message);
+            console.error("Error stack:", githubError.stack);
+          }
+          // Continue with mock data instead of failing entirely
+          setScrapingProgress("GitHub scraping failed, using fallback data...");
+        }
+      }
+
+      // 4. Get X/Twitter tweets using Yellowcake (if username provided)
+      let twitterData: Partial<YellowcakeData> = {};
+
+      if (formData.twitterUsername) {
+        try {
+          setScrapingProgress("Extracting X/Twitter tweets...");
+          const xURL = `https://xcancel.com/${formData.twitterUsername}`;
+          const tweets = await extractTweets(xURL, (progressEvent) => {
+            setScrapingProgress(progressEvent.message || "Extracting tweets...");
+          });
+
+          twitterData = {
+            tweets,
+          };
+          setScrapingProgress("Twitter data extracted!");
+        } catch (twitterError) {
+          console.error("❌ Twitter scraping failed:", twitterError);
+          if (twitterError instanceof Error) {
+            console.error("Error message:", twitterError.message);
+            console.error("Error stack:", twitterError.stack);
+          }
+          // Continue with mock data instead of failing entirely
+          setScrapingProgress("Twitter scraping failed, using fallback data...");
+        }
+      }
+
+      // 5. Get Substack posts using Yellowcake (if username provided)
+      let substackData: Partial<YellowcakeData> = {};
+
+      if (formData.substackUsername) {
+        try {
+          setScrapingProgress("Extracting Substack posts...");
+          const substackURL = `https://substack.com/@${formData.substackUsername}`;
+          const posts = await extractSubstackPosts(substackURL, (progressEvent) => {
+            setScrapingProgress(progressEvent.message || "Extracting posts...");
+          });
+
+          substackData = {
+            substackPosts: posts,
+          };
+          setScrapingProgress("Substack data extracted!");
+        } catch (substackError) {
+          console.error("❌ Substack scraping failed:", substackError);
+          if (substackError instanceof Error) {
+            console.error("Error message:", substackError.message);
+            console.error("Error stack:", substackError.stack);
+          }
+          // Continue with mock data instead of failing entirely
+          setScrapingProgress("Substack scraping failed, using fallback data...");
+        }
+      }
+
+      // 6. Get Steam games using Yellowcake (if username provided)
+      let steamData: Partial<YellowcakeData> = {};
+
+      if (formData.steamUsername) {
+        try {
+          setScrapingProgress("Extracting Steam games...");
+          const steamURL = `https://steamcommunity.com/id/${formData.steamUsername}`;
+          const games = await extractSteamGames(steamURL, (progressEvent) => {
+            setScrapingProgress(progressEvent.message || "Extracting games...");
+          });
+
+          steamData = {
+            steamGames: games,
+          };
+          setScrapingProgress("Steam data extracted!");
+        } catch (steamError) {
+          console.error("❌ Steam scraping failed:", steamError);
+          if (steamError instanceof Error) {
+            console.error("Error message:", steamError.message);
+            console.error("Error stack:", steamError.stack);
+          }
+          // Continue with mock data instead of failing entirely
+          setScrapingProgress("Steam scraping failed, using fallback data...");
+        }
+      }
+
+      // 7. Get mock data for GitHub/Letterboxd (or as fallback for Spotify)
       const mockData = await mockYellowcakeAPI({
         github: formData.githubUsername,
         letterboxd: formData.letterboxdUsername,
         spotify: formData.spotifyUsername && Object.keys(spotifyData).length === 0 ? formData.spotifyUsername : undefined,
       });
 
-      // 3. Merge real Spotify data with mock data
+      // 8. Merge real scraping data with mock data
       const yellowcakeData: YellowcakeData = {
         ...mockData,
         ...spotifyData, // Override with real Spotify data if available
+        ...letterboxdData, // Override with real Letterboxd data if available
+        ...githubData, // Override with real GitHub data if available
+        ...twitterData, // Override with real Twitter data if available
+        ...substackData, // Override with real Substack data if available
+        ...steamData, // Override with real Steam data if available
       };
 
-      // 4. Call Gemini to generate profile content
+      // 9. Call Gemini to generate profile content
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-profile`, {
         method: "POST",
         headers: {
@@ -324,36 +468,79 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     },
     {
       title: "Connect Your World",
-      subtitle: "We'll analyze your digital footprint to find what makes you unique",
+      subtitle: "Select which platforms to connect and analyze",
       content: (
         <div className="space-y-4">
           <div className="space-y-3">
-            <div className="relative">
-              <Github className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="GitHub username (optional)"
-                className="pl-12"
-                value={formData.githubUsername}
-                onChange={(e) => updateField("githubUsername", e.target.value)}
-              />
+            <Label className="text-sm font-medium">Select platforms to connect:</Label>
+            <div className="grid grid-cols-1 gap-3">
+              {[
+                { key: 'github', label: 'GitHub', icon: Github, placeholder: 'GitHub username' },
+                { key: 'letterboxd', label: 'Letterboxd', icon: Film, placeholder: 'Letterboxd username' },
+                { key: 'spotify', label: 'Spotify', icon: Music, placeholder: 'Spotify username' },
+                { key: 'twitter', label: 'X/Twitter', icon: MessageSquare, placeholder: 'X/Twitter username' },
+                { key: 'substack', label: 'Substack', icon: BookOpen, placeholder: 'Substack username' },
+                { key: 'steam', label: 'Steam', icon: Gamepad2, placeholder: 'Steam username' },
+              ].map((platform) => {
+                const Icon = platform.icon;
+                const isSelected = selectedPlatforms.includes(platform.key);
+                return (
+                  <div key={platform.key} className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id={platform.key}
+                        checked={isSelected}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedPlatforms([...selectedPlatforms, platform.key]);
+                          } else {
+                            setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.key));
+                            // Clear the username when unchecking
+                            if (platform.key === 'github') updateField('githubUsername', '');
+                            if (platform.key === 'letterboxd') updateField('letterboxdUsername', '');
+                            if (platform.key === 'spotify') updateField('spotifyUsername', '');
+                            if (platform.key === 'twitter') updateField('twitterUsername', '');
+                            if (platform.key === 'substack') updateField('substackUsername', '');
+                            if (platform.key === 'steam') updateField('steamUsername', '');
+                          }
+                        }}
+                      />
+                      <Label
+                        htmlFor={platform.key}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer"
+                      >
+                        <Icon className="w-4 h-4" />
+                        {platform.label}
+                      </Label>
             </div>
-            <div className="relative">
-              <Film className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                    {isSelected && (
+                      <div className="relative pl-6">
               <Input
-                placeholder="Letterboxd username (optional)"
-                className="pl-12"
-                value={formData.letterboxdUsername}
-                onChange={(e) => updateField("letterboxdUsername", e.target.value)}
-              />
+                          placeholder={platform.placeholder}
+                          className="pl-10"
+                          value={
+                            platform.key === 'github' ? formData.githubUsername :
+                            platform.key === 'letterboxd' ? formData.letterboxdUsername :
+                            platform.key === 'spotify' ? formData.spotifyUsername :
+                            platform.key === 'twitter' ? formData.twitterUsername :
+                            platform.key === 'substack' ? formData.substackUsername :
+                            platform.key === 'steam' ? formData.steamUsername : ''
+                          }
+                          onChange={(e) => {
+                            if (platform.key === 'github') updateField('githubUsername', e.target.value);
+                            if (platform.key === 'letterboxd') updateField('letterboxdUsername', e.target.value);
+                            if (platform.key === 'spotify') updateField('spotifyUsername', e.target.value);
+                            if (platform.key === 'twitter') updateField('twitterUsername', e.target.value);
+                            if (platform.key === 'substack') updateField('substackUsername', e.target.value);
+                            if (platform.key === 'steam') updateField('steamUsername', e.target.value);
+                          }}
+                        />
+                        <Icon className="absolute left-8 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      </div>
+                    )}
             </div>
-            <div className="relative">
-              <Music className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="Spotify username (optional)"
-                className="pl-12"
-                value={formData.spotifyUsername}
-                onChange={(e) => updateField("spotifyUsername", e.target.value)}
-              />
+                );
+              })}
             </div>
           </div>
           <p className="text-sm text-muted-foreground text-center">

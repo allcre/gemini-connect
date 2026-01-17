@@ -252,6 +252,7 @@ export async function extractWithYellowcake(
 
     // Priority: complete result over error (in case we get both)
     if (completeResult) {
+      console.log('✅ Yellowcake extraction complete:', JSON.stringify(completeResult, null, 2));
       return completeResult;
     }
 
@@ -486,4 +487,259 @@ export async function extractSpotifyPlaylistsFromUsername(
   }
 
   return playlistsInfo;
+}
+
+export interface LetterboxdFilm {
+  film_title: string;
+  rating: string | number | null; // Rating can be string, number, or null - format doesn't matter, LLM will handle it
+}
+
+/**
+ * Extract films and ratings from a Letterboxd user's films page
+ *
+ * @param letterboxdURL - URL to the Letterboxd user's films page (e.g., "https://letterboxd.com/allci/films/")
+ * @param onProgress - Optional callback for progress updates
+ * @returns Promise resolving to array of films with ratings
+ */
+export async function extractLetterboxdFilms(
+  letterboxdURL: string,
+  onProgress?: (event: YellowcakeProgressEvent) => void
+): Promise<LetterboxdFilm[]> {
+  const result = await extractWithYellowcake(
+    {
+      url: letterboxdURL,
+      prompt: 'Extract all films and their ratings from this Letterboxd page. For each film, extract the film title and rating (if rated).  Return each film with keys "film_title" and "rating".',
+    },
+    onProgress
+  );
+
+  const films: LetterboxdFilm[] = [];
+
+  if (result.data && Array.isArray(result.data)) {
+    for (const item of result.data) {
+      if (typeof item === 'object' && item !== null) {
+        const record = item as Record<string, unknown>;
+
+        // Extract film information
+        if (typeof record.film_title === 'string' || typeof record.rating !== 'undefined') {
+          let rating: string | number | null = null;
+
+          // Normalize rating to string, number, or null
+          if (typeof record.rating === 'string' || typeof record.rating === 'number') {
+            rating = record.rating;
+          } else if (record.rating === null || record.rating === undefined) {
+            rating = null;
+          } else {
+            // Convert other types to string
+            rating = String(record.rating);
+          }
+
+          const film: LetterboxdFilm = {
+            film_title: typeof record.film_title === 'string' ? record.film_title : 'Unknown Film',
+            rating,
+          };
+
+          films.push(film);
+        }
+      }
+    }
+  }
+
+  return films;
+}
+
+export interface GitHubRepo {
+  name: string;
+  description: string;
+}
+
+/**
+ * Extract repositories with names and descriptions from a GitHub user's repositories page
+ *
+ * @param githubURL - URL to the GitHub user's repositories page (e.g., "https://github.com/allcre?tab=repositories")
+ * @param onProgress - Optional callback for progress updates
+ * @returns Promise resolving to array of repositories with names and descriptions
+ */
+export async function extractGitHubRepos(
+  githubURL: string,
+  onProgress?: (event: YellowcakeProgressEvent) => void
+): Promise<GitHubRepo[]> {
+  const result = await extractWithYellowcake(
+    {
+      url: githubURL,
+      prompt: 'Extract all repositories from this GitHub page. For each repository, extract the repository name and description. Return each repository with keys "name" and "description".',
+    },
+    onProgress
+  );
+
+  const repos: GitHubRepo[] = [];
+
+  if (result.data && Array.isArray(result.data)) {
+    for (const item of result.data) {
+      if (typeof item === 'object' && item !== null) {
+        const record = item as Record<string, unknown>;
+
+        // Extract repository information
+        if (typeof record.name === 'string' || typeof record.description !== 'undefined') {
+          const repo: GitHubRepo = {
+            name: typeof record.name === 'string' ? record.name : 'Unknown Repo',
+            description: typeof record.description === 'string' ? record.description : '',
+          };
+
+          repos.push(repo);
+        }
+      }
+    }
+  }
+
+  return repos;
+}
+
+export interface Tweet {
+  text: string;
+}
+
+/**
+ * Extract tweets from an X (Twitter) user's profile page
+ *
+ * @param xURL - URL to the X user's profile page (e.g., "https://xcancel.com/username")
+ * @param onProgress - Optional callback for progress updates
+ * @returns Promise resolving to array of tweets with text content
+ */
+export async function extractTweets(
+  xURL: string,
+  onProgress?: (event: YellowcakeProgressEvent) => void
+): Promise<Tweet[]> {
+  const result = await extractWithYellowcake(
+    {
+      url: xURL,
+      prompt: 'Extract all tweets from this X (Twitter) profile page. For each tweet, extract the tweet text content. Return each tweet with key "text".',
+    },
+    onProgress
+  );
+
+  const tweets: Tweet[] = [];
+
+  if (result.data && Array.isArray(result.data)) {
+    for (const item of result.data) {
+      if (typeof item === 'object' && item !== null) {
+        const record = item as Record<string, unknown>;
+
+        // Extract tweet information
+        if (typeof record.text === 'string' || typeof record.tweet_text === 'string') {
+          const tweet: Tweet = {
+            text: typeof record.text === 'string' ? record.text :
+              typeof record.tweet_text === 'string' ? record.tweet_text : '',
+          };
+
+          if (tweet.text) {
+            tweets.push(tweet);
+          }
+        }
+      }
+    }
+  }
+
+  return tweets;
+}
+
+export interface SubstackPost {
+  title: string;
+  text: string;
+}
+
+/**
+ * Extract posts from a Substack author's profile page
+ *
+ * @param substackURL - URL to the Substack author's profile page (e.g., "https://substack.com/@jacksonlong")
+ * @param onProgress - Optional callback for progress updates
+ * @returns Promise resolving to array of posts with titles and text content
+ */
+export async function extractSubstackPosts(
+  substackURL: string,
+  onProgress?: (event: YellowcakeProgressEvent) => void
+): Promise<SubstackPost[]> {
+  const result = await extractWithYellowcake(
+    {
+      url: substackURL,
+      prompt: 'Extract all posts from this Substack profile page. For each post, extract the post title and text content. Return each post with keys "title" and "text".',
+    },
+    onProgress
+  );
+
+  const posts: SubstackPost[] = [];
+
+  if (result.data && Array.isArray(result.data)) {
+    for (const item of result.data) {
+      if (typeof item === 'object' && item !== null) {
+        const record = item as Record<string, unknown>;
+
+        // Extract post information
+        if (typeof record.title === 'string' || typeof record.text === 'string' || typeof record.post_title === 'string') {
+          const post: SubstackPost = {
+            title: typeof record.title === 'string' ? record.title :
+              typeof record.post_title === 'string' ? record.post_title : '',
+            text: typeof record.text === 'string' ? record.text :
+              typeof record.post_text === 'string' ? record.post_text : '',
+          };
+
+          if (post.title || post.text) {
+            posts.push(post);
+          }
+        }
+      }
+    }
+  }
+
+  return posts;
+}
+
+export interface SteamGame {
+  game_name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  hours_played?: any; // Can be number, string, or any format from Yellowcake
+}
+
+/**
+ * Extract recent games from a Steam user's profile page
+ *
+ * @param steamURL - URL to the Steam user's profile page (e.g., "https://steamcommunity.com/id/ayynavy")
+ * @param onProgress - Optional callback for progress updates
+ * @returns Promise resolving to array of games with names and hours played
+ */
+export async function extractSteamGames(
+  steamURL: string,
+  onProgress?: (event: YellowcakeProgressEvent) => void
+): Promise<SteamGame[]> {
+  const result = await extractWithYellowcake(
+    {
+      url: steamURL,
+      prompt: 'Extract all recent games from this Steam profile page. For each game, extract the game name and hours played (if available). Return each game with keys "game_name" and "hours_played" (hours_played can be a number, string, or null if not available).',
+    },
+    onProgress
+  );
+
+  const games: SteamGame[] = [];
+
+  if (result.data && Array.isArray(result.data)) {
+    for (const item of result.data) {
+      if (typeof item === 'object' && item !== null) {
+        const record = item as Record<string, unknown>;
+
+        // Extract game information
+        if (typeof record.game_name === 'string' || typeof record.name === 'string') {
+          const game: SteamGame = {
+            game_name: typeof record.game_name === 'string' ? record.game_name :
+              typeof record.name === 'string' ? record.name : 'Unknown Game',
+            hours_played: record.hours_played !== undefined ? record.hours_played :
+              record.hours !== undefined ? record.hours : undefined,
+          };
+
+          games.push(game);
+        }
+      }
+    }
+  }
+
+  return games;
 }
