@@ -140,17 +140,54 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
     if (!files) return;
 
     // Convert files to data URLs for localStorage storage
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string;
-        setFormData(prev => ({
+    // Process all files and place them in empty slots
+    const fileArray = Array.from(files);
+
+    // Convert all files to data URLs using Promises
+    const filePromises = fileArray.map(file =>
+      new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const dataUrl = event.target?.result as string;
+          resolve(dataUrl);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      })
+    );
+
+    // Once all files are read, update state with photos placed in empty slots
+    Promise.all(filePromises).then(dataUrls => {
+      setFormData(prev => {
+        const newPhotos = [...prev.photos];
+
+        // Place each new photo in the first available empty slot
+        for (const dataUrl of dataUrls) {
+          // Find the first empty slot (undefined, null, or empty string)
+          let targetIndex = newPhotos.findIndex(photo => !photo);
+
+          // If no empty slot found, append at the end (up to max 6 photos)
+          if (targetIndex === -1) {
+            targetIndex = newPhotos.length;
+          }
+
+          // Don't add if we've reached the max (6 photos, indices 0-5)
+          if (targetIndex < 6) {
+            newPhotos[targetIndex] = dataUrl;
+          }
+        }
+
+        return {
           ...prev,
-          photos: [...prev.photos.slice(0, 5), dataUrl], // Max 6 photos
-        }));
-      };
-      reader.readAsDataURL(file);
+          photos: newPhotos,
+        };
+      });
+    }).catch(error => {
+      console.error('Error reading photo files:', error);
     });
+
+    // Reset input value to allow selecting the same file again
+    e.target.value = '';
   };
 
   const removePhoto = (index: number) => {
@@ -665,6 +702,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                     <input
                       type="file"
                       accept="image/*"
+                      capture="environment"
                       className="hidden"
                       onChange={handlePhotoUpload}
                     />
