@@ -45,6 +45,7 @@ export interface YellowcakeData {
   codingHours: number;
   movieHours: number;
   topArtists?: string[];
+  playlistSongs?: Array<{ track_name: string; artist_name: string }>;
   avgLetterboxdRating?: number;
   totalFilmsWatched?: number;
   commitCount?: number;
@@ -75,7 +76,7 @@ export interface UserProfile {
 }
 
 // Content item for interleaved display
-export type ProfileContentItem = 
+export type ProfileContentItem =
   | { type: "photo"; data: Photo }
   | { type: "prompt"; data: PromptAnswer }
   | { type: "funFact"; data: FunFact }

@@ -32,9 +32,29 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Set up environment variables.
+# Copy the example environment file and fill in your API keys:
+cp .env.example .env
+# Then edit .env and add your actual API keys (see Environment Variables section below)
+
+# Step 5: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
+
+## Environment Variables
+
+This project requires API keys to function. Create a `.env` file in the root directory with the following variables:
+
+- `VITE_YELLOWCAKE_API_KEY` - Your Yellowcake API key (required for data extraction)
+  - Get your key from [yellowcake.dev](https://yellowcake.dev)
+
+- `VITE_SUPABASE_URL` - Your Supabase project URL (if using Supabase features)
+- `VITE_SUPABASE_PUBLISHABLE_KEY` - Your Supabase publishable key (if using Supabase features)
+
+**Important:**
+- Never commit your `.env` file to version control (it's already in `.gitignore`)
+- Copy `.env.example` to `.env` and fill in your actual keys
+- In Vite, environment variables must be prefixed with `VITE_` to be exposed to the client
 
 **Edit a file directly in GitHub**
 
