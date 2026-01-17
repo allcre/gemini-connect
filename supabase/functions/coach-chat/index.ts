@@ -1,5 +1,17 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+/**
+ * Coach Chat Edge Function
+ *
+ * This function handles the Gemini Coach AI chat feature.
+ *
+ * PROMPT REFERENCE: The system prompt used here is defined in:
+ * - src/prompts/ai-prompts.ts (COACH_SYSTEM_PROMPT, buildCoachSystemPrompt)
+ *
+ * If you update the prompt here, please also update the centralized version
+ * in the prompts folder to keep documentation in sync.
+ */
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",

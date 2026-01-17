@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import type { UserProfile } from "@/types/profile";
+import { getCoachWelcomeMessage } from "@/prompts";
 
 interface Message {
   id: string;
@@ -26,11 +27,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     {
       id: "1",
       role: "assistant",
-      content: `Hey there! 👋 I'm your Data-Driven Wingman. ${
-        profile?.yellowcakeData 
-          ? "I've analyzed your digital footprint and I'm ready to help optimize your profile!" 
-          : "I'm here to help you craft the perfect profile."
-      }\n\nAsk me anything like:\n• "Make my bio more mysterious"\n• "Add something about my coding projects"\n• "What should I highlight for creative types?"`,
+      content: getCoachWelcomeMessage(!!profile?.yellowcakeData),
     },
   ]);
   const [input, setInput] = useState("");
