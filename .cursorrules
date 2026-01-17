@@ -1,0 +1,359 @@
+# Bio-Match - Cursor Rules
+
+## Project Overview
+
+**Project Title:** Bio-Match - A Data-Driven Dating PWA
+
+**Mission:** Build a mobile-first dating/friending web app where profiles are generated programmatically using scraped data (GitHub, Letterboxd, Spotify) in addition to manual user input. The app features a "Gemini Coach" AI that interviews the user to optimize their profile for specific attraction targets.
+
+## Tech Stack
+
+- **Frontend Framework:** React 18+ with TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS with custom design system
+- **UI Components:** shadcn/ui (Radix UI primitives)
+- **Animations:** Framer Motion
+- **Routing:** React Router v6
+- **State Management:** React Context + Local Storage for persistence
+- **Data Storage:** Browser Local Storage & IndexedDB (for photos)
+- **AI/ML:** Google Gemini API (for Gemini Coach)
+- **Face Detection:** face-api.js (for auto-swipe experiment)
+- **Charts:** Recharts
+- **Forms:** React Hook Form + Zod validation
+- **Fonts:** Nunito (body), Playfair Display (headings)
+
+## Design Aesthetic
+
+**Style:** Hinge-inspired but cuter, with signature fonts, fun and playful yet sleek
+
+**Key Principles:**
+- Mobile-first responsive design
+- Warm, inviting color palette (coral/rose primary, mint accents)
+- Playful but professional tone
+- Smooth animations and micro-interactions
+- Data visualization as a core design element
+- Clean, minimal UI with thoughtful spacing
+
+**Design System:**
+- Primary: Coral/Rose gradient (warm and inviting)
+- Secondary: Soft cream tones
+- Accent: Mint green (playful pop)
+- Match: Purple gradient (for compatibility indicators)
+- Typography: Nunito for body, Playfair Display for headings
+- Border radius: 1rem base, with variations
+- Shadows: Soft, elevated, card variants
+- Gradients: Primary, match, success, card
+
+## Core Features & Implementation
+
+### 1. Onboarding & Data Ingestion ("Yellowcake" Integration)
+
+**Flow:**
+1. Multi-step onboarding wizard (3 steps)
+2. Step 1: User inputs external usernames (GitHub, Letterboxd, Twitter/X handle)
+3. Step 2: User uploads 3-6 photos (stored locally)
+4. Step 3: Loading state while processing
+
+**Yellowcake API Integration:**
+- On submission, trigger mock API call to "Yellowcake API"
+- Returns JSON: `{ top_repos, music_genres, recent_reviews, sentiment_analysis }`
+- **Current Status:** Mock this response for now so UI has data to render
+- Store response in local storage under `yellowcake_data` key
+
+**Implementation Notes:**
+- Use `OnboardingWizard` component with step navigation
+- Photo uploads stored in IndexedDB or as base64 in localStorage
+- Store photo data URLs in `profiles.photos_array` (string array)
+- Use `localStorage` for profile data, `IndexedDB` for larger files like photos
+
+### 2. The "Gemini Coach" (Chat Interface)
+
+**Persona:** "Data-Driven Wingman" - witty, helpful, data-focused
+
+**Flow:**
+1. Coach asks: "Who are you trying to attract?" (e.g., "Introverted gamers," "Outdoor hikers")
+2. Based on user's answer AND Yellowcake data, AI generates:
+   - Witty Bio
+   - "Best Features" to highlight (e.g., "Matches high-compatibility on obscure indie films")
+3. Store conversation in local storage under `chat_history` key
+
+**Data Structure:**
+```typescript
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: string; // ISO timestamp
+}
+```
+
+**Implementation:**
+- Use `GeminiCoach` component with persistent chat UI
+- Messages stored in localStorage as JSON array
+- Integrate with Google Gemini API for responses
+- Use Yellowcake data + user preferences to generate personalized bio
+- Load chat history from localStorage on component mount
+
+### 3. Discovery Feed (Hinge-Style)
+
+**UI Pattern:**
+- Card-based swipe interface
+- Display "Data Insights" alongside photos
+- Charts showing compatibility metrics
+- "Compatibility Score" badge (LLM-generated)
+
+**Interaction:**
+- Swipe left/right or use buttons
+- Users can "Like" specific data points (e.g., specific GitHub repo)
+- Show profile cards with:
+  - Photos
+  - Bio
+  - Data insights (charts, badges)
+  - Compatibility score
+  - Highlighted features
+
+**Implementation:**
+- Use `DiscoveryFeed` component with `ProfileCard` sub-component
+- Framer Motion for swipe animations
+- Recharts for data visualization
+- Store likes in localStorage under `matches` key
+
+### 4. Auto-Swipe Experiment (Smile Detection)
+
+**Integration:**
+- Use face-api.js or similar lightweight library
+- Access user's webcam (with permission)
+
+**Logic:**
+- If user dwells on profile > 2 seconds
+- AND camera detects "Smile" probability > 0.8
+- Trigger "Like" animation automatically
+
+**Implementation:**
+- Add webcam permission request
+- Use face-api.js for emotion detection
+- Track dwell time per profile
+- Auto-trigger like action
+
+## Data Storage (Local Storage)
+
+### Local Storage Keys
+
+**Profile Data:**
+- `bio_match_profile` - Current user's profile
+- `bio_match_profiles` - Array of all profiles (for discovery feed)
+- `bio_match_yellowcake_data` - Yellowcake API response data
+
+**Matches & Interactions:**
+- `bio_match_matches` - Array of matches/likes
+- `bio_match_messages` - Array of messages between matched users
+
+**Chat History:**
+- `bio_match_chat_history` - Array of Gemini Coach chat messages
+
+### Data Structures
+
+```typescript
+// Profile stored in localStorage
+interface Profile {
+  id: string;
+  username: string;
+  photos: string[]; // Array of data URLs or IndexedDB keys
+  bio: string;
+  targetAudience?: string;
+  yellowcakeData?: YellowcakeData;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Match stored in localStorage
+interface Match {
+  id: string;
+  userId: string;
+  matchedUserId: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  likedFeatures?: string[];
+  createdAt: string;
+}
+
+// Message stored in localStorage
+interface Message {
+  id: string;
+  matchId: string;
+  senderId: string;
+  content: string;
+  createdAt: string;
+}
+
+// Chat message stored in localStorage
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: string;
+}
+```
+
+### Storage Implementation
+
+- **Small data (JSON):** Use `localStorage` (profiles, matches, messages, chat history)
+- **Large files (photos):** Use `IndexedDB` or base64 in localStorage
+- **Storage utilities:** Create helper functions in `src/lib/storage.ts`
+
+## File Structure Patterns
+
+```
+src/
+  components/
+    ui/              # shadcn/ui components
+    [Feature].tsx    # Feature-specific components
+  pages/
+    [Page].tsx       # Route pages
+  hooks/
+    use-[name].tsx   # Custom React hooks
+  lib/
+    utils.ts         # Utility functions
+  data/
+    mockData.ts      # Mock data for development
+```
+
+## Code Style & Conventions
+
+### TypeScript
+- Use strict TypeScript configuration
+- Define interfaces for all data structures
+- Use type inference where appropriate, explicit types for props/interfaces
+- Prefer `interface` over `type` for object shapes
+
+### React Patterns
+- Use functional components with hooks
+- Prefer composition over inheritance
+- Use React Query for server state management
+- Local state with `useState` for UI-only state
+- Custom hooks for reusable logic
+
+### Component Structure
+```tsx
+// Component with props interface
+interface ComponentProps {
+  prop1: string;
+  prop2?: number;
+}
+
+export const Component = ({ prop1, prop2 }: ComponentProps) => {
+  // Hooks
+  const [state, setState] = useState();
+
+  // Effects
+  useEffect(() => {}, []);
+
+  // Handlers
+  const handleAction = () => {};
+
+  // Render
+  return <div>...</div>;
+};
+```
+
+### Styling
+- Use Tailwind CSS utility classes
+- Use design system tokens (CSS variables)
+- Custom utilities in `@layer utilities`
+- Mobile-first responsive design
+- Use Framer Motion for animations
+
+### Naming Conventions
+- Components: PascalCase (`ProfileCard.tsx`)
+- Hooks: camelCase with `use` prefix (`useProfile.tsx`)
+- Utilities: camelCase (`formatDate.ts`)
+- Constants: UPPER_SNAKE_CASE
+- Files: Match export name
+
+### Local Storage Integration
+- Create storage utilities in `src/lib/storage.ts`
+- Use `localStorage` for JSON data (profiles, matches, messages, chat)
+- Use `IndexedDB` for larger files (photos) via `idb` library or native API
+- Always handle storage errors gracefully (quota exceeded, etc.)
+- Provide data migration utilities if schema changes
+
+## Key Implementation Details
+
+### Yellowcake API Mock
+```typescript
+// Mock response structure
+interface YellowcakeData {
+  top_repos: Array<{
+    name: string;
+    description: string;
+    stars: number;
+    language: string;
+  }>;
+  music_genres: string[];
+  recent_reviews: Array<{
+    film: string;
+    rating: number;
+    review: string;
+  }>;
+  sentiment_analysis: {
+    overall_sentiment: 'positive' | 'neutral' | 'negative';
+    keywords: string[];
+  };
+}
+```
+
+### Profile Generation Logic
+1. User completes onboarding → Yellowcake data fetched
+2. User chats with Gemini Coach → Target audience identified
+3. AI generates bio using:
+   - Yellowcake data (repos, reviews, music)
+   - Target audience preferences
+   - User's stated interests
+4. Best features selected algorithmically based on compatibility scoring
+
+### Compatibility Scoring
+- Compare user's Yellowcake data with potential matches
+- Score based on:
+  - Shared GitHub interests (languages, project types)
+  - Movie taste overlap (Letterboxd)
+  - Music genre compatibility (Spotify)
+  - Sentiment analysis alignment
+- Display as badge/chart in Discovery Feed
+
+## Development Workflow
+
+1. **Local Development:**
+   - Run `npm run dev` for Vite dev server
+   - Use mock data in `src/data/mockData.ts`
+   - Mock Yellowcake API responses
+   - All data persists in browser localStorage/IndexedDB
+
+2. **Storage Setup:**
+   - Create storage utilities in `src/lib/storage.ts`
+   - Use localStorage for JSON data structures
+   - Use IndexedDB for photo storage (or base64 in localStorage for simplicity)
+   - Handle storage quota limits gracefully
+
+3. **Testing:**
+   - Use Vitest for unit tests
+   - Test components with React Testing Library
+   - Mock localStorage/IndexedDB for integration tests
+   - Clear storage between tests
+
+## Future Enhancements
+
+- Real Yellowcake API integration (replace mocks)
+- Export/import profile data (JSON download)
+- Data backup to cloud storage (optional)
+- Advanced compatibility algorithms
+- Profile photo verification
+- Social sharing features
+- PWA offline support with service workers
+
+## Notes
+
+- Always prioritize mobile experience
+- Keep animations smooth and performant
+- Use optimistic updates for better UX
+- Handle loading and error states gracefully
+- Maintain playful but professional tone in copy
+- Data privacy is critical - be transparent about data usage
