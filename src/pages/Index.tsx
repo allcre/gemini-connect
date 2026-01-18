@@ -53,7 +53,7 @@ const Index = () => {
             <Logo />
           </div>
         </header>
-        <main className="max-w-md mx-auto p-4">
+        <main className="max-w-md mx-auto p-4 pb-24">
           <h2 className="font-display text-xl font-semibold text-center mb-4">Preview Your Profile</h2>
           <ProfilePreview
             profile={profile}
