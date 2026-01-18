@@ -28,150 +28,175 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-md mx-auto space-y-4 pb-24"
+      className="w-full max-w-md mx-auto space-y-2 pb-24"
     >
-      {/* Header Photo Section */}
-      <div className="relative">
-        <PhotoCarousel
-          photos={profile.photos}
-          aspectRatio="portrait"
-          showDots
-          showNavigation
-          overlay={
-            <div className="flex items-end justify-between">
-              <div>
-                <h2 className="text-heading text-white">
-                  {profile.displayName}{profile.age ? `, ${profile.age}` : ""}
-                </h2>
-                {profile.location && (
-                  <p className="text-white/80 flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    {profile.location}
-                  </p>
-                )}
-              </div>
-            </div>
-          }
-        />
+      {/* Photo + Bio Section */}
+      <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
+        <div className="space-y-2">
+          {/* Photo */}
+          <div className="relative rounded-md overflow-hidden aspect-square">
+            <PhotoCarousel
+              photos={profile.photos}
+              aspectRatio="square"
+              showDots
+              showNavigation
+              className="rounded-md"
+              overlay={
+                <div className="flex items-end justify-between">
+                  <div>
+                    <h2 className="text-[2rem] font-heading text-white">
+                      {profile.displayName}{profile.age ? `, ${profile.age}` : ""}
+                    </h2>
+                    {profile.location && (
+                      <p className="text-xs text-white/80 flex items-center gap-1">
+                        <MapPin className="w-2.5 h-2.5" />
+                        {profile.location}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              }
+            />
 
-        {/* Compatibility Badge */}
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.3, type: "spring" }}
-          className="absolute top-4 right-4 z-10"
-        >
-          <Badge variant="match" className="text-sm px-3 py-1.5 shadow-lg">
-            <Star className="w-3 h-3 mr-1 fill-current" />
-            {profile.compatibilityScore}% Match
-          </Badge>
-        </motion.div>
-      </div>
+            {/* Compatibility Badge */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.3, type: "spring" }}
+              className="absolute top-2 right-2 z-10"
+            >
+              <Badge variant="match" className="text-xs px-2 py-1 shadow-lg">
+                <Star className="w-2.5 h-2.5 mr-1 fill-current" />
+                {profile.compatibilityScore}%
+              </Badge>
+            </motion.div>
+          </div>
 
-      {/* Bio */}
-      <Card className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="text-caption">About</h3>
+          {/* Bio */}
+          <div className="rounded-md p-3 bg-background">
+            <p className="text-body text-foreground">{profile.bio || "No bio yet"}</p>
+          </div>
         </div>
-        <p className="text-body text-foreground">{profile.bio || "No bio yet"}</p>
       </Card>
 
-      {/* Fun Facts */}
+      {/* Fun Facts Section */}
       {profile.funFacts.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {profile.funFacts.map((fact) => (
-            <Badge key={fact.id} variant="outline" className="px-3 py-1.5">
-              <span className="font-medium">{fact.label}:</span>
-              <span className="ml-1">{fact.value}</span>
-            </Badge>
-          ))}
-        </div>
-      )}
-
-      {/* Prompt Answers */}
-      {profile.promptAnswers.map((prompt) => (
-        <Card key={prompt.id} className="p-4">
-          <p className="text-caption mb-2">{prompt.promptText}</p>
-          <p className="text-body text-foreground">{prompt.answerText}</p>
-        </Card>
-      ))}
-
-      {/* Data Insights */}
-      {profile.dataInsights.length > 0 && (
-        <div className="grid grid-cols-2 gap-3">
-          {profile.dataInsights.map((insight) => (
-            <Card key={insight.id} className="p-3 h-full">
-              <p className="text-caption text-primary">{insight.metricValue}</p>
-              <p className="text-caption">{insight.title}</p>
-              <p className="text-caption">{insight.description}</p>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {/* Activity Chart */}
-      {hasActivityData && (
-        <Card className="p-4">
-          <p className="text-caption mb-3">Weekly Activity</p>
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <Code className="w-4 h-4 text-chart-1" />
-              <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${codingWidth}%` }}
-                  transition={{ delay: 0.5, duration: 0.8 }}
-                  className="h-full bg-chart-1 rounded-full"
-                />
-              </div>
-              <span className="text-caption w-12 text-right">
-                {yellowcake.codingHours}h
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Film className="w-4 h-4 text-chart-3" />
-              <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${movieWidth}%` }}
-                  transition={{ delay: 0.6, duration: 0.8 }}
-                  className="h-full bg-chart-3 rounded-full"
-                />
-              </div>
-              <span className="text-caption w-12 text-right">
-                {yellowcake.movieHours}h
-              </span>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* Best Features */}
-      {profile.bestFeatures.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-caption uppercase tracking-wide">
-            Best Features
-          </p>
+        <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
+          <h3 className="text-lg font-heading font-medium text-foreground mb-3">Quick Facts</h3>
           <div className="flex flex-wrap gap-2">
-            {profile.bestFeatures.map((feature, i) => (
-              <Badge key={i} variant="insight" className="px-3 py-1.5">
-                {feature}
-              </Badge>
+            {profile.funFacts.map((fact) => (
+              <div key={fact.id} className="rounded-md px-3 py-1.5 bg-background">
+                <span className="font-medium text-caption">{fact.label}:</span>
+                <span className="ml-1 text-caption">{fact.value}</span>
+              </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
-      {/* Music Genres */}
+      {/* Questions + Answers Section */}
+      {profile.promptAnswers.length > 0 && (
+        <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
+          <h3 className="text-lg font-heading font-medium text-foreground mb-3">Questions & Answers</h3>
+          <div className="space-y-2">
+            {profile.promptAnswers.map((prompt) => (
+              <div key={prompt.id} className="rounded-md p-3 bg-background">
+                <p className="text-caption mb-2 font-medium">{prompt.promptText}</p>
+                <p className="text-body text-foreground">{prompt.answerText}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Data Insights Section */}
+      {profile.dataInsights.length > 0 && (
+        <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
+          <h3 className="text-lg font-heading font-medium text-foreground mb-3">Data Insights</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {profile.dataInsights.map((insight) => (
+              <div key={insight.id} className="rounded-md p-3 h-full bg-background">
+                <p className="text-caption text-primary font-semibold">{insight.metricValue}</p>
+                <p className="text-caption font-medium">{insight.title}</p>
+                <p className="text-caption text-muted-foreground">{insight.description}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Activity Chart Section */}
+      {hasActivityData && (
+        <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
+          <h3 className="text-lg font-heading font-medium text-foreground mb-3">Weekly Activity</h3>
+          <div className="space-y-2">
+            <div className="rounded-md p-3 bg-background">
+              <div className="flex items-center gap-3">
+                <Code className="w-4 h-4 text-chart-1" />
+                <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${codingWidth}%` }}
+                    transition={{ delay: 0.5, duration: 0.8 }}
+                    className="h-full bg-chart-1 rounded-full"
+                  />
+                </div>
+                <span className="text-caption w-12 text-right">
+                  {yellowcake.codingHours}h
+                </span>
+              </div>
+            </div>
+            <div className="rounded-md p-3 bg-background">
+              <div className="flex items-center gap-3">
+                <Film className="w-4 h-4 text-chart-3" />
+                <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${movieWidth}%` }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                    className="h-full bg-chart-3 rounded-full"
+                  />
+                </div>
+                <span className="text-caption w-12 text-right">
+                  {yellowcake.movieHours}h
+                </span>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Best Features Section */}
+      {profile.bestFeatures.length > 0 && (
+        <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
+          <h3 className="text-lg font-heading font-medium text-foreground mb-3 tracking-wide">
+            Best Features
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {profile.bestFeatures.map((feature, i) => (
+              <div key={i} className="rounded-md px-3 py-1.5 bg-background">
+                <span className="text-caption">{feature}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Music Genres Section */}
       {yellowcake?.musicGenres && yellowcake.musicGenres.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <Music className="w-4 h-4 text-accent" />
-          {yellowcake.musicGenres.map((genre, i) => (
-            <Badge key={i} variant="data" className="text-xs">
-              {genre}
-            </Badge>
-          ))}
-        </div>
+        <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <Music className="w-4 h-4 text-accent" />
+            <h3 className="text-lg font-heading font-medium text-foreground">Music Taste</h3>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {yellowcake.musicGenres.map((genre, i) => (
+              <div key={i} className="rounded-md px-3 py-1.5 bg-background">
+                <span className="text-caption text-xs">{genre}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
       )}
 
       {/* Action Buttons */}

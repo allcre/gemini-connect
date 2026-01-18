@@ -193,7 +193,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
       {/* Best Features */}
       {profile.bestFeatures && profile.bestFeatures.length > 0 && (
         <div className="space-y-2">
-          <p className="text-caption uppercase tracking-wide">
+          <p className="text-caption tracking-wide">
             Best Features
           </p>
           <div className="flex flex-wrap gap-2">
