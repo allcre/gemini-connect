@@ -18,7 +18,6 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource/instrument-serif";
 @import "@fontsource/pacifico";
-@import "@fontsource-variable/lora";
 
 @tailwind base;
 @tailwind components;
@@ -57,25 +56,16 @@
     --gold: 51 100% 50%;               /* #FFD700 */
     --gold-foreground: 0 0% 18%;       /* Dark text on gold */
     
-    /* ===== GRADIENTS (Flare Signature Multi-Color Style) ===== */
-    
-    /* Main app gradient - Pink to Yellow to Blue */
-    --gradient-main: linear-gradient(180deg, #D4A5A5 0%, #F4E8C1 50%, #A5C4D4 100%);
-    
-    /* Card gradient - Subtle pink variation */
-    --gradient-card: linear-gradient(135deg, #E8D4D4 0%, #D4A5A5 100%);
-    
-    /* Pink to Blue gradient - For interactive elements */
-    --gradient-pink-blue: linear-gradient(135deg, #D4A5A5 0%, #A5C4D4 100%);
-    
+    /* ===== GRADIENTS (Simplified) ===== */
+
+    /* Main gradient - Pink to Blue */
+    --gradient-main: linear-gradient(135deg, #D4A5A5 0%, #A5C4D4 100%);
+
     /* Subtle overlay gradient */
-    --gradient-subtle: linear-gradient(180deg, rgba(212,165,165,0.3) 0%, rgba(165,196,212,0.3) 100%);
-    
-    /* White overlay for cards */
-    --gradient-overlay: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
-    
-    /* Grainy background gradient - Lavender to Pink */
-    --gradient-grainy: linear-gradient(135deg, #E8D4E8 0%, #F2D4E0 35%, #F4E0D4 65%, #E8D4E8 100%);
+    --gradient-subtle: linear-gradient(180deg, rgba(212,165,165,0.2) 0%, rgba(165,196,212,0.2) 100%);
+
+    /* Photo overlay gradient */
+    --gradient-overlay: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
     
     /* ===== BACKGROUND COLORS ===== */
     
@@ -150,14 +140,11 @@
     --chart-4: 45 70% 87%;             /* Pale yellow */
     --chart-5: 270 22% 72%;            /* Soft purple */
     
-    /* ===== SHADOWS (Soft with pink tint) ===== */
-    
-    --shadow-sm: 0 2px 8px rgba(212, 165, 165, 0.1);
-    --shadow-soft: 0 4px 16px rgba(212, 165, 165, 0.15);
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
-    --shadow-elevated: 0 8px 24px rgba(212, 165, 165, 0.2);
-    --shadow-glow-pink: 0 0 40px rgba(212, 165, 165, 0.25);
-    --shadow-glow-purple: 0 0 40px rgba(184, 165, 196, 0.3);
+    /* ===== SHADOWS (Simplified) ===== */
+
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
     
     /* ===== BORDER RADIUS (slightly rounded corners per Flare) ===== */
     
@@ -174,7 +161,6 @@
     --font-display: 'Pacifico', 'Brush Script MT', cursive;        /* Playful logo font */
     --font-heading: 'Instrument Serif', 'Playfair Display', Georgia, serif;  /* Elegant headings */
     --font-body: 'Inter Variable', 'Inter', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-bio: 'Lora Variable', 'Lora', 'Georgia', serif;         /* Editorial bio font */
     --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;    /* System UI */
     --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
     --font-serif: 'Instrument Serif', 'Georgia', serif;
@@ -186,33 +172,22 @@
     --text-lg: 1.125rem;     /* 18px */
     --text-xl: 1.25rem;      /* 20px */
     --text-2xl: 1.5rem;      /* 24px */
-    --text-3xl: 1.875rem;    /* 30px */
-    --text-4xl: 2.25rem;     /* 36px */
-    --text-5xl: 3rem;        /* 48px */
-    --text-6xl: 3.75rem;     /* 60px */
     
     /* Font Weights */
-    --font-light: 300;
     --font-normal: 400;
     --font-medium: 500;
     --font-semibold: 600;
     --font-bold: 700;
-    --font-extrabold: 800;
     
     /* Line Heights */
     --leading-tight: 1.25;
-    --leading-snug: 1.375;
     --leading-normal: 1.5;
     --leading-relaxed: 1.625;
-    --leading-loose: 2;
     
     /* Letter Spacing */
-    --tracking-tighter: -0.05em;
     --tracking-tight: -0.025em;
     --tracking-normal: 0;
     --tracking-wide: 0.025em;
-    --tracking-wider: 0.05em;
-    --tracking-widest: 0.1em;
     
     /* ===== SIDEBAR COLORS ===== */
     
@@ -286,17 +261,13 @@
     --match-foreground: 0 0% 100%;
     
     /* Adjusted gradients for dark mode */
-    --gradient-main: linear-gradient(180deg, #5A4A4A 0%, #5A5A4A 50%, #4A545A 100%);
-    --gradient-card: linear-gradient(135deg, #3A3030 0%, #2D2D2D 100%);
-    --gradient-pink-blue: linear-gradient(135deg, #5A4A4A 0%, #4A545A 100%);
-    
+    --gradient-main: linear-gradient(135deg, #5A4A4A 0%, #4A545A 100%);
+    --gradient-subtle: linear-gradient(180deg, rgba(90,74,74,0.2) 0%, rgba(74,84,90,0.2) 100%);
+
     /* Enhanced shadows in dark mode */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.5);
-    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.6);
-    --shadow-glow-pink: 0 0 40px rgba(212, 165, 165, 0.3);
-    --shadow-glow-purple: 0 0 40px rgba(184, 165, 196, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
     
     /* Sidebar in dark mode */
     --sidebar-background: 0 0% 15%;
@@ -350,27 +321,27 @@
   }
 
   h1 {
-    font-size: var(--text-5xl);
-  }
-
-  h2 {
-    font-size: var(--text-4xl);
-  }
-
-  h3 {
-    font-size: var(--text-3xl);
-  }
-
-  h4 {
     font-size: var(--text-2xl);
   }
 
-  h5 {
+  h2 {
     font-size: var(--text-xl);
   }
 
-  h6 {
+  h3 {
     font-size: var(--text-lg);
+  }
+
+  h4 {
+    font-size: var(--text-base);
+  }
+
+  h5 {
+    font-size: var(--text-sm);
+  }
+
+  h6 {
+    font-size: var(--text-sm);
   }
 
   /* Body text optimization */
@@ -395,6 +366,97 @@
   }
 }
 
+/* ===== COMPONENT CLASSES ===== */
+
+@layer components {
+  /* Circular icon containers */
+  .icon-circle {
+    @apply rounded-full flex items-center justify-center;
+  }
+
+  .icon-circle-sm {
+    @apply w-8 h-8;
+  }
+
+  .icon-circle-sm svg {
+    @apply w-4 h-4;
+  }
+
+  .icon-circle-md {
+    @apply w-10 h-10;
+  }
+
+  .icon-circle-md svg {
+    @apply w-5 h-5;
+  }
+
+  .icon-circle-lg {
+    @apply w-14 h-14;
+  }
+
+  .icon-circle-lg svg {
+    @apply w-6 h-6;
+  }
+
+  /* Carousel navigation */
+  .carousel-nav {
+    @apply absolute top-1/2 -translate-y-1/2 w-10 h-10 bg-background/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-background/80 transition-colors;
+  }
+
+  .carousel-nav-left {
+    @apply left-2;
+  }
+
+  .carousel-nav-right {
+    @apply right-2;
+  }
+
+  .carousel-dots {
+    @apply absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5;
+  }
+
+  .carousel-dot {
+    @apply w-2 h-2 rounded-full transition-colors;
+  }
+
+  .carousel-dot-active {
+    @apply bg-primary;
+  }
+
+  .carousel-dot-inactive {
+    @apply bg-background/50;
+  }
+
+  /* Photo overlay gradient */
+  .photo-overlay {
+    @apply absolute bottom-0 left-0 right-0 p-4;
+    background: var(--gradient-overlay);
+  }
+
+  /* Section card pattern */
+  .section-card {
+    @apply rounded-2xl bg-card p-4 shadow-sm;
+  }
+
+  /* ===== SEMANTIC TEXT STYLES ===== */
+  /* 3 core text styles for consistent typography */
+
+  /* Heading: Names, titles, section headers */
+  .text-heading {
+    @apply font-serif text-xl font-semibold;
+  }
+
+  /* Body: Bios, answers, main content */
+  .text-body {
+    @apply text-base leading-relaxed;
+  }
+
+  /* Caption: Labels, helper text, badges, metrics */
+  .text-caption {
+    @apply text-sm font-medium text-muted-foreground;
+  }
+}
+
 /* ===== UTILITY CLASSES ===== */
 
 @layer utilities {
@@ -403,45 +465,20 @@
     background: var(--gradient-main);
   }
 
-  .gradient-pink-blue {
-    background: var(--gradient-pink-blue);
-  }
-
-  .gradient-card {
-    background: var(--gradient-card);
+  .gradient-primary {
+    background: var(--gradient-main);
   }
 
   .gradient-subtle {
     background: var(--gradient-subtle);
   }
 
-  .gradient-overlay {
-    background: var(--gradient-overlay);
-  }
-
-  /* Grainy gradient background */
-  .gradient-grainy {
-    background: var(--gradient-grainy);
-    position: relative;
-  }
-
-  .gradient-grainy::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 1;
-    pointer-events: none;
-    mix-blend-mode: soft-light;
+  .gradient-match {
+    background: linear-gradient(135deg, hsl(var(--match)) 0%, hsl(var(--purple)) 100%);
   }
 
   /* Text Gradient */
   .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background: var(--gradient-pink-blue);
-  }
-
-  .text-gradient-main {
     @apply bg-clip-text text-transparent;
     background: var(--gradient-main);
   }
@@ -451,65 +488,36 @@
     box-shadow: var(--shadow-sm);
   }
 
+  .shadow-md {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-lg {
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Legacy shadow aliases for compatibility */
   .shadow-soft {
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-md);
   }
 
   .shadow-card {
-    box-shadow: var(--shadow-card);
+    box-shadow: var(--shadow-md);
   }
 
   .shadow-elevated {
-    box-shadow: var(--shadow-elevated);
-  }
-
-  .shadow-glow-pink {
-    box-shadow: var(--shadow-glow-pink);
-  }
-
-  .shadow-glow-purple {
-    box-shadow: var(--shadow-glow-purple);
+    box-shadow: var(--shadow-lg);
   }
 
   /* Glass Morphism */
   .glass {
     @apply bg-card/80 backdrop-blur-xl border border-border/50;
-    position: relative;
-    z-index: 10;
   }
 
-  .glass-dark {
-    @apply bg-card/60 backdrop-blur-2xl border border-border/30;
-    position: relative;
-    z-index: 10;
-  }
-
-  /* Border Radius Utilities */
-  .rounded-default {
-    border-radius: var(--radius);
-  }
-
-  .rounded-card {
-    border-radius: var(--radius-lg);
-  }
-
-  /* Card elevation - ensures cards sit above gradients */
+  /* Card elevation */
   .card-elevated {
     position: relative;
     z-index: 10;
-  }
-
-  /* Typography Utilities */
-  .text-heading {
-    font-family: var(--font-heading);
-    letter-spacing: var(--tracking-tight);
-    line-height: var(--leading-tight);
-  }
-
-  .text-body {
-    font-family: var(--font-body);
-    letter-spacing: var(--tracking-normal);
-    line-height: var(--leading-relaxed);
   }
 
   /* Button Utilities */
@@ -540,176 +548,28 @@
   background: linear-gradient(135deg, #E0B5B5, #B5D4E0);
 }
 
-/* ===== USAGE EXAMPLES & DOCUMENTATION ===== */
+/* ===== DESIGN SYSTEM QUICK REFERENCE ===== */
 
 /*
+SHADOWS (3 levels):
+  --shadow-sm  Small, subtle shadows
+  --shadow-md  Medium, default card shadows
+  --shadow-lg  Large, elevated elements
 
-FLARE APP DESIGN SYSTEM - DESATURATED PINK EDITION
-===================================================
+GRADIENTS (3 types):
+  --gradient-main     Pink to blue, brand gradient
+  --gradient-subtle   Transparent overlay
+  --gradient-overlay  Photo overlay (dark to transparent)
 
-COLOR USAGE:
-------------
-Primary: Dusty pink (#D4A5A5) - Main brand color, interactive elements
-Mauve: Muted mauve-pink (#C4A3B3) - Secondary accents
-Rose: Soft rose (#D1A5B8) - Tertiary accents
-Blue: Soft blue (#A5C4D4) - Cool accent
-Yellow: Pale cream (#F4E8C1) - Warm accent
-Purple: Soft purple (#B8A5C4) - Badges, special highlights
-Gold: Sparkle accent (#FFD700) - Stars, premium features
+CSS COMPONENT CLASSES:
+  .icon-circle           Base circular icon container
+  .icon-circle-sm/md/lg  Icon sizes (8/10/14)
+  .carousel-nav          Photo navigation buttons
+  .carousel-dots         Photo indicator dots
+  .photo-overlay         Photo gradient overlay
+  .section-card          Standard card pattern
 
-BUTTON EXAMPLES:
-----------------
-<!-- Primary CTA (dark button) -->
-<button class="btn-dark px-6 py-3 rounded-lg shadow-card">
-  Match Now
-</button>
-
-<!-- Secondary button (pink gradient) -->
-<button class="gradient-pink-blue text-white px-6 py-3 rounded-lg shadow-soft">
-  Send Message
-</button>
-
-<!-- Tertiary button (outline) -->
-<button class="bg-white border-2 border-primary text-primary px-6 py-3 rounded-lg">
-  Learn More
-</button>
-
-CARD EXAMPLES:
---------------
-<!-- White card on gradient background -->
-<div class="bg-card shadow-card rounded-lg p-6">
-  <h3>Profile Name, 25</h3>
-  <p>Bio text...</p>
-</div>
-
-<!-- Glass morphism card -->
-<div class="glass rounded-xl p-6">
-  <h3>Semi-transparent card</h3>
-</div>
-
-<!-- Card with gradient overlay -->
-<div class="gradient-card rounded-xl p-6">
-  <h3>Gradient card</h3>
-</div>
-
-GRADIENT BACKGROUNDS:
----------------------
-<!-- Full-screen main gradient (pink-yellow-blue) -->
-<div class="gradient-main min-h-screen">
-  Content here
-</div>
-
-<!-- Subtle gradient overlay -->
-<div class="gradient-subtle">
-  Subtle background
-</div>
-
-TYPOGRAPHY EXAMPLES:
---------------------
-<!-- Logo/Brand text (Pacifico) -->
-<h1 class="font-logo text-5xl">Flare</h1>
-
-<!-- Elegant heading (Instrument Serif) -->
-<h2 class="font-display text-4xl">Find Your Match</h2>
-
-<!-- Body text (Inter) -->
-<p class="text-body text-base">Clean, readable body content</p>
-
-<!-- Gradient text -->
-<span class="text-gradient text-3xl font-bold">Special Text</span>
-
-PROFILE CARD STRUCTURE:
------------------------
-<div class="bg-card shadow-card rounded-xl overflow-hidden max-w-sm">
-  <!-- Photo -->
-  <div class="relative aspect-[4/5]">
-    <img src="photo.jpg" class="w-full h-full object-cover" />
-    <!-- Match badge -->
-    <div class="absolute top-4 right-4">
-      <span class="bg-purple text-white px-3 py-1 rounded-full text-sm font-medium shadow-elevated">
-        92% Match
-      </span>
-    </div>
-  </div>
-  
-  <!-- Content -->
-  <div class="p-6">
-    <h3 class="font-display text-2xl mb-2">Name, 25</h3>
-    <p class="text-secondary text-sm mb-4">Location • Distance</p>
-    <p class="text-body">Bio text...</p>
-  </div>
-</div>
-
-CHAT BUBBLES:
--------------
-<!-- Sent message (dark) -->
-<div class="btn-dark rounded-2xl px-4 py-3 max-w-xs ml-auto">
-  <p class="text-white">Your message</p>
-</div>
-
-<!-- Received message (white) -->
-<div class="bg-white shadow-sm rounded-2xl px-4 py-3 max-w-xs">
-  <p class="text-primary">Their message</p>
-</div>
-
-NAVIGATION BAR:
----------------
-<nav class="bg-white border-t border-border py-3">
-  <div class="flex justify-around items-center">
-    <button class="text-primary">
-      <HomeIcon />
-    </button>
-    <button class="text-muted-foreground">
-      <MatchIcon />
-    </button>
-  </div>
-</nav>
-
-BADGES & PILLS:
----------------
-<span class="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm">
-  Active
-</span>
-
-<span class="bg-purple text-white px-3 py-1 rounded-full text-sm shadow-soft">
-  New Match
-</span>
-
-THEME MODIFICATION GUIDE:
---------------------------
-To customize the theme, modify CSS variables in :root:
-
-1. Change primary color:
-   --primary: 0 23% 73%;  (change to your HSL values)
-
-2. Update gradients:
-   --gradient-main: linear-gradient(180deg, #YourColor1, #YourColor2, #YourColor3);
-
-3. Adjust typography:
-   --font-display: 'YourFont', cursive;
-   --font-heading: 'YourSerifFont', serif;
-   --font-body: 'YourSansFont', sans-serif;
-
-4. Modify border radius for different feel:
-   --radius-sm: 4px;   (more square)
-   --radius-lg: 32px;  (more rounded)
-
-DESIGN PRINCIPLES:
-------------------
-1. Soft & Inviting: Use desaturated colors for calm atmosphere
-2. Card-Based: Layer white cards on gradient backgrounds
-3. Generous Spacing: Use padding (p-6, p-8) for breathing room
-4. Rounded Corners: Apply rounded-lg or rounded-xl consistently
-5. Subtle Shadows: Use shadow-soft or shadow-card for depth
-6. Clear Typography Hierarchy: Logo (Pacifico), Headings (Instrument Serif), Body (Inter)
-7. High Contrast Text: Dark text (#2D2D2D) on light backgrounds for readability
-8. Multi-Color Gradients: Pink-yellow-blue for dreamy aesthetic
-
-ACCESSIBILITY:
---------------
-- Text contrast ratios meet WCAG AA standards (4.5:1 for body text)
-- Button tap targets are 44x44px minimum
-- Focus states use visible ring color
-- Test all color combinations for sufficient contrast
-
+THEME CUSTOMIZATION:
+  Modify :root variables to change the entire theme.
+  All colors use HSL format for easy adjustment.
 */

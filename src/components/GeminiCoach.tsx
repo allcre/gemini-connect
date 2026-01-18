@@ -1,20 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, Bot, User, Wand2, Check, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AnimatePresence } from "framer-motion";
+import { Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { IconCircle } from "@/components/ui/icon-circle";
+import {
+  ChatMessage,
+  TypingIndicator,
+  ChatInput,
+  ProfileUpdatePreview,
+  type Message,
+} from "@/components/coach";
 import type { UserProfile } from "@/types/profile";
 import { getCoachWelcomeMessage, buildCoachSystemPrompt } from "@/prompts";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  profileUpdate?: any;
-  profileUpdateIsValid?: boolean; // true if valid, false if invalid, undefined if no update
-}
 
 interface GeminiCoachProps {
   profile: UserProfile | null;
@@ -458,128 +456,16 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     const hasUpdate = lastMessage?.profileUpdate !== undefined;
     const isValid = lastMessage?.profileUpdateIsValid !== false;
 
-    // Show error message if update exists but is invalid
-    if (hasUpdate && !isValid) {
-      return (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="px-4 pb-2"
-        >
-          <Card className="p-4 border-destructive/30 bg-destructive/5">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
-                <X className="w-5 h-5 text-destructive" />
-              </div>
-              <div className="flex-1 space-y-2">
-                <div>
-                  <h4 className="text-sm font-semibold text-destructive">Formatting Issue</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    The coach tried to suggest changes, but there was a formatting issue. You can ask them to try again or rephrase your request.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-      );
-    }
-
-    // Show normal preview for valid updates
-    if (!previewProfile || !lastMessage?.profileUpdate) return null;
-
-    const update = lastMessage.profileUpdate;
+    if (!hasUpdate) return null;
 
     return (
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: "auto" }}
-        className="px-4 pb-2 space-y-2"
-      >
-        <Card className="p-4 space-y-3 border-primary/30 bg-primary/5">
-          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-            <Sparkles className="w-4 h-4" />
-            Preview Changes
-          </div>
-
-          {update.field === "bio" && (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Bio:</p>
-              <p className="text-sm text-foreground whitespace-pre-wrap bg-background/50 p-3 rounded-lg border border-border">
-                {previewProfile.bio}
-              </p>
-            </div>
-          )}
-
-          {update.field === "promptAnswers" && update.action === "add" && (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Prompt:</p>
-              <div className="bg-background/50 p-3 rounded-lg border border-border space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">{update.data.promptText}</p>
-                <p className="text-sm text-foreground whitespace-pre-wrap">{update.data.answerText}</p>
-              </div>
-            </div>
-          )}
-
-          {update.field === "promptAnswers" && update.action === "replace" && (
-            <div className="space-y-2">
-              {Array.isArray(update.data) ? (
-                <>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Updated Prompts ({update.data.length})
-                  </p>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
-                    {update.data.map((prompt: any, i: number) => (
-                      <div key={i} className="bg-background/50 p-3 rounded-lg border border-border space-y-1">
-                        <p className="text-xs font-medium text-muted-foreground">{prompt.promptText}</p>
-                        <p className="text-sm text-foreground whitespace-pre-wrap">{prompt.answerText}</p>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="bg-destructive/10 p-3 rounded-lg border border-destructive/20">
-                  <p className="text-xs font-medium text-destructive">
-                    Invalid data format: Expected array for replace action
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {update.field === "funFacts" && (
-            <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Fun Fact:</p>
-              <div className="bg-background/50 p-3 rounded-lg border border-border">
-                <p className="text-sm text-foreground">
-                  <span className="font-semibold">{update.data.label}:</span> {update.data.value}
-                </p>
-              </div>
-            </div>
-          )}
-        </Card>
-
-        {/* Apply/Decline Buttons */}
-        <div className="flex gap-2">
-          <Button
-            onClick={() => applyProfileUpdate(lastMessage.profileUpdate)}
-            className="flex-1"
-            size="lg"
-          >
-            <Check className="w-4 h-4 mr-2" />
-            Apply Changes
-          </Button>
-          <Button
-            onClick={declineProfileUpdate}
-            variant="outline"
-            size="lg"
-            className="flex-1"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Decline
-          </Button>
-        </div>
-      </motion.div>
+      <ProfileUpdatePreview
+        update={lastMessage.profileUpdate}
+        previewProfile={previewProfile}
+        isValid={isValid}
+        onApply={() => applyProfileUpdate(lastMessage.profileUpdate)}
+        onDecline={declineProfileUpdate}
+      />
     );
   };
 
@@ -587,12 +473,12 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     <Card variant="elevated" className="flex flex-col h-[500px] max-w-md mx-auto">
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center gap-3">
-        <div className="w-10 h-10 gradient-match rounded-full flex items-center justify-center shadow-soft">
+        <IconCircle variant="match" size="md" className="shadow-md">
           <Sparkles className="w-5 h-5 text-match-foreground" />
-        </div>
+        </IconCircle>
         <div>
-          <h3 className="font-semibold">Gemini Coach</h3>
-          <p className="text-xs text-muted-foreground">Your Data-Driven Wingman</p>
+          <h3 className="text-heading text-base">Gemini Coach</h3>
+          <p className="text-caption">Your Data-Driven Wingman</p>
         </div>
       </div>
 
@@ -600,60 +486,12 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <AnimatePresence>
           {messages.map((message) => (
-            <motion.div
-              key={message.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
-            >
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                  message.role === "assistant"
-                    ? "gradient-match"
-                    : "gradient-primary"
-                }`}
-              >
-                {message.role === "assistant" ? (
-                  <Bot className="w-4 h-4 text-match-foreground" />
-                ) : (
-                  <User className="w-4 h-4 text-primary-foreground" />
-                )}
-              </div>
-              <div
-                className={`max-w-[80%] p-3 rounded-2xl ${
-                  message.role === "assistant"
-                    ? "bg-secondary text-secondary-foreground rounded-tl-sm"
-                    : "gradient-primary text-primary-foreground rounded-tr-sm"
-                }`}
-              >
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-              </div>
-            </motion.div>
+            <ChatMessage key={message.id} message={message} />
           ))}
         </AnimatePresence>
 
         {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex gap-3"
-          >
-            <div className="w-8 h-8 gradient-match rounded-full flex items-center justify-center">
-              <Bot className="w-4 h-4 text-match-foreground" />
-            </div>
-            <div className="bg-secondary p-3 rounded-2xl rounded-tl-sm">
-              <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-2 h-2 bg-muted-foreground rounded-full"
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.1 }}
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.div>
+          <TypingIndicator />
         )}
 
         <div ref={messagesEndRef} />
@@ -663,26 +501,12 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
       {renderPreview()}
 
       {/* Input */}
-      <div className="p-4 border-t border-border">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          className="flex gap-2"
-        >
-          <Input
-            placeholder="Ask me to tweak your profile..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="flex-1"
-            disabled={isLoading}
-          />
-          <Button type="submit" size="icon" disabled={!input.trim() || isLoading}>
-            <Send className="w-4 h-4" />
-          </Button>
-        </form>
-      </div>
+      <ChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={sendMessage}
+        isLoading={isLoading}
+      />
     </Card>
   );
 };
