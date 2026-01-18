@@ -104,8 +104,8 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-caption">About</h3>
           {isEditable && editingField !== "bio" && (
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon-sm"
               onClick={() => startEdit("bio", profile.bio)}
             >
@@ -149,8 +149,8 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
           <div className="flex items-start justify-between mb-2">
             <p className="text-caption">{prompt.promptText}</p>
             {isEditable && editingField !== `prompt-${index}` && (
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="icon-sm"
                 onClick={() => startEdit(`prompt-${index}`, prompt.answerText)}
               >
@@ -213,7 +213,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
         transition={{ delay: 0.3 }}
         className="pt-4"
       >
-        <Button onClick={onStartMatching} variant="ghost" className="w-full bg-foreground text-background hover:bg-foreground/90 shadow-card" size="lg">
+        <Button onClick={onStartMatching} variant="default" className="w-full" size="lg">
           <Sparkles className="w-5 h-5 mr-2" />
           {isInitialSetup ? "Start Matching" : "Keep Matching"}
         </Button>
