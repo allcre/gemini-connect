@@ -5,11 +5,10 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
  *
  * This function handles the Gemini Coach AI chat feature.
  *
- * PROMPT REFERENCE: The system prompt used here is defined in:
+ * PROMPT REFERENCE: The system prompt is now sent from the frontend and defined in:
  * - src/prompts/ai-prompts.ts (COACH_SYSTEM_PROMPT, buildCoachSystemPrompt)
  *
- * If you update the prompt here, please also update the centralized version
- * in the prompts folder to keep documentation in sync.
+ * The prompt is built client-side using buildCoachSystemPrompt() and passed in the request body.
  */
 
 const corsHeaders = {
@@ -24,7 +23,8 @@ interface ChatMessage {
 
 interface CoachChatRequest {
   messages: ChatMessage[];
-  currentProfile: any;
+  systemPrompt: string;
+  currentProfile?: any;
   yellowcakeData?: any;
 }
 
@@ -34,50 +34,123 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, currentProfile, yellowcakeData } = await req.json() as CoachChatRequest;
+    let requestBody: CoachChatRequest;
+    try {
+      requestBody = await req.json() as CoachChatRequest;
+    } catch (parseError) {
+      return new Response(
+        JSON.stringify({ error: "Invalid request body. Expected JSON." }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const { messages, systemPrompt, currentProfile, yellowcakeData } = requestBody;
+
+    // Log the system prompt to verify it's being received
+    console.log("[Coach Function] Received systemPrompt length:", systemPrompt?.length);
+    console.log("[Coach Function] SystemPrompt contains BANANA:", systemPrompt?.includes("BANANA"));
+    if (systemPrompt && systemPrompt.length < 500) {
+      console.log("[Coach Function] SystemPrompt preview:", systemPrompt.substring(0, 500));
+    }
+
+    // Validate required fields
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "messages must be a non-empty array" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!systemPrompt || typeof systemPrompt !== "string") {
+      return new Response(
+        JSON.stringify({ error: "systemPrompt is required and must be a string" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!LOVABLE_API_KEY) {
+      console.error("LOVABLE_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "Server configuration error" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
-    const systemPrompt = `You are the Gemini Coach - a witty, supportive "Data-Driven Wingman" for a dating app. Your personality is:
-- Warm and encouraging, but also playfully honest
-- You use data insights to give advice, but you're not robotic
-- You reference their GitHub repos, movie taste, music etc. naturally
-- You help optimize their profile for their target audience
-- You can suggest specific tweaks to their bio, prompts, or highlights
+    // Validate message structure
+    const validMessages = messages.filter((msg) =>
+      msg && typeof msg === "object" &&
+      (msg.role === "user" || msg.role === "assistant") &&
+      typeof msg.content === "string"
+    );
 
-Current User Profile:
-${JSON.stringify(currentProfile, null, 2)}
+    if (validMessages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: "No valid messages found" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
-Their Data:
-${yellowcakeData ? JSON.stringify(yellowcakeData, null, 2) : "No data connected yet"}
-
-IMPORTANT: When you suggest profile changes, include a JSON block at the end of your message with the exact changes. Format:
-\`\`\`json:profile_update
-{
-  "field": "bio" | "promptAnswers" | "funFacts" | "dataInsights" | "bestFeatures",
-  "action": "replace" | "add" | "remove",
-  "data": { ... }
-}
-\`\`\`
-
-Only include the JSON block if you're actually suggesting a concrete change they can apply. Otherwise, just chat normally.`;
-
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    let requestPayload: unknown;
+    try {
+      requestPayload = {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...validMessages,
         ],
         stream: true,
-      }),
-    });
+      };
+      console.log("[Coach Function] Sending to AI gateway - system message length:", systemPrompt.length);
+      console.log("[Coach Function] System message contains BANANA:", systemPrompt.includes("BANANA"));
+    } catch (payloadError) {
+      console.error("Failed to construct request payload:", payloadError);
+      return new Response(
+        JSON.stringify({ error: "Failed to prepare request" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    let response: Response;
+    try {
+      response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestPayload),
+      });
+    } catch (fetchError) {
+      console.error("Failed to fetch from AI gateway:", fetchError);
+      return new Response(
+        JSON.stringify({
+          error: "Failed to connect to AI service. Please try again."
+        }),
+        {
+          status: 503,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     if (!response.ok) {
       if (response.status === 429) {

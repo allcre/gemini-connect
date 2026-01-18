@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import type { UserProfile } from "@/types/profile";
-import { getCoachWelcomeMessage } from "@/prompts";
+import { getCoachWelcomeMessage, buildCoachSystemPrompt } from "@/prompts";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   profileUpdate?: any;
+  profileUpdateIsValid?: boolean; // true if valid, false if invalid, undefined if no update
 }
 
 interface GeminiCoachProps {
@@ -42,25 +43,169 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     scrollToBottom();
   }, [messages]);
 
-  const parseProfileUpdate = (content: string): { text: string; update: any | null } => {
-    const updateMatch = content.match(/```json:profile_update\s*([\s\S]*?)```/);
-    if (updateMatch) {
-      try {
-        const update = JSON.parse(updateMatch[1].trim());
-        const text = content.replace(/```json:profile_update[\s\S]*?```/g, "").trim();
-        return { text, update };
-      } catch (e) {
-        console.error("Failed to parse profile update:", e);
+  /**
+   * Attempts to coerce an update object into the correct format
+   * Returns { update, wasCoerced: boolean }
+   */
+  const coerceUpdateFormat = (update: any): { update: any; wasCoerced: boolean } => {
+    if (!update || typeof update !== "object" || !update.field || !update.action) {
+      return { update, wasCoerced: false };
+    }
+
+    const originalUpdate = JSON.parse(JSON.stringify(update)); // Deep clone for logging
+    let wasCoerced = false;
+
+    // Coerce promptAnswers replace: if data is an object instead of array, wrap it
+    if (update.field === "promptAnswers" && update.action === "replace") {
+      if (update.data && typeof update.data === "object" && !Array.isArray(update.data)) {
+        // Check if it looks like a single prompt object
+        if (update.data.promptText && update.data.answerText) {
+          console.log("[Coach] Coercion applied: Wrapping single prompt object into array", {
+            before: originalUpdate,
+            after: { ...update, data: [update.data] },
+          });
+          update.data = [update.data];
+          wasCoerced = true;
+        }
       }
     }
-    return { text: content, update: null };
+
+    // Coerce bio replace: normalize string vs object format
+    if (update.field === "bio" && update.action === "replace") {
+      if (update.data && typeof update.data === "object" && !update.data.bio) {
+        // If object doesn't have bio property but has text-like property, try to extract
+        const textValue = update.data.text || update.data.content || update.data.bio;
+        if (typeof textValue === "string") {
+          console.log("[Coach] Coercion applied: Extracting bio text from object", {
+            before: originalUpdate,
+            after: { ...update, data: textValue },
+          });
+          update.data = textValue;
+          wasCoerced = true;
+        }
+      }
+    }
+
+    // Coerce promptAnswers add: ensure it's an object (not array)
+    if (update.field === "promptAnswers" && update.action === "add") {
+      if (Array.isArray(update.data) && update.data.length > 0) {
+        // If it's an array, take the first element
+        console.log("[Coach] Coercion applied: Extracting first element from array for add action", {
+          before: originalUpdate,
+          after: { ...update, data: update.data[0] },
+        });
+        update.data = update.data[0];
+        wasCoerced = true;
+      }
+    }
+
+    return { update, wasCoerced };
+  };
+
+  /**
+   * Validates that an update object has the correct structure for its field/action combination
+   */
+  const validateUpdateStructure = (update: any): boolean => {
+    if (!update || typeof update !== "object") return false;
+    if (!update.field || !update.action) return false;
+
+    // Validate based on field and action
+    if (update.field === "promptAnswers") {
+      if (update.action === "replace") {
+        // Must be an array
+        return Array.isArray(update.data);
+      } else if (update.action === "add") {
+        // Must be an object with promptText and answerText
+        return (
+          update.data &&
+          typeof update.data === "object" &&
+          typeof update.data.promptText === "string" &&
+          typeof update.data.answerText === "string"
+        );
+      }
+    } else if (update.field === "bio" && update.action === "replace") {
+      // Can be string or object with bio property
+      return (
+        typeof update.data === "string" ||
+        (update.data && typeof update.data === "object" && typeof update.data.bio === "string")
+      );
+    } else if (update.field === "funFacts" && update.action === "add") {
+      // Must be object with label and value
+      return (
+        update.data &&
+        typeof update.data === "object" &&
+        typeof update.data.label === "string" &&
+        typeof update.data.value === "string"
+      );
+    }
+
+    // Unknown field/action combination - consider invalid
+    return false;
+  };
+
+  const parseProfileUpdate = (content: string): { text: string; update: any | null; isValid: boolean } => {
+    console.log("[Coach] Raw response received", content);
+
+    const updateMatch = content.match(/```json:profile_update\s*([\s\S]*?)```/);
+    if (updateMatch) {
+      const jsonStr = updateMatch[1].trim();
+      console.log("[Coach] Update JSON found", jsonStr);
+
+      try {
+        const parsedUpdate = JSON.parse(jsonStr);
+        console.log("[Coach] Parsed update", parsedUpdate);
+
+        const text = content.replace(/```json:profile_update[\s\S]*?```/g, "").trim();
+
+        // Try coercion first
+        const { update, wasCoerced } = coerceUpdateFormat(parsedUpdate);
+
+        if (wasCoerced) {
+          console.log("[Coach] Coercion applied", {
+            original: parsedUpdate,
+            coerced: update,
+          });
+        }
+
+        // Validate the update structure
+        const isValid = validateUpdateStructure(update);
+
+        if (isValid) {
+          console.log("[Coach] Validation passed", {
+            field: update.field,
+            action: update.action,
+            dataType: Array.isArray(update.data) ? "array" : typeof update.data,
+          });
+          console.log("[Coach] Final update", update);
+          return { text, update, isValid: true };
+        } else {
+          console.warn("[Coach] Validation failed", {
+            update,
+            field: update?.field,
+            action: update?.action,
+            dataType: update?.data ? (Array.isArray(update.data) ? "array" : typeof update.data) : "undefined",
+            expected: update?.field === "promptAnswers" && update?.action === "replace" ? "array" : "object",
+          });
+          return { text, update, isValid: false };
+        }
+      } catch (e) {
+        console.error("[Coach] Parse error", {
+          error: e instanceof Error ? e.message : String(e),
+          jsonStr,
+          stack: e instanceof Error ? e.stack : undefined,
+        });
+        return { text: content, update: null, isValid: false };
+      }
+    }
+    console.log("[Coach] No update JSON found in response");
+    return { text: content, update: null, isValid: true };
   };
 
   const getPreviewProfile = (update: any): UserProfile | null => {
     if (!profile || !update) return null;
-    
+
     const updated = { ...profile };
-    
+
     if (update.field === "bio" && update.action === "replace") {
       updated.bio = update.data.bio || update.data;
     } else if (update.field === "promptAnswers") {
@@ -94,7 +239,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
       };
       updated.funFacts = [...updated.funFacts, newFact];
     }
-    
+
     return updated;
   };
 
@@ -138,6 +283,13 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     let assistantContent = "";
 
     try {
+      const systemPrompt = buildCoachSystemPrompt(profile, profile?.yellowcakeData);
+      console.log("[Coach Frontend] Built systemPrompt length:", systemPrompt.length);
+      console.log("[Coach Frontend] SystemPrompt contains BANANA:", systemPrompt.includes("BANANA"));
+      if (systemPrompt.length < 500) {
+        console.log("[Coach Frontend] SystemPrompt preview:", systemPrompt.substring(0, 500));
+      }
+
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
@@ -149,6 +301,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
             role: m.role,
             content: m.content,
           })),
+          systemPrompt,
           currentProfile: profile,
           yellowcakeData: profile?.yellowcakeData,
         }),
@@ -215,14 +368,23 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
       }
 
       // Parse final content for profile updates
-      const { text, update } = parseProfileUpdate(assistantContent);
-      
-      // Update the final message with cleaned text
+      const { text, update, isValid } = parseProfileUpdate(assistantContent);
+
+      // Update the final message with cleaned text and update status
       setMessages((prev) => {
         const last = prev[prev.length - 1];
         if (last?.role === "assistant") {
+          // Include isValid flag to determine if we should show error UI
           return prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, id: Date.now().toString(), content: text, profileUpdate: update } : m
+            i === prev.length - 1
+              ? {
+                  ...m,
+                  id: Date.now().toString(),
+                  content: text,
+                  profileUpdate: update,
+                  profileUpdateIsValid: isValid,
+                }
+              : m
           );
         }
         return prev;
@@ -231,7 +393,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     } catch (error) {
       console.error("Coach chat error:", error);
       toast.error(error instanceof Error ? error.message : "Failed to get response");
-      
+
       // Add error message
       setMessages((prev) => [
         ...prev,
@@ -251,10 +413,41 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
   const previewProfile = hasProfileUpdate ? getPreviewProfile(lastMessage.profileUpdate) : null;
 
   const renderPreview = () => {
+    const hasUpdate = lastMessage?.profileUpdate !== undefined;
+    const isValid = lastMessage?.profileUpdateIsValid !== false;
+
+    // Show error message if update exists but is invalid
+    if (hasUpdate && !isValid) {
+      return (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="px-4 pb-2"
+        >
+          <Card className="p-4 border-destructive/30 bg-destructive/5">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                <X className="w-5 h-5 text-destructive" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div>
+                  <h4 className="text-sm font-semibold text-destructive">Formatting Issue</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    The coach tried to suggest changes, but there was a formatting issue. You can ask them to try again or rephrase your request.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      );
+    }
+
+    // Show normal preview for valid updates
     if (!previewProfile || !lastMessage?.profileUpdate) return null;
-    
+
     const update = lastMessage.profileUpdate;
-    
+
     return (
       <motion.div
         initial={{ opacity: 0, height: 0 }}
@@ -266,7 +459,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
             <Sparkles className="w-4 h-4" />
             Preview Changes
           </div>
-          
+
           {update.field === "bio" && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Bio:</p>
@@ -275,7 +468,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
               </p>
             </div>
           )}
-          
+
           {update.field === "promptAnswers" && update.action === "add" && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Prompt:</p>
@@ -285,23 +478,33 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
               </div>
             </div>
           )}
-          
+
           {update.field === "promptAnswers" && update.action === "replace" && (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                Updated Prompts ({update.data.length})
-              </p>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {update.data.map((prompt: any, i: number) => (
-                  <div key={i} className="bg-background/50 p-3 rounded-lg border border-border space-y-1">
-                    <p className="text-xs font-medium text-muted-foreground">{prompt.promptText}</p>
-                    <p className="text-sm text-foreground whitespace-pre-wrap">{prompt.answerText}</p>
+              {Array.isArray(update.data) ? (
+                <>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Updated Prompts ({update.data.length})
+                  </p>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {update.data.map((prompt: any, i: number) => (
+                      <div key={i} className="bg-background/50 p-3 rounded-lg border border-border space-y-1">
+                        <p className="text-xs font-medium text-muted-foreground">{prompt.promptText}</p>
+                        <p className="text-sm text-foreground whitespace-pre-wrap">{prompt.answerText}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              ) : (
+                <div className="bg-destructive/10 p-3 rounded-lg border border-destructive/20">
+                  <p className="text-xs font-medium text-destructive">
+                    Invalid data format: Expected array for replace action
+                  </p>
+                </div>
+              )}
             </div>
           )}
-          
+
           {update.field === "funFacts" && (
             <div className="space-y-2">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">New Fun Fact:</p>
@@ -313,10 +516,10 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
             </div>
           )}
         </Card>
-        
+
         {/* Apply/Decline Buttons */}
         <div className="flex gap-2">
-          <Button 
+          <Button
             onClick={() => applyProfileUpdate(lastMessage.profileUpdate)}
             className="flex-1"
             size="lg"
@@ -324,7 +527,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
             <Check className="w-4 h-4 mr-2" />
             Apply Changes
           </Button>
-          <Button 
+          <Button
             onClick={declineProfileUpdate}
             variant="outline"
             size="lg"
