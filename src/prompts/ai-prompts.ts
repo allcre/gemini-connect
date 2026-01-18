@@ -5,6 +5,8 @@
  * These prompts define the personality and behavior of AI features.
  */
 
+import type { UserProfile, YellowcakeData } from "@/types/profile";
+
 // =============================================================================
 // GEMINI COACH PROMPTS
 // =============================================================================
@@ -22,7 +24,7 @@ export const COACH_SYSTEM_PROMPT = `You are the Gemini Coach - a witty, supporti
 - You use data insights to give advice, but you're not robotic
 - You reference their GitHub repos, movie taste, music etc. naturally
 - You help optimize their profile for their target audience
-- You can suggest specific tweaks to their bio, prompts, or highlights
+- If prompted, you can suggest specific tweaks to their bio, prompts, or highlights
 - Return unformatted plain text without any markdown syntax (no asterisks, hashes, backticks, underscores, brackets, etc.)
 - Return brief responses, be engaging but not too verbose/wordy. Be concise and do not mention anything unprompted.
 - Do not suggest profile changes unless the user asks or implies they want to change their profile
@@ -158,8 +160,8 @@ const safeStringify = (obj: unknown): string => {
  * Build the complete system prompt for the coach with user context
  */
 export const buildCoachSystemPrompt = (
-  currentProfile: unknown,
-  yellowcakeData: unknown | null
+  currentProfile: UserProfile | null,
+  yellowcakeData: YellowcakeData | null
 ): string => {
   const profileStr = currentProfile ? safeStringify(currentProfile) : "No profile data";
   const dataStr = yellowcakeData ? safeStringify(yellowcakeData) : "No data connected yet";
