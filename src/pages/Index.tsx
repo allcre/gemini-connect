@@ -9,7 +9,7 @@ import { ProfilePreview } from "@/components/ProfilePreview";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MessageCircle, LogOut } from "lucide-react";
+import { Heart, LogOut } from "lucide-react";
 import { useLocalProfile } from "@/hooks/useLocalProfile";
 import type { UserProfile } from "@/types/profile";
 
@@ -55,8 +55,8 @@ const Index = () => {
         </header>
         <main className="max-w-md mx-auto p-4">
           <h2 className="font-display text-xl font-semibold text-center mb-4">Preview Your Profile</h2>
-          <ProfilePreview 
-            profile={profile} 
+          <ProfilePreview
+            profile={profile}
             onSave={setProfile}
             onStartMatching={handleStartMatching}
             isInitialSetup={true}
@@ -97,16 +97,16 @@ const Index = () => {
         return (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 pb-24 space-y-6">
             {profile && (
-              <ProfilePreview 
-                profile={profile} 
+              <ProfilePreview
+                profile={profile}
                 onSave={setProfile}
                 onStartMatching={() => setActiveTab("discover")}
                 isEditable={true}
                 isInitialSetup={false}
               />
             )}
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="w-full text-destructive border-destructive/30 hover:bg-destructive/10"
               onClick={resetProfile}
             >
@@ -124,11 +124,8 @@ const Index = () => {
   return (
     <div className="min-h-screen gradient-grainy">
       <header className="sticky top-0 z-40 bg-transparent backdrop-blur-lg border-b border-border/30">
-        <div className="flex items-center justify-between p-4 max-w-md mx-auto">
+        <div className="flex items-center justify-center p-4 max-w-md mx-auto">
           <Logo />
-          <Button variant="ghost" size="icon-sm">
-            <MessageCircle className="w-5 h-5" />
-          </Button>
         </div>
       </header>
       <main className="max-w-md mx-auto">{renderContent()}</main>
