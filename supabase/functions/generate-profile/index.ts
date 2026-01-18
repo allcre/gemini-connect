@@ -53,7 +53,11 @@ serve(async (req) => {
 **What They Want to Highlight:** ${highlights || "Not provided"}
 
 **Their Digital Footprint Data:**
-${yellowcakeData ? JSON.stringify(yellowcakeData, null, 2) : "No data available"} Use this data as prompt answers and fun facts.
+${yellowcakeData ? JSON.stringify(yellowcakeData, null, 2) : "No data available"} Use this data as prompt answers and fun facts. 
+For users targetting a hackathon buddy reference interesting repos and coding languages (which can often be found in the description of the repo).
+For users targetting a date, reference details that make them stand out (e.g. their favorite genres, interesting substack articles written, etc.).
+For users targetting a friend, reference group activities they enjoy (e.g. Steam for games played, Twitter for interesting tweets, etc.).
+Of course, you are not constrained by these examples and can use your imagination to create a profile that is unique and engaging.
 
 Generate a complete profile with:
 
@@ -69,7 +73,7 @@ Generate a complete profile with:
 4. **dataInsights**: 1-2 data-backed insights that would intrigue their target audience. Each has:
    - type: "stat" | "badge" | "chart"
    - title: short title
-   - description: 1 sentence to the point explanation. Ensure it is described in first person perspective.
+   - description: short bullet point explanation, no need to use pronouns, just describe the data
    - metricValue: the key number or label
 
 5. **bestFeatures**: 3 compelling features to highlight as badges
