@@ -47,15 +47,8 @@ export const DiscoveryFeed = () => {
   };
 
   const handleLikeFeature = (feature: string) => {
-    if (feature) {
-      toast.success(
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4" />
-          <span>You liked "{feature}"</span>
-        </div>
-      );
-      // Just show the toast, don't like the profile or move on
-    }
+    // Just a placeholder for the click interaction
+    // No toast, no action - keeps the animations but removes the notification
   };
 
   if (!currentProfile) {
