@@ -14,15 +14,28 @@ interface DiscoveryFeedProps {
   onNavigateToMessages?: (conversationId: string | null) => void;
 }
 
+const DISCOVERY_INDEX_KEY = "biomatch_discovery_index";
+
 export const DiscoveryFeed = ({ onNavigateToMessages }: DiscoveryFeedProps) => {
   const [profiles] = useState<DiscoverProfile[]>(mockProfiles);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    // Load saved index from localStorage on mount
+    const saved = localStorage.getItem(DISCOVERY_INDEX_KEY);
+    const savedIndex = saved ? parseInt(saved, 10) : 0;
+    // Make sure index is valid
+    return savedIndex >= 0 && savedIndex < mockProfiles.length ? savedIndex : 0;
+  });
   const [liked, setLiked] = useState(false);
   const { likeProfile, hasLiked } = useLocalMatches();
   const { profile } = useLocalProfile();
   const { startConversation } = useLocalMessages();
 
   const currentProfile = profiles[currentIndex];
+
+  // Save current index to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(DISCOVERY_INDEX_KEY, currentIndex.toString());
+  }, [currentIndex]);
 
   const handleMessage = () => {
     if (!currentProfile || !profile) return;
