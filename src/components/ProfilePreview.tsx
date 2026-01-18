@@ -267,7 +267,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
         transition={{ delay: 0.3 }}
         className="pt-4"
       >
-        <Button onClick={onStartMatching} className="w-full" size="lg">
+        <Button onClick={onStartMatching} variant="ghost" className="w-full bg-foreground text-background hover:bg-foreground/90 shadow-card" size="lg">
           <Sparkles className="w-5 h-5 mr-2" />
           {isInitialSetup ? "Start Matching" : "Keep Matching"}
         </Button>
