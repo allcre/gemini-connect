@@ -47,7 +47,7 @@ export const LETTERBOXD_FILMS_PROMPT =
  * Used by: src/integrations/yellowcake/client.ts - extractGitHubRepos()
  */
 export const GITHUB_REPOS_PROMPT =
-  'Extract all repositories from this GitHub page. For each repository, extract the repository name and description. Return each repository with keys "name" and "description".';
+  'Extract all repositories from this GitHub page. Extract the repository names and descriptions. Return data with exact keys "name" and "description".';
 
 // =============================================================================
 // TWITTER/X EXTRACTION PROMPTS
