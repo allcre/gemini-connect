@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -320,6 +320,17 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     setInput("");
     setIsLoading(true);
 
+    // Immediately add a placeholder assistant message to show it's thinking
+    const assistantId = `assistant-${Date.now()}`;
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+      },
+    ]);
+
     let assistantContent = "";
 
     try {
@@ -367,14 +378,16 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
         assistantContent += chunk;
         setMessages((prev) => {
           const last = prev[prev.length - 1];
-          if (last?.role === "assistant" && last.id.startsWith("streaming-")) {
+          if (last?.role === "assistant" && last.id === assistantId) {
+            // Update the placeholder message we created earlier
             return prev.map((m, i) =>
               i === prev.length - 1 ? { ...m, content: assistantContent } : m
             );
           }
+          // Fallback (shouldn't happen since we pre-created the message)
           return [
             ...prev,
-            { id: `streaming-${Date.now()}`, role: "assistant", content: assistantContent },
+            { id: assistantId, role: "assistant", content: assistantContent },
           ];
         });
       };
@@ -407,28 +420,30 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
         }
       }
 
-      // Parse final content for profile updates
-      const { text, update, isValid } = parseProfileUpdate(assistantContent);
+      // Parse final content for profile updates asynchronously
+      // Use setTimeout to defer this work and prevent blocking
+      setTimeout(() => {
+        const { text, update, isValid } = parseProfileUpdate(assistantContent);
 
-      // Update the final message with cleaned text and update status
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant") {
-          // Include isValid flag to determine if we should show error UI
-          return prev.map((m, i) =>
-            i === prev.length - 1
-              ? {
-                  ...m,
-                  id: Date.now().toString(),
-                  content: text,
-                  profileUpdate: update,
-                  profileUpdateIsValid: isValid,
-                }
-              : m
-          );
-        }
-        return prev;
-      });
+        // Update the final message with cleaned text and update status
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant" && last.id === assistantId) {
+            // Include isValid flag to determine if we should show error UI
+            return prev.map((m, i) =>
+              i === prev.length - 1
+                ? {
+                    ...m,
+                    content: text,
+                    profileUpdate: update,
+                    profileUpdateIsValid: isValid,
+                  }
+                : m
+            );
+          }
+          return prev;
+        });
+      }, 0);
 
     } catch (error) {
       console.error("Coach chat error:", error);
@@ -470,43 +485,50 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
   };
 
   return (
-    <Card variant="elevated" className="flex flex-col h-[500px] max-w-md mx-auto">
-      {/* Header */}
-      <div className="p-4 border-b border-border flex items-center gap-3">
-        <IconCircle variant="match" size="md" className="shadow-md">
-          <Sparkles className="w-5 h-5 text-match-foreground" />
-        </IconCircle>
-        <div>
-          <h3 className="text-heading text-base">Gemini Coach</h3>
-          <p className="text-caption">Your Data-Driven Wingman</p>
+    <div className="flex flex-col h-full w-full max-w-2xl mx-auto">
+      {/* Scrollable container with header inside */}
+      <div className="flex-1 overflow-y-auto px-2">
+        {/* Header Card - Scrolls away naturally */}
+        <Card variant="elevated" className="mb-4">
+          <div className="p-3 flex items-center gap-3">
+            <IconCircle variant="match" size="md" className="shadow-md">
+              <Sparkles className="w-5 h-5 text-match-foreground" />
+            </IconCircle>
+            <div>
+              <h3 className="text-heading text-base font-semibold">Gemini Coach</h3>
+              <p className="text-caption text-xs">Your Data-Driven Wingman</p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Messages Area */}
+        <div className="space-y-4 mb-4">
+          <AnimatePresence>
+            {messages.map((message) => (
+              <ChatMessage key={message.id} message={message} />
+            ))}
+          </AnimatePresence>
+
+          {isLoading && messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1]?.content === "" && (
+            <TypingIndicator />
+          )}
+
+          <div ref={messagesEndRef} />
         </div>
+
+        {/* Preview Changes with Apply/Decline */}
+        {renderPreview()}
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <AnimatePresence>
-          {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} />
-          ))}
-        </AnimatePresence>
-
-        {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
-          <TypingIndicator />
-        )}
-
-        <div ref={messagesEndRef} />
+      {/* Input - Fixed at bottom */}
+      <div className="mt-auto">
+        <ChatInput
+          value={input}
+          onChange={setInput}
+          onSubmit={sendMessage}
+          isLoading={isLoading}
+        />
       </div>
-
-      {/* Preview Changes with Apply/Decline */}
-      {renderPreview()}
-
-      {/* Input */}
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSubmit={sendMessage}
-        isLoading={isLoading}
-      />
-    </Card>
+    </div>
   );
 };
