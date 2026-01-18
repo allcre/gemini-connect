@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Heart, X, MessageCircle, Star, Code, Film, Music, MapPin } from "lucide-react";
+import { Heart, ArrowRight, MessageCircle, Star, Code, Film, Music, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -208,21 +208,13 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
       {/* Action Buttons */}
       <div className="flex items-center justify-center gap-6 pt-4">
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Button variant="skip" size="icon-lg" onClick={onSkip}>
-            <X className="w-6 h-6" />
+          <Button variant="outline" size="icon-lg" onClick={onSkip}>
+            <ArrowRight className="w-6 h-6" />
           </Button>
         </motion.div>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Button variant="glass" size="icon" onClick={() => {}}>
-            <MessageCircle className="w-5 h-5" />
-          </Button>
-        </motion.div>
-        <motion.div
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button variant="like" size="icon-lg" onClick={onLike}>
-            <Heart className="w-6 h-6" />
+          <Button variant="default" size="icon-lg" onClick={() => {}}>
+            <MessageCircle className="w-6 h-6" />
           </Button>
         </motion.div>
       </div>
