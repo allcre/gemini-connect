@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { IconCircle } from "@/components/ui/icon-circle";
 
 interface OnboardingStepsProps {
   currentStep: number;
@@ -22,12 +23,13 @@ export const OnboardingSteps = ({ currentStep, totalSteps }: OnboardingStepsProp
             transition={{ delay: index * 0.1 }}
             className="flex items-center"
           >
-            <div
+            <IconCircle
+              variant={isCompleted ? "primary" : isCurrent ? "ghost" : "default"}
+              size="md"
               className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all duration-300",
-                isCompleted && "gradient-primary text-primary-foreground shadow-soft",
-                isCurrent && "border-2 border-primary bg-primary/10 text-primary",
-                !isCompleted && !isCurrent && "bg-muted text-muted-foreground"
+                "font-semibold transition-all duration-300",
+                isCompleted && "shadow-md",
+                isCurrent && "border-2 border-primary bg-primary/10 text-primary"
               )}
             >
               {isCompleted ? (
@@ -41,7 +43,7 @@ export const OnboardingSteps = ({ currentStep, totalSteps }: OnboardingStepsProp
               ) : (
                 index + 1
               )}
-            </div>
+            </IconCircle>
             {index < totalSteps - 1 && (
               <div
                 className={cn(
