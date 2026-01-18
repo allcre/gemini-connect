@@ -1,0 +1,58 @@
+{
+  "personal_info": {
+    "name": "Simon Edem Amable",
+    "handle": "SimonAmable",
+    "location": "Ottawa, Ontario, Canada",
+    "address_provided": "1121 Trent St, Ottawa, ON K1Z 8J3 CA",
+    "contact_email": "simonamable@gmail.com",
+    "website": "https://www.simonamable.com/",
+    "organization": "Transport Canada"
+  },
+  "professional_profile": {
+    "role": "Full Stack Web Developer",
+    "focus": "AI Automation, Web Scraping, and Student-focused tools",
+    "working_status": "Working from home"
+  },
+  "technical_projects": [
+    {
+      "name": "Unican.AI",
+      "description": "AI-powered design tool for advanced visual edits with text prompts on an infinite canvas.",
+      "comparison": "Focussed on being an AI alternative to Photoshop, Canva, or Figma."
+    },
+    {
+      "name": "EzApply & Chrome Extension",
+      "description": "A web suite that streamlines job applications for students using RAG (Retrieval-Augmented Generation) and automated form filling.",
+      "tech_stack": "Grounding with real user data for customized cover letters/resumes."
+    },
+    {
+      "name": "Intern Canada",
+      "description": "Comprehensive internship platform for Canadian students.",
+      "traction": "Peaked at over 100 daily active users."
+    },
+    {
+      "name": "PocketBroker",
+      "origin": "Hack the North 2025",
+      "description": "Voice agent (VAPI framework) that analyzes crypto news on X via Grok and executes real-money trades via Kraken API."
+    },
+    {
+      "name": "MySuccessAutomation",
+      "description": "Open-source Python tool specifically for automating Carleton University's MySuccess job portal applications."
+    },
+    {
+      "name": "real_fall_damage_simulator",
+      "description": "Proof of concept using an Electric Muscle Stimulus (EMS) device and embedded systems to simulate fall damage."
+    }
+  ],
+  "additional_ventures": [
+    {
+      "name": "Seeking Remedy",
+      "type": "E-commerce store",
+      "description": "WordPress/WooCommerce site built for global clothing and accessory sales."
+    },
+    {
+      "name": "EVNAV",
+      "type": "Mobile App",
+      "description": "Android-based navigation/tool for Electric Vehicles."
+    }
+  ]
+}
