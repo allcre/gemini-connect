@@ -28,31 +28,44 @@
     /* ===== PRIMARY COLORS (Desaturated Pink Palette) ===== */
 
     /* Desaturated Dusty Pink - Primary brand color */
-    --primary: 0 23% 73%;              /* #D4A5A5 */
-    --primary-foreground: 0 0% 18%;    /* Dark text on pink */
-    --primary-light: 0 23% 83%;        /* Lighter dusty pink */
+    --primary: 0 23% 73%;
+    /* #D4A5A5 */
+    --primary-foreground: 0 0% 18%;
+    /* Dark text on pink */
+    --primary-light: 0 23% 83%;
+    /* Lighter dusty pink */
 
     /* Soft Blue - Secondary brand color */
-    --blue: 200 30% 74%;               /* #A5C4D4 */
-    --blue-foreground: 0 0% 18%;       /* Dark text on blue */
+    --blue: 200 30% 74%;
+    /* #A5C4D4 */
+    --blue-foreground: 0 0% 18%;
+    /* Dark text on blue */
 
     /* Soft Purple - Accent color (for special highlights) */
-    --purple: 270 22% 72%;             /* #B8A5C4 */
-    --purple-foreground: 0 0% 100%;    /* White text on purple */
+    --purple: 270 22% 72%;
+    /* #B8A5C4 */
+    --purple-foreground: 0 0% 100%;
+    /* White text on purple */
 
     /* Pale Yellow/Cream - Tertiary accent (for charts/visualizations) */
-    --yellow: 45 70% 87%;              /* #F4E8C1 */
-    --yellow-foreground: 0 0% 18%;     /* Dark text on yellow */
+    --yellow: 45 70% 87%;
+    /* #F4E8C1 */
+    --yellow-foreground: 0 0% 18%;
+    /* Dark text on yellow */
 
     /* Legacy colors - kept for chart colors only, use primary/secondary/accent instead */
-    --mauve: 320 18% 70%;              /* #C4A3B3 - chart color only */
+    --mauve: 320 18% 70%;
+    /* #C4A3B3 - chart color only */
     --mauve-foreground: 0 0% 18%;
-    --rose: 340 25% 74%;               /* #D1A5B8 - chart color only */
+    --rose: 340 25% 74%;
+    /* #D1A5B8 - chart color only */
     --rose-foreground: 0 0% 18%;
 
     /* Gold - For sparkle/star icons */
-    --gold: 51 100% 50%;               /* #FFD700 */
-    --gold-foreground: 0 0% 18%;       /* Dark text on gold */
+    --gold: 51 100% 50%;
+    /* #FFD700 */
+    --gold-foreground: 0 0% 18%;
+    /* Dark text on gold */
 
     /* ===== GRADIENTS (Simplified) ===== */
 
@@ -60,59 +73,79 @@
     --gradient-main: linear-gradient(135deg, #FAF8F5 0%, #F5F3F0 50%, #F0EDEA 100%);
 
     /* Subtle overlay gradient */
-    --gradient-subtle: linear-gradient(180deg, rgba(250,248,245,0.2) 0%, rgba(240,237,234,0.2) 100%);
+    --gradient-subtle: linear-gradient(180deg, rgba(250, 248, 245, 0.2) 0%, rgba(240, 237, 234, 0.2) 100%);
 
     /* Background gradient - Calm, light, sophisticated */
     --gradient-background: linear-gradient(180deg, #FEFCFB 0%, #FAF8F5 50%, #F5F3F0 100%);
 
     /* Photo overlay gradient */
-    --gradient-overlay: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+    --gradient-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
 
     /* ===== BACKGROUND COLORS ===== */
 
-    --background: 0 0% 100%;           /* #FFFFFF - Pure white */
-    --background-cream: 40 100% 97%;   /* #FFF9F0 - Warm white */
-    --background-subtle: 210 20% 98%;  /* Light background */
-    --background-dark: 0 0% 18%;       /* #2D2D2D - Dark mode */
-    --foreground: 0 0% 18%;            /* #2D2D2D - Primary text */
+    --background: 0 0% 100%;
+    /* #FFFFFF - Pure white */
+    --background-cream: 40 100% 97%;
+    /* #FFF9F0 - Warm white */
+    --background-subtle: 210 20% 98%;
+    /* Light background */
+    --background-dark: 0 0% 18%;
+    /* #2D2D2D - Dark mode */
+    --foreground: 0 0% 18%;
+    /* #2D2D2D - Primary text */
 
     /* ===== TEXT COLORS ===== */
 
-    --text-primary: 0 0% 18%;          /* #2D2D2D - Main text (near-black) */
-    --text-secondary: 0 0% 42%;        /* #6B6B6B - Secondary text (medium gray) */
-    --text-light: 0 0% 100%;           /* #FFFFFF - Light text */
-    --text-muted: 0 0% 61%;            /* #9B9B9B - Muted text (timestamps) */
+    --text-primary: 0 0% 18%;
+    /* #2D2D2D - Main text (near-black) */
+    --text-secondary: 0 0% 42%;
+    /* #6B6B6B - Secondary text (medium gray) */
+    --text-light: 0 0% 100%;
+    /* #FFFFFF - Light text */
+    --text-muted: 0 0% 61%;
+    /* #9B9B9B - Muted text (timestamps) */
 
     /* ===== UI ELEMENT COLORS ===== */
 
     /* Card system */
-    --card: 0 0% 100%;                 /* White cards */
-    --card-foreground: 0 0% 18%;       /* Dark text on cards */
-    --card-overlay: 0 0% 100% / 0.9;   /* White overlay with transparency */
+    --card: 0 0% 100%;
+    /* White cards */
+    --card-foreground: 0 0% 18%;
+    /* Dark text on cards */
+    --card-overlay: 0 0% 100% / 0.9;
+    /* White overlay with transparency */
 
     /* Popover/Dropdown */
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 18%;
 
     /* Secondary UI elements */
-    --secondary: 40 100% 97%;          /* Cream background */
-    --secondary-foreground: 0 0% 18%;  /* Dark text */
+    --secondary: 40 100% 97%;
+    /* Cream background */
+    --secondary-foreground: 0 0% 18%;
+    /* Dark text */
 
     /* Muted elements */
     --muted: 210 20% 98%;
     --muted-foreground: 0 0% 42%;
 
     /* Accent - Purple for special highlights and accents */
-    --accent: 270 22% 72%;             /* #B8A5C4 - Soft purple */
-    --accent-foreground: 0 0% 100%;    /* White text on purple */
+    --accent: 270 22% 72%;
+    /* #B8A5C4 - Soft purple */
+    --accent-foreground: 0 0% 100%;
+    /* White text on purple */
 
     /* Borders */
-    --border: 0 0% 0% / 0.08;          /* Subtle black border with transparency */
-    --input: 0 0% 0% / 0.08;           /* Input borders */
-    --ring: 0 23% 73%;                 /* Focus ring (dusty pink) */
+    --border: 0 0% 0% / 0.08;
+    /* Subtle black border with transparency */
+    --input: 0 0% 0% / 0.08;
+    /* Input borders */
+    --ring: 0 23% 73%;
+    /* Focus ring (dusty pink) */
 
     /* Button colors */
-    --button-dark: 0 0% 18%;           /* #2D2D2D - Dark CTA buttons */
+    --button-dark: 0 0% 18%;
+    /* #2D2D2D - Dark CTA buttons */
     --button-dark-foreground: 0 0% 100%;
 
     /* ===== STATE COLORS ===== */
@@ -122,24 +155,32 @@
     --destructive-foreground: 0 0% 100%;
 
     /* Success */
-    --success: 142 71% 45%;            /* Green */
+    --success: 142 71% 45%;
+    /* Green */
     --success-foreground: 0 0% 100%;
 
     /* Warning */
-    --warning: 38 92% 50%;             /* Orange/Yellow */
+    --warning: 38 92% 50%;
+    /* Orange/Yellow */
     --warning-foreground: 0 0% 100%;
 
     /* Match/Compatibility (soft purple theme) */
-    --match: 270 22% 72%;              /* #B8A5C4 - Soft purple */
+    --match: 270 22% 72%;
+    /* #B8A5C4 - Soft purple */
     --match-foreground: 0 0% 100%;
 
     /* ===== CHART COLORS (Desaturated Palette) ===== */
 
-    --chart-1: 0 23% 73%;              /* Dusty pink */
-    --chart-2: 320 18% 70%;            /* Mauve */
-    --chart-3: 200 30% 74%;            /* Soft blue */
-    --chart-4: 45 70% 87%;             /* Pale yellow */
-    --chart-5: 270 22% 72%;            /* Soft purple */
+    --chart-1: 0 23% 73%;
+    /* Dusty pink */
+    --chart-2: 320 18% 70%;
+    /* Mauve */
+    --chart-3: 200 30% 74%;
+    /* Soft blue */
+    --chart-4: 45 70% 87%;
+    /* Pale yellow */
+    --chart-5: 270 22% 72%;
+    /* Soft purple */
 
     /* ===== SHADOWS (Simplified) ===== */
 
@@ -149,30 +190,45 @@
 
     /* ===== BORDER RADIUS (slightly rounded corners per Flare) ===== */
 
-    --radius-sm: 0.5rem;    /* 8px */
-    --radius: 0.75rem;      /* 12px - default */
-    --radius-md: 1rem;      /* 16px */
-    --radius-lg: 1.5rem;    /* 24px */
-    --radius-xl: 2rem;      /* 32px */
-    --radius-full: 9999px;  /* Fully rounded */
+    --radius-sm: 0.5rem;
+    /* 8px */
+    --radius: 0.75rem;
+    /* 12px - default */
+    --radius-md: 1rem;
+    /* 16px */
+    --radius-lg: 1.5rem;
+    /* 24px */
+    --radius-xl: 2rem;
+    /* 32px */
+    --radius-full: 9999px;
+    /* Fully rounded */
 
     /* ===== TYPOGRAPHY SCALE (Flare App Style) ===== */
 
     /* Font Families */
-    --font-display: 'Pacifico', 'Brush Script MT', cursive;        /* Playful logo font */
-    --font-heading: 'Instrument Serif', 'Playfair Display', Georgia, serif;  /* Elegant headings */
+    --font-display: 'Pacifico', 'Brush Script MT', cursive;
+    /* Playful logo font */
+    --font-heading: 'Instrument Serif', 'Playfair Display', Georgia, serif;
+    /* Elegant headings */
     --font-body: 'Inter Variable', 'Inter', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;    /* System UI */
+    --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    /* System UI */
     --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
     --font-serif: 'Instrument Serif', 'Georgia', serif;
 
     /* Font Sizes */
-    --text-xs: 0.75rem;      /* 12px */
-    --text-sm: 0.875rem;     /* 14px */
-    --text-base: 1rem;       /* 16px */
-    --text-lg: 1.125rem;     /* 18px */
-    --text-xl: 1.25rem;      /* 20px */
-    --text-2xl: 1.5rem;      /* 24px */
+    --text-xs: 0.75rem;
+    /* 12px */
+    --text-sm: 0.875rem;
+    /* 14px */
+    --text-base: 1rem;
+    /* 16px */
+    --text-lg: 1.125rem;
+    /* 18px */
+    --text-xl: 1.25rem;
+    /* 20px */
+    --text-2xl: 1.5rem;
+    /* 24px */
 
     /* Font Weights */
     --font-normal: 400;
@@ -194,9 +250,11 @@
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 0 0% 18%;
-    --sidebar-primary: 0 23% 73%;      /* Dusty pink */
+    --sidebar-primary: 0 23% 73%;
+    /* Dusty pink */
     --sidebar-primary-foreground: 0 0% 18%;
-    --sidebar-accent: 40 100% 97%;     /* Cream */
+    --sidebar-accent: 40 100% 97%;
+    /* Cream */
     --sidebar-accent-foreground: 0 0% 18%;
     --sidebar-border: 0 0% 0% / 0.08;
     --sidebar-ring: 0 23% 73%;
@@ -223,10 +281,12 @@
     --rose-foreground: 0 0% 100%;
 
     /* Dark backgrounds */
-    --background: 0 0% 18%;            /* #2D2D2D */
+    --background: 0 0% 18%;
+    /* #2D2D2D */
     --background-cream: 0 0% 20%;
     --background-subtle: 0 0% 22%;
-    --foreground: 0 0% 98%;            /* Nearly white text */
+    --foreground: 0 0% 98%;
+    /* Nearly white text */
 
     /* Text in dark mode */
     --text-primary: 0 0% 98%;
@@ -263,7 +323,7 @@
 
     /* Adjusted gradients for dark mode */
     --gradient-main: linear-gradient(135deg, #5A4A4A 0%, #4A545A 100%);
-    --gradient-subtle: linear-gradient(180deg, rgba(90,74,74,0.2) 0%, rgba(74,84,90,0.2) 100%);
+    --gradient-subtle: linear-gradient(180deg, rgba(90, 74, 74, 0.2) 0%, rgba(74, 84, 90, 0.2) 100%);
 
     /* Enhanced shadows in dark mode */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -295,6 +355,11 @@
     font-size: var(--text-base);
     line-height: var(--leading-normal);
     position: relative;
+    background-image: url('/image-mesh-gradient.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
   }
 
   /* Grain texture overlay */
@@ -314,7 +379,12 @@
   }
 
   /* Typography Hierarchy */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-heading);
     font-weight: var(--font-semibold);
     line-height: var(--leading-tight);
@@ -370,6 +440,7 @@
 /* ===== COMPONENT CLASSES ===== */
 
 @layer components {
+
   /* Circular icon containers */
   .icon-circle {
     @apply rounded-full flex items-center justify-center;
@@ -461,6 +532,7 @@
 /* ===== UTILITY CLASSES ===== */
 
 @layer utilities {
+
   /* Gradient Utilities */
   .gradient-main {
     background: var(--gradient-main);
@@ -565,12 +637,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #D4A5A5, #A5C4D4);
+  background: hsl(var(--muted-foreground) / 0.3);
   border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #E0B5B5, #B5D4E0);
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 
 /* ===== DESIGN SYSTEM QUICK REFERENCE ===== */

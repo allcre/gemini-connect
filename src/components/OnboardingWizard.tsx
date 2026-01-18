@@ -509,7 +509,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   // Generating state
   if (isGenerating) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen flex flex-col items-center justify-center px-4">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -543,7 +543,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <header className="p-6">
         <Logo />
       </header>
