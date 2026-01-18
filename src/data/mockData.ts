@@ -1,7 +1,8 @@
 import profile1 from "@/assets/profile-1.jpg";
 import profile2 from "@/assets/profile-2.jpg";
 import profile3 from "@/assets/profile-3.jpg";
-import profile4 from "@/data/candidate_data/Daniel.png";
+import profile4 from "@/data/candidate-raw-data/daniel/daniel.png";
+import profile5 from "@/data/candidate-raw-data/simon/simon.jpg";
 import type { DiscoverProfile, YellowcakeData, PromptAnswer, FunFact, DataInsight, Photo } from "@/types/profile";
 
 // Mock profiles using the new Hinge-style data model
@@ -332,6 +333,93 @@ export const mockProfiles: DiscoverProfile[] = [
     compatibilityScore: 89,
     bestFeatures: ["Apache contributor", "Builds actual rockets", "Tweets like a poet-philosopher"],
     socialUsernames: { github: "bskdany", twitter: "bskdany" },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "5",
+    displayName: "Simon Amable",
+    age: 21,
+    location: "Ottawa, ON",
+    photos: [
+      { id: "p1", url: profile5, isPrimary: true, sortOrder: 0 },
+    ],
+    lookingFor: "Someone who gets the startup grind",
+    targetAudience: "Builder mentality creators",
+    bio: "CS + AI. Building consumer apps and shipping MVPs. Marketing is just as important as coding. Let's build something people actually want.",
+    promptAnswers: [
+      {
+        id: "pa1",
+        promptId: "philosophy",
+        promptText: "I believe that...",
+        answerText: "Building in public and marketing are as essential as coding for success. Ship fast, iterate faster.",
+        source: "twitter",
+        sortOrder: 0,
+      },
+      {
+        id: "pa2",
+        promptId: "working-on",
+        promptText: "Right now I'm working on...",
+        answerText: "Unican.ai - an AI-powered design tool that's basically Figma meets Photoshop meets AI. Also automating job applications because why not.",
+        source: "llm",
+        sortOrder: 1,
+      },
+      {
+        id: "pa3",
+        promptId: "hot-take",
+        promptText: "My hot take is...",
+        answerText: "Building real products > grinding LeetCode. Sure there's a skill gap, but I'd rather ship MVPs and learn by doing.",
+        source: "twitter",
+        sortOrder: 2,
+      },
+    ],
+    funFacts: [
+      { id: "f1", label: "Active project", value: "Unican.ai", source: "yellowcake", sortOrder: 0 },
+      { id: "f2", label: "Shipped in Oct", value: "4 full-stack apps", source: "twitter", sortOrder: 1 },
+      { id: "f3", label: "Top genre", value: "Hip Hop / Rap", source: "yellowcake", sortOrder: 2 },
+      { id: "f4", label: "Vibe", value: "Building in public", source: "twitter", sortOrder: 3 },
+    ],
+    dataInsights: [
+      {
+        id: "d1",
+        type: "badge",
+        title: "Serial Shipper",
+        description: "4 full-stack projects in one month",
+        metricKey: "shipping",
+        metricValue: "4 MVPs/month",
+        visualizationHint: "pill",
+        source: "twitter",
+        sortOrder: 0,
+      },
+      {
+        id: "d2",
+        type: "stat",
+        title: "AI Product Builder",
+        description: "Unican.ai reached 10 active users",
+        metricKey: "traction",
+        metricValue: "10 DAU",
+        visualizationHint: "simple",
+        source: "twitter",
+        sortOrder: 1,
+      },
+    ],
+    yellowcakeData: {
+      topRepos: [
+        { name: "Unican.AI", stars: 0, language: "TypeScript" },
+        { name: "EzApply", stars: 0, language: "Next.js" },
+        { name: "MySuccessAutomation", stars: 0, language: "Python" },
+      ],
+      musicGenres: ["Hip Hop", "Rap", "Trap", "Comedy Rap"],
+      recentReviews: [],
+      sentimentAnalysis: { mood: "Hustle Mode", score: 0.91 },
+      codingHours: 55,
+      movieHours: 5,
+      topArtists: ["Yung Gravy", "Drake", "Ugly God"],
+      commitCount: 780,
+    },
+    compatibilityScore: 88,
+    bestFeatures: ["Shipped 4 MVPs in a month", "Build in public advocate", "Transport Canada dev"],
+    socialUsernames: { github: "SimonAmable", twitter: "Simoncodingshit", spotify: "simonamable" },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },

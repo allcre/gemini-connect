@@ -1,0 +1,57 @@
+{
+  "person": {
+    "name": "Simon Amable",
+    "handle": "@Simoncodingshit",
+    "location": "Ottawa, ON, Canada",
+    "website": "https://simonamable.com/",
+    "bio": "cs + ai | making consumer apps and websites",
+    "education_status": "Student (currently attending school/university as of late 2025)",
+    "joined_date": "July 2024"
+  },
+  "technical_skills": {
+    "frameworks_languages": ["Next.js", "Full-stack Web Development", "Mobile App Development", "Desktop Apps"],
+    "tools_sdks": ["Cursor AI", "tldraw SDK", "HackerRank/LeetCode", "Simple RAG"],
+    "ai_models_tested": ["Qwen-image-edit-2509", "Nano Banana", "Composer 1 (Cursor)"]
+  },
+  "products_and_projects": [
+    {
+      "name": "Unican.ai",
+      "url": "https://unican.ai",
+      "description": "An AI image generator and platform. Features include a model selector, improved UX/UI, and mobile app functionality.",
+      "status": "Live/Active"
+    },
+    {
+      "name": "EzApply AI",
+      "url": "https://ezapply-ai.vercel.app/",
+      "description": "A tool for automating job applications. Includes a Chrome extension specifically for 'Carleton Central' (Carleton University portal), automated resume/cover letter tailoring using Jakes Template clones, and application tracking.",
+      "status": "Beta/In Progress"
+    },
+    {
+      "name": "Consistent Character Creator",
+      "description": "Tool for maintaining subject consistency in AI image generation using Qwen image editing and custom upscaling.",
+      "status": "In Development"
+    },
+    {
+      "name": "Browser Use Agent",
+      "description": "A computer/web browser agent built to automate tasks.",
+      "status": "In Development (Started Sept 2025)"
+    }
+  ],
+  "professional_milestones": {
+    "hackathons": "Active participant; signed up for another in Nov 2025.",
+    "challenges": "Committed to '4 full-stack projects in October' (one per week) focusing on AI and Agents.",
+    "metrics": "Reached 10 active users on Unican.ai in October 2025.",
+    "competitions": "2nd place at uOttaHack 7 (QNX Roomba project)."
+  },
+  "insights_and_philosophy": {
+    "marketing": "Strongly believes that 'Building in Public' and marketing are as essential as coding for success.",
+    "coding_style": "Prefers building real products and MVPs over 'grinding' LeetCode/HackerRank, though acknowledges the 'skill gap' in competitive programming.",
+    "future_prediction": "Betting that 'interdimensional cable' powered by AI will be a reality soon."
+  },
+  "social_stats_snapshot": {
+    "tweets": 84,
+    "following": 33,
+    "followers": 21,
+    "likes": 43
+  }
+}
