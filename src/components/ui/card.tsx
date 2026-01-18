@@ -9,10 +9,10 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", ...props }, ref) => {
     const variants = {
-      default: "rounded-2xl border bg-card text-card-foreground shadow-card",
-      elevated: "rounded-3xl border bg-card text-card-foreground shadow-elevated",
-      glass: "rounded-3xl glass border border-border/50 text-card-foreground shadow-card",
-      profile: "rounded-3xl bg-card text-card-foreground shadow-elevated overflow-hidden",
+      default: "rounded-2xl border bg-card text-card-foreground shadow-card relative z-10",
+      elevated: "rounded-3xl border bg-card text-card-foreground shadow-elevated relative z-10",
+      glass: "rounded-3xl glass border border-border/50 text-card-foreground shadow-card relative z-10",
+      profile: "rounded-3xl bg-card text-card-foreground shadow-elevated overflow-hidden relative z-10",
     };
 
     return (
