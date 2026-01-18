@@ -31,7 +31,7 @@ export const ChatInput = ({ value, onChange, onSubmit, isLoading, placeholder = 
           type="submit"
           size="icon"
           disabled={!value.trim() || isLoading}
-          className="h-12 w-12 shrink-0"
+          className="h-12 w-12 shrink-0 bg-match hover:bg-match/90 text-match-foreground"
         >
           <Send className="w-4 h-4" />
         </Button>

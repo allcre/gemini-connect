@@ -165,8 +165,8 @@
     --warning-foreground: 0 0% 100%;
 
     /* Match/Compatibility (soft purple theme) */
-    --match: 270 22% 72%;
-    /* #B8A5C4 - Soft purple */
+    --match: 270 35% 60%;
+    /* Lighter purple */
     --match-foreground: 0 0% 100%;
 
     /* ===== CHART COLORS (Desaturated Palette) ===== */
@@ -179,8 +179,8 @@
     /* Soft blue */
     --chart-4: 45 70% 87%;
     /* Pale yellow */
-    --chart-5: 270 22% 72%;
-    /* Soft purple */
+    --chart-5: 270 35% 60%;
+    /* Lighter purple */
 
     /* ===== SHADOWS (Simplified) ===== */
 
@@ -308,7 +308,7 @@
     --muted: 0 0% 25%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 270 22% 68%;
+    --accent: 270 35% 60%;
     --accent-foreground: 0 0% 100%;
 
     --border: 0 0% 100% / 0.1;
@@ -318,7 +318,7 @@
     --button-dark: 0 0% 90%;
     --button-dark-foreground: 0 0% 18%;
 
-    --match: 270 22% 68%;
+    --match: 270 35% 60%;
     --match-foreground: 0 0% 100%;
 
     /* Adjusted gradients for dark mode */

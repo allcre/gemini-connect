@@ -55,8 +55,8 @@ export const ProfileUpdatePreview = ({
       animate={{ opacity: 1, height: "auto" }}
       className="pb-2 space-y-2"
     >
-      <Card className="p-3 space-y-3 border-primary/50 bg-card/90 backdrop-blur-md shadow-lg">
-        <div className="flex items-center gap-2 text-caption text-primary">
+      <Card className="p-3 space-y-3 border-primary/50 bg-card/50 backdrop-blur-md shadow-lg">
+        <div className="flex items-center gap-2 text-caption text-foreground">
           <Sparkles className="w-3.5 h-3.5" />
           <span className="text-xs font-medium">Preview Changes</span>
         </div>
@@ -137,11 +137,11 @@ export const ProfileUpdatePreview = ({
 
       {/* Apply/Decline Buttons*/}
       <div className="flex gap-2">
-        <Button onClick={onApply} className="flex-1" size="sm">
+        <Button onClick={onApply} className="flex-1 bg-match hover:bg-match/90 text-match-foreground" size="sm">
           <Check className="w-3.5 h-3.5 mr-1.5" />
           <span className="text-xs">Apply</span>
         </Button>
-        <Button onClick={onDecline} variant="outline" size="sm" className="flex-1">
+        <Button onClick={onDecline} variant="ghost" size="sm" className="flex-1 bg-background/80 hover:bg-background">
           <X className="w-3.5 h-3.5 mr-1.5" />
           <span className="text-xs">Decline</span>
         </Button>
