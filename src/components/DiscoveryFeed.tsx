@@ -54,7 +54,7 @@ export const DiscoveryFeed = () => {
           <span>You liked "{feature}"</span>
         </div>
       );
-      handleLike(feature);
+      // Just show the toast, don't like the profile or move on
     }
   };
 
