@@ -51,7 +51,6 @@ serve(async (req) => {
 
     // Log the system prompt to verify it's being received
     console.log("[Coach Function] Received systemPrompt length:", systemPrompt?.length);
-    console.log("[Coach Function] SystemPrompt contains BANANA:", systemPrompt?.includes("BANANA"));
     if (systemPrompt && systemPrompt.length < 500) {
       console.log("[Coach Function] SystemPrompt preview:", systemPrompt.substring(0, 500));
     }
@@ -117,7 +116,6 @@ serve(async (req) => {
         stream: true,
       };
       console.log("[Coach Function] Sending to AI gateway - system message length:", systemPrompt.length);
-      console.log("[Coach Function] System message contains BANANA:", systemPrompt.includes("BANANA"));
     } catch (payloadError) {
       console.error("Failed to construct request payload:", payloadError);
       return new Response(

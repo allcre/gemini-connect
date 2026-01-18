@@ -39,37 +39,37 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    let systemPrompt = `You are a witty, data-driven matchmaker. You create engaging, authentic profiles that highlight someone's unique personality based on their data and preferences. You write in a warm, playful tone that feels genuine—never cheesy or try-hard.`;
+    let systemPrompt = `You are a witty, data-driven matchmaker. You create engaging, authentic profiles that highlight someone's quirks and personality based on their data and preferences. You write in a warm, playful tone that feels genuine. You never sound cheesy or try-hard.`;
 
     let userPrompt = "";
 
     if (type === "generate") {
-      userPrompt = `Create a dating profile for someone with these characteristics:
+      userPrompt = `Create a profile inspired by dating profiles these characteristics:
 
-**Target Audience (who they want to connect with):** ${targetAudience}
+**Target Audience (who they want to connect with and what this profile is themed around):** ${targetAudience}
 
 **About Themselves:** ${aboutMe || "Not provided"}
 
 **What They Want to Highlight:** ${highlights || "Not provided"}
 
 **Their Digital Footprint Data:**
-${yellowcakeData ? JSON.stringify(yellowcakeData, null, 2) : "No data available"}
+${yellowcakeData ? JSON.stringify(yellowcakeData, null, 2) : "No data available"} Use this data as prompt answers and fun facts.
 
 Generate a complete profile with:
 
-1. **bio**: A personal, authentic bio (CRITICAL: 200 character hard-limit) that must appeal to their target audience. CRITICAL: Reference their data naturally.
+1. **bio**: A personal, authentic bio (CRITICAL: 150 character hard-limit) that must appeal to their target audience. Must reference their data naturally.
 
 2. **promptAnswers**: 2-3 prompt answers. Pick prompts that showcase their personality based on the data and avoid prompts that don't align with their target audience (example: somneone looking for a hackathon partner should not have a prompt discussing their perfect first date). Each should have:
    - promptId: a snake_case identifier
    - promptText: the prompt question
-   - answerText: a clever, authentic answer (CRITICAL: keep it concise, 150 characters hard-limit)
+   - answerText: a clever, authentic answer (CRITICAL: keep it concise, 75 characters hard-limit)
 
-3. **funFacts**: 3-4 short, punchy one-liners derived from their data. Format as { label: "Category", value: "Specific thing" }. Examples: "Most played artist: Mitski", "Top language: TypeScript", "Films this year: 47"
+3. **funFacts**: 3-4 short and punchy superlatives and one-word descriptors derived from their data. Format as { label: "Category", value: "Specific thing" }. Examples: "Most played artist: Mitski", "Top language: TypeScript", "Films this year: 47"
 
 4. **dataInsights**: 1-2 data-backed insights that would intrigue their target audience. Each has:
    - type: "stat" | "badge" | "chart"
    - title: short title
-   - description: 1 sentence explanation
+   - description: 1 sentence to the point explanation. Ensure it is described in first person perspective.
    - metricValue: the key number or label
 
 5. **bestFeatures**: 3 compelling features to highlight as badges
