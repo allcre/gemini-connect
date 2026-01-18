@@ -27,6 +27,7 @@ import {
   extractSteamGames,
   type PlaylistInfo,
 } from "@/integrations/yellowcake/client";
+import { getHardcodedData } from "@/data/hardcodedYellowcakeData";
 
 interface OnboardingWizardProps {
   onComplete: (profile: UserProfile) => void;
@@ -69,28 +70,32 @@ const transformPlaylistsToYellowcakeData = (playlists: PlaylistInfo[]): Partial<
 };
 
 // Mock Yellowcake API response (fallback for GitHub/Letterboxd or when Spotify scraping fails)
-const mockYellowcakeAPI = async (usernames: { github?: string; letterboxd?: string; spotify?: string }): Promise<YellowcakeData> => {
+// For demo: only returns hardcoded data, no fake fallback
+const mockYellowcakeAPI = async (usernames: { github?: string; letterboxd?: string; spotify?: string; twitter?: string }): Promise<YellowcakeData> => {
   await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
 
+  // Try to get hardcoded data first
+  const hardcoded = getHardcodedData(usernames);
+  if (hardcoded) {
+    return {
+      topRepos: [],
+      musicGenres: [],
+      recentReviews: [],
+      sentimentAnalysis: { mood: "Neutral", score: 0.5 },
+      codingHours: 0,
+      movieHours: 0,
+      ...hardcoded,
+    } as YellowcakeData;
+  }
+
+  // For demo: return empty/minimal data instead of fake fallback
   return {
-    topRepos: usernames.github ? [
-      { name: "awesome-project", stars: 142, language: "TypeScript" },
-      { name: "dotfiles", stars: 23, language: "Shell" },
-      { name: "ml-experiments", stars: 67, language: "Python" },
-    ] : [],
-    musicGenres: usernames.spotify ? ["Indie", "Electronic", "Lo-fi Hip Hop"] : [],
-    recentReviews: usernames.letterboxd ? [
-      { title: "Past Lives", rating: 5, type: "movie" },
-      { title: "Aftersun", rating: 4.5, type: "movie" },
-      { title: "Everything Everywhere All at Once", rating: 5, type: "movie" },
-    ] : [],
-    sentimentAnalysis: { mood: "Contemplative", score: 0.82 },
-    codingHours: usernames.github ? 34 : 0,
-    movieHours: usernames.letterboxd ? 18 : 0,
-    topArtists: usernames.spotify ? ["Mitski", "Phoebe Bridgers", "Japanese Breakfast"] : [],
-    avgLetterboxdRating: usernames.letterboxd ? 3.8 : undefined,
-    totalFilmsWatched: usernames.letterboxd ? 247 : undefined,
-    commitCount: usernames.github ? 892 : undefined,
+    topRepos: [],
+    musicGenres: [],
+    recentReviews: [],
+    sentimentAnalysis: { mood: "Neutral", score: 0.5 },
+    codingHours: 0,
+    movieHours: 0,
   };
 };
 
@@ -202,9 +207,16 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
 
     try {
       // 1. Get Spotify playlist data using Yellowcake (if username provided)
+      // Check if we should use hardcoded data (skip real scraping for demo)
+      const shouldUseHardcodedData =
+        formData.githubUsername?.toLowerCase() === "dory" ||
+        formData.letterboxdUsername?.toLowerCase() === "dory" ||
+        formData.spotifyUsername?.toLowerCase() === "dory" ||
+        formData.twitterUsername?.toLowerCase() === "dory";
+
       let spotifyData: Partial<YellowcakeData> = {};
 
-      if (formData.spotifyUsername) {
+      if (formData.spotifyUsername && !shouldUseHardcodedData) {
         try {
           setScrapingProgress("Extracting playlist links...");
           const playlists = await extractSpotifyPlaylistsFromUsername(
@@ -239,7 +251,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       // 2. Get Letterboxd films and ratings using Yellowcake (if username provided)
       let letterboxdData: Partial<YellowcakeData> = {};
 
-      if (formData.letterboxdUsername) {
+      if (formData.letterboxdUsername && !shouldUseHardcodedData) {
         try {
           setScrapingProgress("Extracting Letterboxd films and ratings...");
           const letterboxdURL = `https://letterboxd.com/${formData.letterboxdUsername}/films/`;
@@ -265,7 +277,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       // 3. Get GitHub repositories using Yellowcake (if username provided)
       let githubData: Partial<YellowcakeData> = {};
 
-      if (formData.githubUsername) {
+      if (formData.githubUsername && !shouldUseHardcodedData) {
         try {
           setScrapingProgress("Extracting GitHub repositories...");
           const githubURL = `https://github.com/${formData.githubUsername}?tab=repositories`;
@@ -291,7 +303,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
       // 4. Get X/Twitter tweets using Yellowcake (if username provided)
       let twitterData: Partial<YellowcakeData> = {};
 
-      if (formData.twitterUsername) {
+      if (formData.twitterUsername && !shouldUseHardcodedData) {
         try {
           setScrapingProgress("Extracting X/Twitter tweets...");
           const xURL = `https://xcancel.com/${formData.twitterUsername}`;
@@ -371,6 +383,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
         github: formData.githubUsername,
         letterboxd: formData.letterboxdUsername,
         spotify: formData.spotifyUsername && Object.keys(spotifyData).length === 0 ? formData.spotifyUsername : undefined,
+        twitter: formData.twitterUsername,
       });
 
       // 8. Merge real scraping data with mock data

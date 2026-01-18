@@ -287,7 +287,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
     const updatedProfile = getPreviewProfile(update);
     if (updatedProfile) {
       onProfileUpdate(updatedProfile);
-      toast.success("Profile updated!");
+      toast.success("Profile updated!", { duration: 1500 });
       // Clear the profileUpdate from the last message
       setMessages((prev) => {
         return prev.map((m, i) =>
