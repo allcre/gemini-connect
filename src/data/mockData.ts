@@ -3,6 +3,7 @@ import profile2 from "@/assets/profile-2.jpg";
 import profile3 from "@/assets/profile-3.jpg";
 import profile4 from "@/data/candidate-raw-data/daniel/daniel.png";
 import profile5 from "@/data/candidate-raw-data/simon/simon.jpg";
+import profile6 from "@/data/candidate-raw-data/veronica/veronica.jpg";
 import type { DiscoverProfile, YellowcakeData, PromptAnswer, FunFact, DataInsight, Photo } from "@/types/profile";
 
 // Mock profiles using the new Hinge-style data model
@@ -421,6 +422,93 @@ export const mockProfiles: DiscoverProfile[] = [
     compatibilityScore: 88,
     bestFeatures: ["Shipped 4 MVPs in a month", "Build in public advocate", "Transport Canada dev"],
     socialUsernames: { github: "SimonAmable", twitter: "Simoncodingshit", spotify: "simonamable" },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "6",
+    displayName: "Veronica Mordvinova",
+    age: 20,
+    location: "Ottawa, ON",
+    photos: [
+      { id: "p1", url: profile6, isPrimary: true, sortOrder: 0 },
+    ],
+    lookingFor: "Someone who leads with empathy",
+    targetAudience: "Student leaders & community builders",
+    bio: "CCSS President, AI/ML student, hackathon winner. I build tech that helps people connect—from website blockers to coffee chat systems. Let's grab coffee and talk about building better communities.",
+    promptAnswers: [
+      {
+        id: "pa1",
+        promptId: "leadership-style",
+        promptText: "My leadership philosophy is...",
+        answerText: "Making leadership approachable. I'm always at the CCSS lounge, accessible via Discord, because approaching someone shouldn't feel intimidating.",
+        source: "website",
+        sortOrder: 0,
+      },
+      {
+        id: "pa2",
+        promptId: "passion-project",
+        promptText: "I'm most proud of...",
+        answerText: "Winning CUHacking with an unproductive website blocker and organizing study groups that actually combat the isolation of university life.",
+        source: "github",
+        sortOrder: 1,
+      },
+      {
+        id: "pa3",
+        promptId: "helping-others",
+        promptText: "I believe in...",
+        answerText: "Supporting beginners through step-by-step workshops and creating spaces where students can connect—movie nights, speed-friending, coffee chats.",
+        source: "website",
+        sortOrder: 2,
+      },
+    ],
+    funFacts: [
+      { id: "f1", label: "Role", value: "CCSS President", source: "yellowcake", sortOrder: 0 },
+      { id: "f2", label: "Major", value: "CS (AI/ML) + Math + Neuro", source: "yellowcake", sortOrder: 1 },
+      { id: "f3", label: "Hackathon", value: "CUHacking Winner", source: "yellowcake", sortOrder: 2 },
+      { id: "f4", label: "Teaches", value: "Git, Python, Web Basics", source: "yellowcake", sortOrder: 3 },
+    ],
+    dataInsights: [
+      {
+        id: "d1",
+        type: "badge",
+        title: "Student Leader",
+        description: "CCSS President (2nd term) & YES Committee Chair",
+        metricKey: "leadership",
+        metricValue: "2024-2026",
+        visualizationHint: "pill",
+        source: "github",
+        sortOrder: 0,
+      },
+      {
+        id: "d2",
+        type: "stat",
+        title: "Community Builder",
+        description: "Runs Coffee Chat system & study groups",
+        metricKey: "community",
+        metricValue: "Active",
+        visualizationHint: "simple",
+        source: "website",
+        sortOrder: 1,
+      },
+    ],
+    yellowcakeData: {
+      topRepos: [
+        { name: "CCSS-Website", stars: 0, language: "HTML" },
+        { name: "unproductive-website-blocker", stars: 0, language: "Python" },
+        { name: "VVProgrammingCamp2024", stars: 0, language: "Python" },
+      ],
+      musicGenres: ["Unknown"],
+      recentReviews: [],
+      sentimentAnalysis: { mood: "Empowering", score: 0.94 },
+      codingHours: 35,
+      movieHours: 12,
+      topArtists: [],
+      commitCount: 320,
+    },
+    compatibilityScore: 93,
+    bestFeatures: ["CCSS President 2 terms", "Hackathon winner", "Makes leadership accessible"],
+    socialUsernames: { github: "VMordvinova", discord: "macaroni4467" },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
