@@ -10,13 +10,13 @@
    Theme Modification Guide:
    - All colors use HSL format in CSS variables
    - Gradients use multi-color transitions (pink-yellow-blue)
-   - Typography: Pacifico (display), Instrument Serif (headings), Inter (body)
+   - Typography: Pacifico (display), Rufina (headings), Source Sans Pro (body)
    - Change variable values to swap entire theme
    ============================================================ */
 
 /* Font Imports */
-@import "@fontsource-variable/inter";
-@import "@fontsource/instrument-serif";
+@import "@fontsource/source-sans-pro";
+@import "@fontsource/rufina";
 @import "@fontsource/pacifico";
 
 @tailwind base;
@@ -208,13 +208,13 @@
     /* Font Families */
     --font-display: 'Pacifico', 'Brush Script MT', cursive;
     /* Playful logo font */
-    --font-heading: 'Instrument Serif', 'Playfair Display', Georgia, serif;
+    --font-heading: 'Rufina', 'Playfair Display', Georgia, serif;
     /* Elegant headings */
-    --font-body: 'Inter Variable', 'Inter', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Source Sans Pro', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     /* System UI */
-    --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
-    --font-serif: 'Instrument Serif', 'Georgia', serif;
+    --font-sans: 'Source Sans Pro', system-ui, -apple-system, sans-serif;
+    --font-serif: 'Rufina', 'Georgia', serif;
 
     /* Font Sizes */
     --text-xs: 0.75rem;
