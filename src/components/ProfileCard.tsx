@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Heart, ArrowRight, MessageCircle, Star, Code, Film, Music, MapPin } from "lucide-react";
+import { ArrowRight, MessageCircle, Star, Code, Film, Music, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -80,53 +80,31 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
       {profile.funFacts.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {profile.funFacts.map((fact) => (
-            <motion.button
-              key={fact.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => onLikeFeature(`${fact.label}: ${fact.value}`)}
-            >
-              <Badge variant="outline" className="px-3 py-1.5 cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">
-                <span className="font-medium">{fact.label}:</span>
-                <span className="ml-1">{fact.value}</span>
-              </Badge>
-            </motion.button>
+            <Badge key={fact.id} variant="outline" className="px-3 py-1.5">
+              <span className="font-medium">{fact.label}:</span>
+              <span className="ml-1">{fact.value}</span>
+            </Badge>
           ))}
         </div>
       )}
 
       {/* Prompt Answers */}
       {profile.promptAnswers.map((prompt) => (
-        <motion.button
-          key={prompt.id}
-          whileHover={{ scale: 1.01 }}
-          onClick={() => onLikeFeature(prompt.answerText)}
-          className="w-full text-left"
-        >
-          <Card className="p-4 hover:shadow-soft transition-shadow cursor-pointer">
-            <p className="text-caption mb-2">{prompt.promptText}</p>
-            <p className="text-body text-foreground">{prompt.answerText}</p>
-          </Card>
-        </motion.button>
+        <Card key={prompt.id} className="p-4">
+          <p className="text-caption mb-2">{prompt.promptText}</p>
+          <p className="text-body text-foreground">{prompt.answerText}</p>
+        </Card>
       ))}
 
       {/* Data Insights */}
       {profile.dataInsights.length > 0 && (
         <div className="grid grid-cols-2 gap-3">
           {profile.dataInsights.map((insight) => (
-            <motion.button
-              key={insight.id}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => onLikeFeature(insight.title)}
-              className="text-left"
-            >
-              <Card className="p-3 hover:shadow-soft transition-shadow cursor-pointer h-full">
-                <p className="text-caption text-primary">{insight.metricValue}</p>
-                <p className="text-caption">{insight.title}</p>
-                <p className="text-caption">{insight.description}</p>
-              </Card>
-            </motion.button>
+            <Card key={insight.id} className="p-3 h-full">
+              <p className="text-caption text-primary">{insight.metricValue}</p>
+              <p className="text-caption">{insight.title}</p>
+              <p className="text-caption">{insight.description}</p>
+            </Card>
           ))}
         </div>
       )}
@@ -168,7 +146,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
         </Card>
       )}
 
-      {/* Best Features - Likeable */}
+      {/* Best Features */}
       {profile.bestFeatures.length > 0 && (
         <div className="space-y-2">
           <p className="text-caption uppercase tracking-wide">
@@ -176,18 +154,9 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
           </p>
           <div className="flex flex-wrap gap-2">
             {profile.bestFeatures.map((feature, i) => (
-              <motion.button
-                key={i}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => onLikeFeature(feature)}
-                className="group"
-              >
-                <Badge variant="insight" className="cursor-pointer group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Heart className="w-3 h-3 mr-1 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  {feature}
-                </Badge>
-              </motion.button>
+              <Badge key={i} variant="insight" className="px-3 py-1.5">
+                {feature}
+              </Badge>
             ))}
           </div>
         </div>
