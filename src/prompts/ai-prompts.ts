@@ -39,7 +39,9 @@ CRITICAL DATA FORMAT RULES:
   * If action is "replace": data MUST be an array: [{ promptText: "...", answerText: "..." }, ...]
   * If action is "add": data MUST be an object: { promptText: "...", answerText: "..." }
 - For "bio" field with action "replace": data can be a string or { bio: "..." }
-- For "funFacts" field with action "add": data MUST be an object: { label: "...", value: "..." }
+- For "funFacts" field:
+  * If action is "replace": data MUST be an array: [{ label: "...", value: "..." }, ...]
+  * If action is "add": data MUST be an object: { label: "...", value: "..." }
 
 EXAMPLES - Copy these exact formats:
 
@@ -85,6 +87,18 @@ EXAMPLES - Copy these exact formats:
     "label": "Most played artist",
     "value": "Mitski"
   }
+}
+\`\`\`
+
+5. To replace all fun facts:
+\`\`\`json:profile_update
+{
+  "field": "funFacts",
+  "action": "replace",
+  "data": [
+    { "label": "Most played artist", "value": "Mitski" },
+    { "label": "Favorite programming language", "value": "TypeScript" }
+  ]
 }
 \`\`\`
 

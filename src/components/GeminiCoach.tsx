@@ -99,6 +99,21 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
       }
     }
 
+    // Coerce funFacts replace: if data is an object instead of array, wrap it
+    if (update.field === "funFacts" && update.action === "replace") {
+      if (update.data && typeof update.data === "object" && !Array.isArray(update.data)) {
+        // Check if it looks like a single fun fact object
+        if (update.data.label && update.data.value) {
+          console.log("[Coach] Coercion applied: Wrapping single fun fact object into array", {
+            before: originalUpdate,
+            after: { ...update, data: [update.data] },
+          });
+          update.data = [update.data];
+          wasCoerced = true;
+        }
+      }
+    }
+
     return { update, wasCoerced };
   };
 
@@ -129,14 +144,28 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
         typeof update.data === "string" ||
         (update.data && typeof update.data === "object" && typeof update.data.bio === "string")
       );
-    } else if (update.field === "funFacts" && update.action === "add") {
-      // Must be object with label and value
-      return (
-        update.data &&
-        typeof update.data === "object" &&
-        typeof update.data.label === "string" &&
-        typeof update.data.value === "string"
-      );
+    } else if (update.field === "funFacts") {
+      if (update.action === "replace") {
+        // Must be an array of objects with label and value
+        return (
+          Array.isArray(update.data) &&
+          update.data.every(
+            (item: any) =>
+              item &&
+              typeof item === "object" &&
+              typeof item.label === "string" &&
+              typeof item.value === "string"
+          )
+        );
+      } else if (update.action === "add") {
+        // Must be object with label and value
+        return (
+          update.data &&
+          typeof update.data === "object" &&
+          typeof update.data.label === "string" &&
+          typeof update.data.value === "string"
+        );
+      }
     }
 
     // Unknown field/action combination - consider invalid
@@ -229,15 +258,28 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
         };
         updated.promptAnswers = [...updated.promptAnswers, newPrompt];
       }
-    } else if (update.field === "funFacts" && update.action === "add") {
-      const newFact = {
-        id: `fact-${updated.funFacts.length}`,
-        label: update.data.label,
-        value: update.data.value,
-        source: "llm" as const,
-        sortOrder: updated.funFacts.length,
-      };
-      updated.funFacts = [...updated.funFacts, newFact];
+    } else if (update.field === "funFacts") {
+      if (update.action === "replace" && Array.isArray(update.data)) {
+        updated.funFacts = update.data.map((f: any, i: number) => {
+          const source: "llm" | "user" = f.source === "llm" || f.source === "user" ? f.source : "llm";
+          return {
+            id: f.id || `fact-${i}`,
+            label: f.label,
+            value: f.value,
+            source,
+            sortOrder: f.sortOrder ?? i,
+          };
+        });
+      } else if (update.action === "add" && update.data) {
+        const newFact = {
+          id: `fact-${updated.funFacts.length}`,
+          label: update.data.label,
+          value: update.data.value,
+          source: "llm" as const,
+          sortOrder: updated.funFacts.length,
+        };
+        updated.funFacts = [...updated.funFacts, newFact];
+      }
     }
 
     return updated;
