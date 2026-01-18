@@ -15,6 +15,11 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ message }: ChatMessageProps) => {
+  // Don't render empty messages - they show as typing indicator instead
+  if (!message.content || message.content.trim() === "") {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

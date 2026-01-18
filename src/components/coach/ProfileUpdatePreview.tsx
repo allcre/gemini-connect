@@ -26,21 +26,19 @@ export const ProfileUpdatePreview = ({
       <motion.div
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
-        className="px-4 pb-2"
+        className="pb-2"
       >
-        <Card className="p-4 border-destructive/30 bg-destructive/5">
-          <div className="flex items-start gap-3">
-            <IconCircle variant="destructive" size="md">
-              <X className="w-5 h-5" />
+        <Card className="p-3 border-destructive/30 bg-destructive/5">
+          <div className="flex items-start gap-2">
+            <IconCircle variant="destructive" size="sm">
+              <X className="w-4 h-4" />
             </IconCircle>
-            <div className="flex-1 space-y-2">
-              <div>
-                <h4 className="text-caption text-destructive">Formatting Issue</h4>
-                <p className="text-caption mt-1">
-                  The coach tried to suggest changes, but there was a formatting issue. You can
-                  ask them to try again or rephrase your request.
-                </p>
-              </div>
+            <div className="flex-1 space-y-1">
+              <h4 className="text-xs font-semibold text-destructive">Formatting Issue</h4>
+              <p className="text-xs text-muted-foreground break-words">
+                The coach tried to suggest changes, but there was a formatting issue. You can
+                ask them to try again or rephrase your request.
+              </p>
             </div>
           </div>
         </Card>
@@ -55,35 +53,35 @@ export const ProfileUpdatePreview = ({
     <motion.div
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
-      className="px-4 pb-2 space-y-2"
+      className="pb-2 space-y-2"
     >
-      <Card className="p-4 space-y-3 border-primary/30 bg-primary/5">
+      <Card className="p-3 space-y-3 border-primary/30 bg-primary/5">
         <div className="flex items-center gap-2 text-caption text-primary">
-          <Sparkles className="w-4 h-4" />
-          Preview Changes
+          <Sparkles className="w-3.5 h-3.5" />
+          <span className="text-xs font-medium">Preview Changes</span>
         </div>
 
         {update.field === "bio" && (
-          <div className="space-y-2">
-            <p className="text-caption uppercase tracking-wide">
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               New Bio:
             </p>
-            <p className="text-body text-foreground whitespace-pre-wrap bg-background/50 p-3 rounded-lg border border-border">
+            <p className="text-sm text-foreground whitespace-pre-wrap bg-background/50 p-2.5 rounded-lg border border-border break-words">
               {previewProfile.bio}
             </p>
           </div>
         )}
 
         {update.field === "promptAnswers" && update.action === "add" && (
-          <div className="space-y-2">
-            <p className="text-caption uppercase tracking-wide">
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               New Prompt:
             </p>
-            <div className="bg-background/50 p-3 rounded-lg border border-border space-y-2">
-              <p className="text-caption">
+            <div className="bg-background/50 p-2.5 rounded-lg border border-border space-y-1.5">
+              <p className="text-xs text-muted-foreground break-words">
                 {update.data.promptText}
               </p>
-              <p className="text-body text-foreground whitespace-pre-wrap">
+              <p className="text-sm text-foreground whitespace-pre-wrap break-words">
                 {update.data.answerText}
               </p>
             </div>
@@ -91,22 +89,22 @@ export const ProfileUpdatePreview = ({
         )}
 
         {update.field === "promptAnswers" && update.action === "replace" && (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {Array.isArray(update.data) ? (
               <>
-                <p className="text-caption uppercase tracking-wide">
+                <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                   Updated Prompts ({update.data.length})
                 </p>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {update.data.map((prompt: any, i: number) => (
                     <div
                       key={i}
-                      className="bg-background/50 p-3 rounded-lg border border-border space-y-1"
+                      className="bg-background/50 p-2.5 rounded-lg border border-border space-y-1"
                     >
-                      <p className="text-caption">
+                      <p className="text-xs text-muted-foreground break-words">
                         {prompt.promptText}
                       </p>
-                      <p className="text-body text-foreground whitespace-pre-wrap">
+                      <p className="text-sm text-foreground whitespace-pre-wrap break-words">
                         {prompt.answerText}
                       </p>
                     </div>
@@ -114,8 +112,8 @@ export const ProfileUpdatePreview = ({
                 </div>
               </>
             ) : (
-              <div className="bg-destructive/10 p-3 rounded-lg border border-destructive/20">
-                <p className="text-caption text-destructive">
+              <div className="bg-destructive/10 p-2.5 rounded-lg border border-destructive/20">
+                <p className="text-xs text-destructive break-words">
                   Invalid data format: Expected array for replace action
                 </p>
               </div>
@@ -124,12 +122,12 @@ export const ProfileUpdatePreview = ({
         )}
 
         {update.field === "funFacts" && (
-          <div className="space-y-2">
-            <p className="text-caption uppercase tracking-wide">
+          <div className="space-y-1.5">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
               New Fun Fact:
             </p>
-            <div className="bg-background/50 p-3 rounded-lg border border-border">
-              <p className="text-body text-foreground">
+            <div className="bg-background/50 p-2.5 rounded-lg border border-border">
+              <p className="text-sm text-foreground break-words">
                 <span className="font-semibold">{update.data.label}:</span> {update.data.value}
               </p>
             </div>
@@ -137,15 +135,15 @@ export const ProfileUpdatePreview = ({
         )}
       </Card>
 
-      {/* Apply/Decline Buttons */}
+      {/* Apply/Decline Buttons*/}
       <div className="flex gap-2">
-        <Button onClick={onApply} className="flex-1" size="lg">
-          <Check className="w-4 h-4 mr-2" />
-          Apply Changes
+        <Button onClick={onApply} className="flex-1" size="sm">
+          <Check className="w-3.5 h-3.5 mr-1.5" />
+          <span className="text-xs">Apply</span>
         </Button>
-        <Button onClick={onDecline} variant="outline" size="lg" className="flex-1">
-          <X className="w-4 h-4 mr-2" />
-          Decline
+        <Button onClick={onDecline} variant="outline" size="sm" className="flex-1">
+          <X className="w-3.5 h-3.5 mr-1.5" />
+          <span className="text-xs">Decline</span>
         </Button>
       </div>
     </motion.div>
