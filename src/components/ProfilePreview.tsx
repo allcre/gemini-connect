@@ -13,9 +13,10 @@ interface ProfilePreviewProps {
   onSave: (profile: UserProfile) => void;
   onStartMatching: () => void;
   isEditable?: boolean;
+  isInitialSetup?: boolean;
 }
 
-export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = true }: ProfilePreviewProps) => {
+export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = true, isInitialSetup = false }: ProfilePreviewProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -252,11 +253,13 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
       >
         <Button onClick={onStartMatching} className="w-full" size="lg">
           <Sparkles className="w-5 h-5 mr-2" />
-          Start Matching
+          {isInitialSetup ? "Start Matching" : "Keep Matching"}
         </Button>
-        <p className="text-center text-sm text-muted-foreground mt-2">
-          You can always edit your profile later
-        </p>
+        {isInitialSetup && (
+          <p className="text-center text-sm text-muted-foreground mt-2">
+            You can always edit your profile later
+          </p>
+        )}
       </motion.div>
     </div>
   );

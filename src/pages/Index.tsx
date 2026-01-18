@@ -59,6 +59,7 @@ const Index = () => {
             profile={profile} 
             onSave={setProfile}
             onStartMatching={handleStartMatching}
+            isInitialSetup={true}
           />
         </main>
       </div>
@@ -101,6 +102,7 @@ const Index = () => {
                 onSave={setProfile}
                 onStartMatching={() => setActiveTab("discover")}
                 isEditable={true}
+                isInitialSetup={false}
               />
             )}
             <Button 
