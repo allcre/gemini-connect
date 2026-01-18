@@ -498,7 +498,7 @@ export const mockProfiles: DiscoverProfile[] = [
         { name: "unproductive-website-blocker", stars: 0, language: "Python" },
         { name: "VVProgrammingCamp2024", stars: 0, language: "Python" },
       ],
-      musicGenres: ["Unknown"],
+      musicGenres: [],
       recentReviews: [],
       sentimentAnalysis: { mood: "Empowering", score: 0.94 },
       codingHours: 35,
