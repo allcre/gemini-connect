@@ -125,7 +125,7 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="h-[calc(100vh-4rem)] p-4"
+            className="h-[calc(100vh-4rem)] flex flex-col"
           >
             <GeminiCoach profile={profile} onProfileUpdate={setProfile} />
           </motion.div>
@@ -136,7 +136,7 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="h-[calc(100vh-9rem)] px-4 pb-4 pt-0"
+            className="h-[calc(100vh-4rem)] flex flex-col pt-0"
           >
             <Messages
               initialConversationId={selectedConversationId === null ? undefined : selectedConversationId}
@@ -175,8 +175,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Header - hidden on coach and matches tabs, auto-hides on scroll on other tabs */}
-      {activeTab !== "coach" && activeTab !== "matches" && (
+      {/* Header - hidden on coach, matches, and messages tabs, auto-hides on scroll on other tabs */}
+      {activeTab !== "coach" && activeTab !== "matches" && activeTab !== "messages" && (
         <header
           className={`fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg shadow-sm transition-transform duration-300 ${
             showHeader ? 'translate-y-0' : '-translate-y-full'
@@ -188,7 +188,7 @@ const Index = () => {
         </header>
       )}
       {/* Spacer for fixed header */}
-      {activeTab !== "coach" && activeTab !== "matches" && <div className="h-[72px]" />}
+      {activeTab !== "coach" && activeTab !== "matches" && activeTab !== "messages" && <div className="h-[72px]" />}
       <main className={activeTab === "coach" ? "w-full h-[calc(100vh-4rem)]" : "max-w-md mx-auto"}>{renderContent()}</main>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>

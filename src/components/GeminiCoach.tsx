@@ -487,7 +487,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
   return (
     <div className="flex flex-col h-full w-full max-w-2xl mx-auto">
       {/* Scrollable container with header inside */}
-      <div className="flex-1 overflow-y-auto px-2">
+      <div className="flex-1 overflow-y-auto px-2 pt-4">
         {/* Header Card - Scrolls away naturally */}
         <Card variant="elevated" className="mb-4">
           <div className="p-3 flex items-center gap-3">
@@ -521,7 +521,7 @@ export const GeminiCoach = ({ profile, onProfileUpdate }: GeminiCoachProps) => {
       </div>
 
       {/* Input - Fixed at bottom */}
-      <div className="mt-auto">
+      <div className="shrink-0 px-2">
         <ChatInput
           value={input}
           onChange={setInput}

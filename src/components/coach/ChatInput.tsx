@@ -12,7 +12,7 @@ interface ChatInputProps {
 
 export const ChatInput = ({ value, onChange, onSubmit, isLoading, placeholder = "Ask me to tweak your profile..." }: ChatInputProps) => {
   return (
-    <div className="px-4 pt-4 pb-4 border-t border-border">
+    <div className="pt-4 pb-4 border-t border-border">
       <form
         onSubmit={(e) => {
           e.preventDefault();

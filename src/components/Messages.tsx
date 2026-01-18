@@ -130,7 +130,7 @@ export const Messages = ({ initialConversationId = null, onConversationChange }:
     return (
       <div className="flex flex-col h-full w-full max-w-2xl mx-auto">
         {/* Scrollable container with header inside */}
-        <div className="flex-1 overflow-y-auto px-2">
+        <div className="flex-1 overflow-y-auto px-2 pt-4">
           {/* Header Card - Scrolls away naturally */}
           <Card variant="elevated" className="mb-4">
             <div className="p-3 flex items-center gap-3">
@@ -219,7 +219,7 @@ export const Messages = ({ initialConversationId = null, onConversationChange }:
         </div>
 
         {/* Input - Fixed at bottom */}
-        <div className="shrink-0">
+        <div className="shrink-0 px-2">
           <ChatInput
             value={messageInput}
             onChange={setMessageInput}
@@ -235,11 +235,9 @@ export const Messages = ({ initialConversationId = null, onConversationChange }:
   // Conversation list - show when no conversation is selected
   return (
     <div className="flex flex-col h-full w-full max-w-2xl mx-auto">
-      <div className="flex-1 overflow-y-auto px-2">
-        <Card variant="elevated" className="mb-4">
-          <div className="p-3">
-            <h2 className="text-heading text-base font-semibold">Messages</h2>
-          </div>
+      <div className="flex-1 overflow-y-auto px-2 pt-4">
+        <Card variant="elevated" className="mb-4 p-4">
+          <h2 className="font-heading font-semibold text-foreground">Messages</h2>
         </Card>
 
         {conversations.length === 0 ? (
