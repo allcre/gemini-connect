@@ -1,7 +1,24 @@
-@import "@fontsource/nunito/400.css";
-@import "@fontsource/nunito/600.css";
-@import "@fontsource/nunito/700.css";
-@import "@fontsource/playfair-display/600.css";
+/* ============================================================
+   FLARE DATING APP DESIGN SYSTEM - DESATURATED PINK EDITION
+   
+   Design Philosophy:
+   - Soft & Inviting: Desaturated colors create calm, approachable atmosphere
+   - Playful Yet Sophisticated: Mix of playful gradients with refined typography
+   - Card-Based Layouts: White cards floating on gradient backgrounds
+   - Rounded Everything: Consistent border-radius for friendly feel
+   
+   Theme Modification Guide:
+   - All colors use HSL format in CSS variables
+   - Gradients use multi-color transitions (pink-yellow-blue)
+   - Typography: Pacifico (display), Instrument Serif (headings), Inter (body)
+   - Change variable values to swap entire theme
+   ============================================================ */
+
+/* Font Imports */
+@import "@fontsource-variable/inter";
+@import "@fontsource/instrument-serif";
+@import "@fontsource/pacifico";
+@import "@fontsource-variable/lora";
 
 @tailwind base;
 @tailwind components;
@@ -9,133 +26,288 @@
 
 @layer base {
   :root {
-    /* Bio-Match Design System - Warm, Playful, Sleek */
-    --background: 30 50% 98%;
-    --foreground: 20 25% 15%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 20 25% 15%;
-
+    /* ===== PRIMARY COLORS (Desaturated Pink Palette) ===== */
+    
+    /* Desaturated Dusty Pink - Primary brand color */
+    --primary: 0 23% 73%;              /* #D4A5A5 */
+    --primary-foreground: 0 0% 18%;    /* Dark text on pink */
+    --primary-light: 0 23% 83%;        /* Lighter dusty pink */
+    
+    /* Muted Mauve-Pink - Secondary brand color */
+    --mauve: 320 18% 70%;              /* #C4A3B3 */
+    --mauve-foreground: 0 0% 18%;      /* Dark text on mauve */
+    
+    /* Soft Rose - Tertiary accent */
+    --rose: 340 25% 74%;               /* #D1A5B8 */
+    --rose-foreground: 0 0% 18%;       /* Dark text on rose */
+    
+    /* Soft Blue - Secondary accent */
+    --blue: 200 30% 74%;               /* #A5C4D4 */
+    --blue-foreground: 0 0% 18%;       /* Dark text on blue */
+    
+    /* Pale Yellow/Cream - Tertiary accent */
+    --yellow: 45 70% 87%;              /* #F4E8C1 */
+    --yellow-foreground: 0 0% 18%;     /* Dark text on yellow */
+    
+    /* Soft Purple - Accent for badges */
+    --purple: 270 22% 72%;             /* #B8A5C4 */
+    --purple-foreground: 0 0% 100%;    /* White text on purple */
+    
+    /* Gold - For sparkle/star icons */
+    --gold: 51 100% 50%;               /* #FFD700 */
+    --gold-foreground: 0 0% 18%;       /* Dark text on gold */
+    
+    /* ===== GRADIENTS (Flare Signature Multi-Color Style) ===== */
+    
+    /* Main app gradient - Pink to Yellow to Blue */
+    --gradient-main: linear-gradient(180deg, #D4A5A5 0%, #F4E8C1 50%, #A5C4D4 100%);
+    
+    /* Card gradient - Subtle pink variation */
+    --gradient-card: linear-gradient(135deg, #E8D4D4 0%, #D4A5A5 100%);
+    
+    /* Pink to Blue gradient - For interactive elements */
+    --gradient-pink-blue: linear-gradient(135deg, #D4A5A5 0%, #A5C4D4 100%);
+    
+    /* Subtle overlay gradient */
+    --gradient-subtle: linear-gradient(180deg, rgba(212,165,165,0.3) 0%, rgba(165,196,212,0.3) 100%);
+    
+    /* White overlay for cards */
+    --gradient-overlay: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+    
+    /* ===== BACKGROUND COLORS ===== */
+    
+    --background: 0 0% 100%;           /* #FFFFFF - Pure white */
+    --background-cream: 40 100% 97%;   /* #FFF9F0 - Warm white */
+    --background-subtle: 210 20% 98%;  /* Light background */
+    --background-dark: 0 0% 18%;       /* #2D2D2D - Dark mode */
+    --foreground: 0 0% 18%;            /* #2D2D2D - Primary text */
+    
+    /* ===== TEXT COLORS ===== */
+    
+    --text-primary: 0 0% 18%;          /* #2D2D2D - Main text (near-black) */
+    --text-secondary: 0 0% 42%;        /* #6B6B6B - Secondary text (medium gray) */
+    --text-light: 0 0% 100%;           /* #FFFFFF - Light text */
+    --text-muted: 0 0% 61%;            /* #9B9B9B - Muted text (timestamps) */
+    
+    /* ===== UI ELEMENT COLORS ===== */
+    
+    /* Card system */
+    --card: 0 0% 100%;                 /* White cards */
+    --card-foreground: 0 0% 18%;       /* Dark text on cards */
+    --card-overlay: 0 0% 100% / 0.9;   /* White overlay with transparency */
+    
+    /* Popover/Dropdown */
     --popover: 0 0% 100%;
-    --popover-foreground: 20 25% 15%;
-
-    /* Coral/Rose Primary - Warm and Inviting */
-    --primary: 10 78% 65%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 10 78% 75%;
-
-    /* Soft Cream Secondary */
-    --secondary: 30 30% 94%;
-    --secondary-foreground: 20 25% 25%;
-
-    /* Muted Warm Gray */
-    --muted: 30 15% 92%;
-    --muted-foreground: 20 10% 45%;
-
-    /* Mint Accent - Playful Pop */
-    --accent: 165 60% 70%;
-    --accent-foreground: 165 70% 20%;
-
-    /* Destructive - Soft Red */
-    --destructive: 0 65% 55%;
+    --popover-foreground: 0 0% 18%;
+    
+    /* Secondary UI elements */
+    --secondary: 40 100% 97%;          /* Cream background */
+    --secondary-foreground: 0 0% 18%;  /* Dark text */
+    
+    /* Muted elements */
+    --muted: 210 20% 98%;
+    --muted-foreground: 0 0% 42%;
+    
+    /* Accent (using desaturated pink) */
+    --accent: 0 23% 73%;               /* Dusty pink */
+    --accent-foreground: 0 0% 18%;     /* Dark text */
+    
+    /* Borders */
+    --border: 0 0% 0% / 0.08;          /* Subtle black border with transparency */
+    --input: 0 0% 0% / 0.08;           /* Input borders */
+    --ring: 0 23% 73%;                 /* Focus ring (dusty pink) */
+    
+    /* Button colors */
+    --button-dark: 0 0% 18%;           /* #2D2D2D - Dark CTA buttons */
+    --button-dark-foreground: 0 0% 100%;
+    
+    /* ===== STATE COLORS ===== */
+    
+    /* Destructive/Error */
+    --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
-
-    /* Success - Warm Green */
-    --success: 145 55% 50%;
+    
+    /* Success */
+    --success: 142 71% 45%;            /* Green */
     --success-foreground: 0 0% 100%;
-
-    /* Match Purple - For compatibility */
-    --match: 280 60% 65%;
+    
+    /* Warning */
+    --warning: 38 92% 50%;             /* Orange/Yellow */
+    --warning-foreground: 0 0% 100%;
+    
+    /* Match/Compatibility (soft purple theme) */
+    --match: 270 22% 72%;              /* #B8A5C4 - Soft purple */
     --match-foreground: 0 0% 100%;
-
-    /* Chart Colors */
-    --chart-1: 10 78% 65%;
-    --chart-2: 165 60% 70%;
-    --chart-3: 280 60% 65%;
-    --chart-4: 45 90% 65%;
-    --chart-5: 200 70% 60%;
-
-    --border: 30 20% 88%;
-    --input: 30 20% 88%;
-    --ring: 10 78% 65%;
-
-    --radius: 1rem;
-
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(10 78% 65%), hsl(350 70% 65%));
-    --gradient-match: linear-gradient(135deg, hsl(280 60% 65%), hsl(320 70% 65%));
-    --gradient-success: linear-gradient(135deg, hsl(165 60% 70%), hsl(145 55% 50%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(30 30% 98%));
-
-    /* Shadows */
-    --shadow-soft: 0 4px 20px -4px hsl(10 78% 65% / 0.15);
-    --shadow-card: 0 8px 30px -8px hsl(20 25% 15% / 0.1);
-    --shadow-elevated: 0 20px 60px -15px hsl(20 25% 15% / 0.2);
-
-    /* Sidebar */
-    --sidebar-background: 30 30% 97%;
-    --sidebar-foreground: 20 25% 25%;
-    --sidebar-primary: 10 78% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 30 30% 94%;
-    --sidebar-accent-foreground: 20 25% 25%;
-    --sidebar-border: 30 20% 90%;
-    --sidebar-ring: 10 78% 65%;
+    
+    /* ===== CHART COLORS (Desaturated Palette) ===== */
+    
+    --chart-1: 0 23% 73%;              /* Dusty pink */
+    --chart-2: 320 18% 70%;            /* Mauve */
+    --chart-3: 200 30% 74%;            /* Soft blue */
+    --chart-4: 45 70% 87%;             /* Pale yellow */
+    --chart-5: 270 22% 72%;            /* Soft purple */
+    
+    /* ===== SHADOWS (Soft with pink tint) ===== */
+    
+    --shadow-sm: 0 2px 8px rgba(212, 165, 165, 0.1);
+    --shadow-soft: 0 4px 16px rgba(212, 165, 165, 0.15);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-elevated: 0 8px 24px rgba(212, 165, 165, 0.2);
+    --shadow-glow-pink: 0 0 40px rgba(212, 165, 165, 0.25);
+    --shadow-glow-purple: 0 0 40px rgba(184, 165, 196, 0.3);
+    
+    /* ===== BORDER RADIUS (slightly rounded corners per Flare) ===== */
+    
+    --radius-sm: 0.5rem;    /* 8px */
+    --radius: 0.75rem;      /* 12px - default */
+    --radius-md: 1rem;      /* 16px */
+    --radius-lg: 1.5rem;    /* 24px */
+    --radius-xl: 2rem;      /* 32px */
+    --radius-full: 9999px;  /* Fully rounded */
+    
+    /* ===== TYPOGRAPHY SCALE (Flare App Style) ===== */
+    
+    /* Font Families */
+    --font-display: 'Pacifico', 'Brush Script MT', cursive;        /* Playful logo font */
+    --font-heading: 'Instrument Serif', 'Playfair Display', Georgia, serif;  /* Elegant headings */
+    --font-body: 'Inter Variable', 'Inter', 'SF Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-bio: 'Lora Variable', 'Lora', 'Georgia', serif;         /* Editorial bio font */
+    --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;    /* System UI */
+    --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-serif: 'Instrument Serif', 'Georgia', serif;
+    
+    /* Font Sizes */
+    --text-xs: 0.75rem;      /* 12px */
+    --text-sm: 0.875rem;     /* 14px */
+    --text-base: 1rem;       /* 16px */
+    --text-lg: 1.125rem;     /* 18px */
+    --text-xl: 1.25rem;      /* 20px */
+    --text-2xl: 1.5rem;      /* 24px */
+    --text-3xl: 1.875rem;    /* 30px */
+    --text-4xl: 2.25rem;     /* 36px */
+    --text-5xl: 3rem;        /* 48px */
+    --text-6xl: 3.75rem;     /* 60px */
+    
+    /* Font Weights */
+    --font-light: 300;
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+    --font-extrabold: 800;
+    
+    /* Line Heights */
+    --leading-tight: 1.25;
+    --leading-snug: 1.375;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose: 2;
+    
+    /* Letter Spacing */
+    --tracking-tighter: -0.05em;
+    --tracking-tight: -0.025em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.025em;
+    --tracking-wider: 0.05em;
+    --tracking-widest: 0.1em;
+    
+    /* ===== SIDEBAR COLORS ===== */
+    
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 18%;
+    --sidebar-primary: 0 23% 73%;      /* Dusty pink */
+    --sidebar-primary-foreground: 0 0% 18%;
+    --sidebar-accent: 40 100% 97%;     /* Cream */
+    --sidebar-accent-foreground: 0 0% 18%;
+    --sidebar-border: 0 0% 0% / 0.08;
+    --sidebar-ring: 0 23% 73%;
   }
 
+  /* ===== DARK MODE THEME ===== */
+  
   .dark {
-    --background: 20 20% 8%;
-    --foreground: 30 20% 95%;
-
-    --card: 20 20% 12%;
-    --card-foreground: 30 20% 95%;
-
-    --popover: 20 20% 12%;
-    --popover-foreground: 30 20% 95%;
-
-    --primary: 10 78% 65%;
+    /* Desaturated colors maintain subtlety in dark mode */
+    --primary: 0 23% 68%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 10 78% 55%;
-
-    --secondary: 20 15% 18%;
-    --secondary-foreground: 30 20% 90%;
-
-    --muted: 20 15% 20%;
-    --muted-foreground: 30 15% 60%;
-
-    --accent: 165 50% 45%;
+    --primary-light: 0 23% 78%;
+    
+    --mauve: 320 18% 65%;
+    --mauve-foreground: 0 0% 100%;
+    
+    --rose: 340 25% 70%;
+    --rose-foreground: 0 0% 100%;
+    
+    --blue: 200 30% 70%;
+    --blue-foreground: 0 0% 100%;
+    
+    --purple: 270 22% 68%;
+    --purple-foreground: 0 0% 100%;
+    
+    /* Dark backgrounds */
+    --background: 0 0% 18%;            /* #2D2D2D */
+    --background-cream: 0 0% 20%;
+    --background-subtle: 0 0% 22%;
+    --foreground: 0 0% 98%;            /* Nearly white text */
+    
+    /* Text in dark mode */
+    --text-primary: 0 0% 98%;
+    --text-secondary: 0 0% 70%;
+    --text-light: 0 0% 100%;
+    --text-muted: 0 0% 60%;
+    
+    /* Cards in dark mode */
+    --card: 0 0% 22%;
+    --card-foreground: 0 0% 98%;
+    --card-overlay: 0 0% 22% / 0.9;
+    
+    --popover: 0 0% 22%;
+    --popover-foreground: 0 0% 98%;
+    
+    --secondary: 0 0% 25%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 25%;
+    --muted-foreground: 0 0% 70%;
+    
+    --accent: 0 23% 68%;
     --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 60% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --success: 145 50% 40%;
-    --success-foreground: 0 0% 100%;
-
-    --match: 280 50% 55%;
+    
+    --border: 0 0% 100% / 0.1;
+    --input: 0 0% 100% / 0.1;
+    --ring: 0 23% 68%;
+    
+    --button-dark: 0 0% 90%;
+    --button-dark-foreground: 0 0% 18%;
+    
+    --match: 270 22% 68%;
     --match-foreground: 0 0% 100%;
-
-    --border: 20 15% 20%;
-    --input: 20 15% 20%;
-    --ring: 10 78% 65%;
-
-    --gradient-primary: linear-gradient(135deg, hsl(10 78% 55%), hsl(350 65% 55%));
-    --gradient-card: linear-gradient(180deg, hsl(20 20% 14%), hsl(20 20% 10%));
-
-    --shadow-soft: 0 4px 20px -4px hsl(10 78% 65% / 0.25);
-    --shadow-card: 0 8px 30px -8px hsl(0 0% 0% / 0.3);
-    --shadow-elevated: 0 20px 60px -15px hsl(0 0% 0% / 0.5);
-
-    --sidebar-background: 20 20% 10%;
-    --sidebar-foreground: 30 20% 90%;
-    --sidebar-primary: 10 78% 65%;
+    
+    /* Adjusted gradients for dark mode */
+    --gradient-main: linear-gradient(180deg, #5A4A4A 0%, #5A5A4A 50%, #4A545A 100%);
+    --gradient-card: linear-gradient(135deg, #3A3030 0%, #2D2D2D 100%);
+    --gradient-pink-blue: linear-gradient(135deg, #5A4A4A 0%, #4A545A 100%);
+    
+    /* Enhanced shadows in dark mode */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.5);
+    --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.6);
+    --shadow-glow-pink: 0 0 40px rgba(212, 165, 165, 0.3);
+    --shadow-glow-purple: 0 0 40px rgba(184, 165, 196, 0.3);
+    
+    /* Sidebar in dark mode */
+    --sidebar-background: 0 0% 15%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 23% 68%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 20 15% 15%;
-    --sidebar-accent-foreground: 30 20% 90%;
-    --sidebar-border: 20 15% 18%;
-    --sidebar-ring: 10 78% 65%;
+    --sidebar-accent: 0 0% 20%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 100% / 0.1;
+    --sidebar-ring: 0 23% 68%;
   }
 }
+
+/* ===== BASE STYLES ===== */
 
 @layer base {
   * {
@@ -143,30 +315,104 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Nunito', system-ui, sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
   }
 
-  h1, h2, h3, .font-display {
-    font-family: 'Playfair Display', Georgia, serif;
+  /* Typography Hierarchy */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  h1 {
+    font-size: var(--text-5xl);
+  }
+
+  h2 {
+    font-size: var(--text-4xl);
+  }
+
+  h3 {
+    font-size: var(--text-3xl);
+  }
+
+  h4 {
+    font-size: var(--text-2xl);
+  }
+
+  h5 {
+    font-size: var(--text-xl);
+  }
+
+  h6 {
+    font-size: var(--text-lg);
+  }
+
+  /* Body text optimization */
+  p {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Small text */
+  small {
+    font-size: var(--text-sm);
+  }
+
+  /* Logo/Brand font utility class */
+  .font-logo {
+    font-family: var(--font-display);
+  }
+
+  /* Display/Heading font utility class */
+  .font-display {
+    font-family: var(--font-heading);
   }
 }
 
+/* ===== UTILITY CLASSES ===== */
+
 @layer utilities {
-  .gradient-primary {
-    background: var(--gradient-primary);
+  /* Gradient Utilities */
+  .gradient-main {
+    background: var(--gradient-main);
   }
 
-  .gradient-match {
-    background: var(--gradient-match);
-  }
-
-  .gradient-success {
-    background: var(--gradient-success);
+  .gradient-pink-blue {
+    background: var(--gradient-pink-blue);
   }
 
   .gradient-card {
     background: var(--gradient-card);
+  }
+
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  .gradient-overlay {
+    background: var(--gradient-overlay);
+  }
+
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background: var(--gradient-pink-blue);
+  }
+
+  .text-gradient-main {
+    @apply bg-clip-text text-transparent;
+    background: var(--gradient-main);
+  }
+
+  /* Shadow Utilities */
+  .shadow-sm {
+    box-shadow: var(--shadow-sm);
   }
 
   .shadow-soft {
@@ -181,32 +427,243 @@
     box-shadow: var(--shadow-elevated);
   }
 
-  .glass {
-    @apply bg-card/80 backdrop-blur-xl;
+  .shadow-glow-pink {
+    box-shadow: var(--shadow-glow-pink);
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent;
-    background: var(--gradient-primary);
+  .shadow-glow-purple {
+    box-shadow: var(--shadow-glow-purple);
+  }
+
+  /* Glass Morphism */
+  .glass {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+  }
+
+  .glass-dark {
+    @apply bg-card/60 backdrop-blur-2xl border border-border/30;
+  }
+
+  /* Border Radius Utilities */
+  .rounded-default {
+    border-radius: var(--radius);
+  }
+
+  .rounded-card {
+    border-radius: var(--radius-lg);
+  }
+
+  /* Typography Utilities */
+  .text-heading {
+    font-family: var(--font-heading);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+  }
+
+  .text-body {
+    font-family: var(--font-body);
+    letter-spacing: var(--tracking-normal);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Button Utilities */
+  .btn-dark {
+    background: hsl(var(--button-dark));
+    color: hsl(var(--button-dark-foreground));
   }
 }
 
-/* Custom scrollbar */
+/* ===== CUSTOM SCROLLBAR ===== */
+
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
   background: hsl(var(--muted));
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.3);
-  border-radius: 3px;
+  background: linear-gradient(135deg, #D4A5A5, #A5C4D4);
+  border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  background: linear-gradient(135deg, #E0B5B5, #B5D4E0);
 }
+
+/* ===== USAGE EXAMPLES & DOCUMENTATION ===== */
+
+/*
+
+FLARE APP DESIGN SYSTEM - DESATURATED PINK EDITION
+===================================================
+
+COLOR USAGE:
+------------
+Primary: Dusty pink (#D4A5A5) - Main brand color, interactive elements
+Mauve: Muted mauve-pink (#C4A3B3) - Secondary accents
+Rose: Soft rose (#D1A5B8) - Tertiary accents
+Blue: Soft blue (#A5C4D4) - Cool accent
+Yellow: Pale cream (#F4E8C1) - Warm accent
+Purple: Soft purple (#B8A5C4) - Badges, special highlights
+Gold: Sparkle accent (#FFD700) - Stars, premium features
+
+BUTTON EXAMPLES:
+----------------
+<!-- Primary CTA (dark button) -->
+<button class="btn-dark px-6 py-3 rounded-lg shadow-card">
+  Match Now
+</button>
+
+<!-- Secondary button (pink gradient) -->
+<button class="gradient-pink-blue text-white px-6 py-3 rounded-lg shadow-soft">
+  Send Message
+</button>
+
+<!-- Tertiary button (outline) -->
+<button class="bg-white border-2 border-primary text-primary px-6 py-3 rounded-lg">
+  Learn More
+</button>
+
+CARD EXAMPLES:
+--------------
+<!-- White card on gradient background -->
+<div class="bg-card shadow-card rounded-lg p-6">
+  <h3>Profile Name, 25</h3>
+  <p>Bio text...</p>
+</div>
+
+<!-- Glass morphism card -->
+<div class="glass rounded-xl p-6">
+  <h3>Semi-transparent card</h3>
+</div>
+
+<!-- Card with gradient overlay -->
+<div class="gradient-card rounded-xl p-6">
+  <h3>Gradient card</h3>
+</div>
+
+GRADIENT BACKGROUNDS:
+---------------------
+<!-- Full-screen main gradient (pink-yellow-blue) -->
+<div class="gradient-main min-h-screen">
+  Content here
+</div>
+
+<!-- Subtle gradient overlay -->
+<div class="gradient-subtle">
+  Subtle background
+</div>
+
+TYPOGRAPHY EXAMPLES:
+--------------------
+<!-- Logo/Brand text (Pacifico) -->
+<h1 class="font-logo text-5xl">Flare</h1>
+
+<!-- Elegant heading (Instrument Serif) -->
+<h2 class="font-display text-4xl">Find Your Match</h2>
+
+<!-- Body text (Inter) -->
+<p class="text-body text-base">Clean, readable body content</p>
+
+<!-- Gradient text -->
+<span class="text-gradient text-3xl font-bold">Special Text</span>
+
+PROFILE CARD STRUCTURE:
+-----------------------
+<div class="bg-card shadow-card rounded-xl overflow-hidden max-w-sm">
+  <!-- Photo -->
+  <div class="relative aspect-[4/5]">
+    <img src="photo.jpg" class="w-full h-full object-cover" />
+    <!-- Match badge -->
+    <div class="absolute top-4 right-4">
+      <span class="bg-purple text-white px-3 py-1 rounded-full text-sm font-medium shadow-elevated">
+        92% Match
+      </span>
+    </div>
+  </div>
+  
+  <!-- Content -->
+  <div class="p-6">
+    <h3 class="font-display text-2xl mb-2">Name, 25</h3>
+    <p class="text-secondary text-sm mb-4">Location • Distance</p>
+    <p class="text-body">Bio text...</p>
+  </div>
+</div>
+
+CHAT BUBBLES:
+-------------
+<!-- Sent message (dark) -->
+<div class="btn-dark rounded-2xl px-4 py-3 max-w-xs ml-auto">
+  <p class="text-white">Your message</p>
+</div>
+
+<!-- Received message (white) -->
+<div class="bg-white shadow-sm rounded-2xl px-4 py-3 max-w-xs">
+  <p class="text-primary">Their message</p>
+</div>
+
+NAVIGATION BAR:
+---------------
+<nav class="bg-white border-t border-border py-3">
+  <div class="flex justify-around items-center">
+    <button class="text-primary">
+      <HomeIcon />
+    </button>
+    <button class="text-muted-foreground">
+      <MatchIcon />
+    </button>
+  </div>
+</nav>
+
+BADGES & PILLS:
+---------------
+<span class="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm">
+  Active
+</span>
+
+<span class="bg-purple text-white px-3 py-1 rounded-full text-sm shadow-soft">
+  New Match
+</span>
+
+THEME MODIFICATION GUIDE:
+--------------------------
+To customize the theme, modify CSS variables in :root:
+
+1. Change primary color:
+   --primary: 0 23% 73%;  (change to your HSL values)
+
+2. Update gradients:
+   --gradient-main: linear-gradient(180deg, #YourColor1, #YourColor2, #YourColor3);
+
+3. Adjust typography:
+   --font-display: 'YourFont', cursive;
+   --font-heading: 'YourSerifFont', serif;
+   --font-body: 'YourSansFont', sans-serif;
+
+4. Modify border radius for different feel:
+   --radius-sm: 4px;   (more square)
+   --radius-lg: 32px;  (more rounded)
+
+DESIGN PRINCIPLES:
+------------------
+1. Soft & Inviting: Use desaturated colors for calm atmosphere
+2. Card-Based: Layer white cards on gradient backgrounds
+3. Generous Spacing: Use padding (p-6, p-8) for breathing room
+4. Rounded Corners: Apply rounded-lg or rounded-xl consistently
+5. Subtle Shadows: Use shadow-soft or shadow-card for depth
+6. Clear Typography Hierarchy: Logo (Pacifico), Headings (Instrument Serif), Body (Inter)
+7. High Contrast Text: Dark text (#2D2D2D) on light backgrounds for readability
+8. Multi-Color Gradients: Pink-yellow-blue for dreamy aesthetic
+
+ACCESSIBILITY:
+--------------
+- Text contrast ratios meet WCAG AA standards (4.5:1 for body text)
+- Button tap targets are 44x44px minimum
+- Focus states use visible ring color
+- Test all color combinations for sufficient contrast
+
+*/

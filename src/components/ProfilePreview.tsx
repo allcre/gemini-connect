@@ -180,7 +180,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
             </div>
           </div>
         ) : (
-          <p className="text-foreground">{profile.bio || "No bio yet"}</p>
+          <p className="text-foreground font-bio text-lg leading-relaxed">{profile.bio || "No bio yet"}</p>
         )}
       </Card>
 
@@ -200,7 +200,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
       {profile.promptAnswers.map((prompt, index) => (
         <Card key={prompt.id} className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <p className="text-sm font-medium text-muted-foreground">{prompt.promptText}</p>
+            <p className="text-sm font-medium font-display text-muted-foreground">{prompt.promptText}</p>
             {isEditable && editingField !== `prompt-${index}` && (
               <Button 
                 variant="ghost" 
@@ -236,7 +236,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
           {profile.dataInsights.map((insight) => (
             <Card key={insight.id} className="p-3 text-center">
               <p className="text-2xl font-bold text-primary">{insight.metricValue}</p>
-              <p className="text-sm font-medium">{insight.title}</p>
+              <p className="text-sm font-medium font-display">{insight.title}</p>
               <p className="text-xs text-muted-foreground">{insight.description}</p>
             </Card>
           ))}

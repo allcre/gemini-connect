@@ -111,7 +111,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
         {/* Content Section - Interleaved */}
         <div className="p-5 space-y-4">
           {/* Bio */}
-          <p className="text-foreground leading-relaxed">{profile.bio}</p>
+          <p className="text-foreground leading-relaxed font-bio text-lg">{profile.bio}</p>
 
           {/* Fun Facts Pills */}
           {profile.funFacts.length > 0 && (
@@ -142,7 +142,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
               className="w-full text-left"
             >
               <Card className="p-4 hover:shadow-soft transition-shadow cursor-pointer group">
-                <p className="text-sm font-medium text-muted-foreground mb-1">{prompt.promptText}</p>
+                <p className="text-sm font-medium font-display text-muted-foreground mb-1">{prompt.promptText}</p>
                 <p className="text-foreground group-hover:text-primary transition-colors">{prompt.answerText}</p>
               </Card>
             </motion.button>
@@ -161,7 +161,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
                 >
                   <Card className="p-3 hover:shadow-soft transition-shadow cursor-pointer h-full">
                     <p className="text-xl font-bold text-primary">{insight.metricValue}</p>
-                    <p className="text-sm font-medium">{insight.title}</p>
+                    <p className="text-sm font-medium font-display">{insight.title}</p>
                     <p className="text-xs text-muted-foreground">{insight.description}</p>
                   </Card>
                 </motion.button>
@@ -172,7 +172,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
           {/* Activity Chart */}
           {hasActivityData && (
             <div className="bg-secondary/50 rounded-2xl p-4 space-y-3">
-              <p className="text-sm font-medium">Weekly Activity</p>
+              <p className="text-sm font-medium font-display">Weekly Activity</p>
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <Code className="w-4 h-4 text-chart-1" />
