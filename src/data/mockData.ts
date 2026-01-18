@@ -1,9 +1,9 @@
 import profile1 from "@/assets/profile-1.jpg";
 import profile2 from "@/assets/profile-2.jpg";
 import profile3 from "@/assets/profile-3.jpg";
-import profile4 from "@/data/candidate-raw-data/daniel/daniel.png";
+import profile4 from "@/data/candidate-raw-data/daniel/daniel.jpeg";
 import profile5 from "@/data/candidate-raw-data/simon/simon.jpg";
-import profile6 from "@/data/candidate-raw-data/veronica/veronica.jpg";
+import profile6 from "@/data/candidate-raw-data/veronica/veronica.jpeg";
 import type { DiscoverProfile, YellowcakeData, PromptAnswer, FunFact, DataInsight, Photo } from "@/types/profile";
 
 // Mock profiles using the new Hinge-style data model
