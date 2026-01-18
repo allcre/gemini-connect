@@ -544,7 +544,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="p-6">
+      <header className="p-6 flex justify-center">
         <Logo />
       </header>
 

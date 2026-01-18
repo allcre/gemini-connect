@@ -83,13 +83,14 @@ const Index = () => {
   if (showProfilePreview && profile) {
     return (
       <div className="min-h-screen">
-        <header className="z-40 bg-transparent backdrop-blur-lg border-b border-border/30">
+        <header className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg shadow-sm">
           <div className="flex items-center justify-center p-4 max-w-md mx-auto">
             <Logo />
           </div>
         </header>
+        <div className="h-[72px]" />
         <main className="max-w-md mx-auto p-4 pb-24">
-          <h2 className="font-display text-xl font-semibold text-center mb-4">Preview Your Profile</h2>
+          <h2 className="font-heading text-xl font-semibold text-center mb-4">Preview Your Profile</h2>
           <ProfilePreview
             profile={profile}
             onSave={setProfile}
