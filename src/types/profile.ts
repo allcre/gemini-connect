@@ -70,6 +70,7 @@ export interface UserProfile {
   promptAnswers: PromptAnswer[];
   funFacts: FunFact[];
   dataInsights: DataInsight[];
+  bestFeatures: string[];
   yellowcakeData: YellowcakeData | null;
   socialUsernames: {
     github?: string;
@@ -90,5 +91,4 @@ export type ProfileContentItem =
 // For discovery feed profiles (other users)
 export interface DiscoverProfile extends UserProfile {
   compatibilityScore: number;
-  bestFeatures: string[];
 }

@@ -23,6 +23,7 @@ const createEmptyProfile = (): UserProfile => ({
   promptAnswers: [],
   funFacts: [],
   dataInsights: [],
+  bestFeatures: [],
   yellowcakeData: null,
   socialUsernames: {},
   createdAt: new Date().toISOString(),
@@ -70,6 +71,7 @@ export const useLocalProfile = () => {
           setProfileState({
             ...parsedProfile,
             photos: photosWithUrls,
+            bestFeatures: parsedProfile.bestFeatures || [], // Ensure bestFeatures exists for backward compatibility
           });
         } catch (e) {
           console.error("Failed to parse stored profile:", e);
