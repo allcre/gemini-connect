@@ -29,7 +29,7 @@ export const OnboardingSteps = ({ currentStep, totalSteps }: OnboardingStepsProp
               className={cn(
                 "font-semibold transition-all duration-300",
                 isCompleted && "shadow-md",
-                isCurrent && "border-2 border-primary bg-primary/10 text-primary"
+                isCurrent && "border-2 border-foreground bg-foreground/10 text-foreground"
               )}
             >
               {isCompleted ? (

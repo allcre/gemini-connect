@@ -47,7 +47,7 @@ const Index = () => {
 
   if (showProfilePreview && profile) {
     return (
-      <div className="min-h-screen gradient-grainy">
+      <div className="min-h-screen">
         <header className="z-40 bg-transparent backdrop-blur-lg border-b border-border/30">
           <div className="flex items-center justify-center p-4 max-w-md mx-auto">
             <Logo />
@@ -122,7 +122,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen gradient-grainy">
+    <div className="min-h-screen">
       <header className="z-40 bg-transparent backdrop-blur-lg border-b border-border/30">
         <div className="flex items-center justify-center p-4 max-w-md mx-auto">
           <Logo />

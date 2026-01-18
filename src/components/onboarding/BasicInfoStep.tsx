@@ -24,7 +24,7 @@ export const BasicInfoStep = ({ formData, updateField }: StepProps) => {
             onChange={(e) => updateField("age", e.target.value)}
           />
           <Input
-            placeholder="City, State"
+            placeholder="City"
             className="flex-1"
             value={formData.location}
             onChange={(e) => updateField("location", e.target.value)}
