@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ProfileCard } from "./ProfileCard";
 import { mockProfiles } from "@/data/mockData";
@@ -14,6 +14,11 @@ export const DiscoveryFeed = () => {
   const { likeProfile, hasLiked } = useLocalMatches();
 
   const currentProfile = profiles[currentIndex];
+
+  // Scroll to top when profile changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentIndex]);
 
   const handleLike = (likedFeature?: string) => {
     if (!currentProfile) return;
