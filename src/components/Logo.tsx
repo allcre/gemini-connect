@@ -7,14 +7,14 @@ export const Logo = ({ size = "default" }: { size?: "default" | "large" }) => {
 
   return (
     <motion.div 
-      className="flex items-center gap-2"
+      className="flex items-center gap-3"
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <div className="relative">
         <motion.div
-          className={`${iconSize} gradient-primary rounded-xl flex items-center justify-center shadow-soft`}
+          className={`${iconSize} gradient-primary rounded-lg flex items-center justify-center shadow-soft`}
           whileHover={{ scale: 1.1, rotate: 5 }}
           transition={{ type: "spring", stiffness: 400 }}
         >
