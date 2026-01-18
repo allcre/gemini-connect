@@ -94,7 +94,7 @@ const Index = () => {
               <ProfilePreview 
                 profile={profile} 
                 onSave={setProfile}
-                onStartMatching={() => {}}
+                onStartMatching={() => setActiveTab("discover")}
                 isEditable={true}
               />
             )}
