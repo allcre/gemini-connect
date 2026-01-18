@@ -65,6 +65,7 @@ const Index = () => {
   const handleStartMatching = () => {
     setOnboarded(true);
     setShowProfilePreview(false);
+    setActiveTab("discover");
   };
 
   if (isLoading) {
