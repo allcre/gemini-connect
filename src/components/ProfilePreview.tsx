@@ -244,6 +244,22 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
         </div>
       )}
 
+      {/* Best Features */}
+      {profile.bestFeatures && profile.bestFeatures.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Best Features
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {profile.bestFeatures.map((feature, i) => (
+              <Badge key={i} variant="insight" className="px-3 py-1.5">
+                {feature}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* CTA */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

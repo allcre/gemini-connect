@@ -452,6 +452,7 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           source: "llm" as const,
           sortOrder: i,
         })),
+        bestFeatures: generatedContent.bestFeatures || [],
         yellowcakeData,
         socialUsernames: {
           github: formData.githubUsername || undefined,
