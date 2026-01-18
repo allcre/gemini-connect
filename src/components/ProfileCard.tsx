@@ -11,9 +11,10 @@ interface ProfileCardProps {
   onLike: () => void;
   onSkip: () => void;
   onLikeFeature: (feature: string) => void;
+  onMessage: () => void;
 }
 
-export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileCardProps) => {
+export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature, onMessage }: ProfileCardProps) => {
   const yellowcake = profile.yellowcakeData;
   const hasActivityData = yellowcake && (yellowcake.codingHours || yellowcake.movieHours);
 
@@ -28,7 +29,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-md mx-auto space-y-2 pb-24"
+      className="w-full max-w-md mx-auto space-y-2 pb-8"
     >
       {/* Photo + Bio Section */}
       <Card className="rounded-md p-4 bg-card/80 backdrop-blur-sm">
@@ -207,7 +208,7 @@ export const ProfileCard = ({ profile, onLike, onSkip, onLikeFeature }: ProfileC
           </Button>
         </motion.div>
         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          <Button variant="default" size="icon-lg" onClick={() => {}}>
+          <Button variant="default" size="icon-lg" onClick={onMessage}>
             <MessageCircle className="w-6 h-6" />
           </Button>
         </motion.div>

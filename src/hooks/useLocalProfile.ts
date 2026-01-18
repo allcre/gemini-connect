@@ -177,6 +177,7 @@ export const useLocalProfile = () => {
     localStorage.removeItem(ONBOARDED_KEY);
     localStorage.removeItem(MATCHES_KEY);
     localStorage.removeItem(LIKED_KEY);
+    localStorage.removeItem("biomatch_messages");
     setProfileState(createEmptyProfile());
     setHasOnboardedState(false);
   }, []);

@@ -4,6 +4,7 @@ import { Logo } from "@/components/Logo";
 import { BottomNav } from "@/components/BottomNav";
 import { DiscoveryFeed } from "@/components/DiscoveryFeed";
 import { GeminiCoach } from "@/components/GeminiCoach";
+import { Messages } from "@/components/Messages";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
 import { ProfilePreview } from "@/components/ProfilePreview";
 import { Button } from "@/components/ui/button";
@@ -19,17 +20,22 @@ const Index = () => {
   const [showProfilePreview, setShowProfilePreview] = useState(false);
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
 
   // Scroll to top when tab changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    // Clear selected conversation when leaving messages tab
+    if (activeTab !== "messages") {
+      setSelectedConversationId(null);
+    }
   }, [activeTab]);
 
   // Handle scroll to hide/show header
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       // Show header when scrolling up, hide when scrolling down
       if (currentScrollY < lastScrollY.current) {
         // Scrolling up
@@ -38,12 +44,12 @@ const Index = () => {
         // Scrolling down (and past 50px threshold)
         setShowHeader(false);
       }
-      
+
       // Always show at very top
       if (currentScrollY < 10) {
         setShowHeader(true);
       }
-      
+
       lastScrollY.current = currentScrollY;
     };
 
@@ -98,30 +104,43 @@ const Index = () => {
     switch (activeTab) {
       case "discover":
         return (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pb-20">
-            <DiscoveryFeed />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="pb-20 overscroll-contain"
+            style={{ overscrollBehaviorY: 'contain' }}
+          >
+            <DiscoveryFeed
+              onNavigateToMessages={(conversationId: string | null) => {
+                setSelectedConversationId(conversationId);
+                setActiveTab("messages");
+              }}
+            />
           </motion.div>
         );
 
       case "coach":
         return (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="h-[calc(100vh-4rem)] p-4"
           >
             <GeminiCoach profile={profile} onProfileUpdate={setProfile} />
           </motion.div>
         );
 
-      case "matches":
+      case "messages":
         return (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 pb-24 space-y-4">
-            <h2 className="font-display text-2xl font-semibold">Matches</h2>
-            <div className="text-center py-8 text-muted-foreground">
-              <Heart className="w-12 h-12 mx-auto mb-4 opacity-30" />
-              <p>Keep swiping to find matches!</p>
-            </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="h-[calc(100vh-9rem)] px-4 pb-4 pt-0"
+          >
+            <Messages
+              initialConversationId={selectedConversationId === null ? undefined : selectedConversationId}
+              onConversationChange={setSelectedConversationId}
+            />
           </motion.div>
         );
 
@@ -157,7 +176,7 @@ const Index = () => {
     <div className="min-h-screen">
       {/* Header - hidden on coach and matches tabs, auto-hides on scroll on other tabs */}
       {activeTab !== "coach" && activeTab !== "matches" && (
-        <header 
+        <header
           className={`fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg shadow-sm transition-transform duration-300 ${
             showHeader ? 'translate-y-0' : '-translate-y-full'
           }`}

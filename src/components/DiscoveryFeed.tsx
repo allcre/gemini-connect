@@ -3,18 +3,38 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ProfileCard } from "./ProfileCard";
 import { mockProfiles } from "@/data/mockData";
 import { toast } from "sonner";
-import { Heart, Sparkles } from "lucide-react";
+import { Heart, Sparkles, MessageCircle } from "lucide-react";
 import { IconCircle } from "@/components/ui/icon-circle";
 import type { DiscoverProfile } from "@/types/profile";
 import { useLocalMatches } from "@/hooks/useLocalProfile";
+import { useLocalMessages } from "@/hooks/useLocalMessages";
+import { useLocalProfile } from "@/hooks/useLocalProfile";
 
-export const DiscoveryFeed = () => {
+interface DiscoveryFeedProps {
+  onNavigateToMessages?: (conversationId: string | null) => void;
+}
+
+export const DiscoveryFeed = ({ onNavigateToMessages }: DiscoveryFeedProps) => {
   const [profiles] = useState<DiscoverProfile[]>(mockProfiles);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [liked, setLiked] = useState(false);
   const { likeProfile, hasLiked } = useLocalMatches();
+  const { profile } = useLocalProfile();
+  const { startConversation } = useLocalMessages();
 
   const currentProfile = profiles[currentIndex];
+
+  const handleMessage = () => {
+    if (!currentProfile || !profile) return;
+
+    // Start conversation and get conversation ID
+    const conversationId = startConversation(currentProfile, profile.id);
+
+    // Navigate to messages tab with conversation ID
+    if (onNavigateToMessages) {
+      onNavigateToMessages(conversationId);
+    }
+  };
 
   // Scroll to top when profile changes
   useEffect(() => {
@@ -95,6 +115,7 @@ export const DiscoveryFeed = () => {
           onLike={() => handleLike()}
           onSkip={handleSkip}
           onLikeFeature={handleLikeFeature}
+          onMessage={handleMessage}
         />
       </AnimatePresence>
     </div>
