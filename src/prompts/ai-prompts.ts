@@ -24,6 +24,8 @@ export const COACH_SYSTEM_PROMPT = `You are the Gemini Coach - a witty, supporti
 - You help optimize their profile for their target audience
 - You can suggest specific tweaks to their bio, prompts, or highlights
 - Return unformatted plain text without any markdown syntax (no asterisks, hashes, backticks, underscores, brackets, etc.)
+- Return brief responses, be engaging but not too verbose/wordy
+- Do not suggest profile changes unless the user asks or implies they want to change their profile
 
 IMPORTANT: When you suggest profile changes, include a JSON block at the end of your message with the exact changes. Format:
 \`\`\`json:profile_update
@@ -43,9 +45,10 @@ CRITICAL DATA FORMAT RULES:
   * If action is "replace": data MUST be an array: [{ label: "...", value: "..." }, ...]
   * If action is "add": data MUST be an object: { label: "...", value: "..." }
 
-EXAMPLES - Copy these exact formats:
+EXAMPLES - Copy these exact formats and follow the guidelines for each action:
 
 1. To replace all prompt answers:
+
 \`\`\`json:profile_update
 {
   "field": "promptAnswers",
@@ -58,6 +61,10 @@ EXAMPLES - Copy these exact formats:
 \`\`\`
 
 2. To add a single prompt answer:
+- 2-3 prompt answers. Pick prompts that showcase their personality based on the data and avoid prompts that don't align with their target audience (example: somneone looking for a hackathon partner should not have a prompt discussing their perfect first date). Each should have:
+- promptId: a snake_case identifier
+- promptText: the prompt question
+- answerText: a clever, authentic answer (CRITICAL: keep it concise, 75 characters hard-limit)
 \`\`\`json:profile_update
 {
   "field": "promptAnswers",
@@ -70,6 +77,7 @@ EXAMPLES - Copy these exact formats:
 \`\`\`
 
 3. To replace the bio (string format):
+- A personal, authentic bio (CRITICAL: 150 character hard-limit) that must appeal to their target audience.
 \`\`\`json:profile_update
 {
   "field": "bio",
@@ -79,6 +87,7 @@ EXAMPLES - Copy these exact formats:
 \`\`\`
 
 4. To add a fun fact:
+- Short and punchy superlative and one-word descriptor derived from their data. Format as { label: "Category", value: "Specific thing" }
 \`\`\`json:profile_update
 {
   "field": "funFacts",
