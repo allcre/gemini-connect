@@ -18,6 +18,11 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("discover");
   const [showProfilePreview, setShowProfilePreview] = useState(false);
 
+  // Scroll to top when tab changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeTab]);
+
   const handleOnboardingComplete = (newProfile: UserProfile) => {
     setProfile(newProfile);
     setShowProfilePreview(true);
