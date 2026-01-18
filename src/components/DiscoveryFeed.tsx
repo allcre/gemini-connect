@@ -17,17 +17,17 @@ export const DiscoveryFeed = () => {
 
   const handleLike = (likedFeature?: string) => {
     if (!currentProfile) return;
-    
+
     setLiked(true);
     likeProfile(currentProfile.id, likedFeature);
-    
+
     toast.success(
       <div className="flex items-center gap-2">
         <Heart className="w-4 h-4 fill-current" />
         <span>You liked {currentProfile.displayName}!</span>
       </div>
     );
-    
+
     setTimeout(() => {
       setLiked(false);
       if (currentIndex < profiles.length - 1) {
@@ -75,7 +75,7 @@ export const DiscoveryFeed = () => {
   }
 
   return (
-    <div className="relative">
+    <div className="relative p-4">
       <AnimatePresence mode="wait">
         {liked && (
           <motion.div
