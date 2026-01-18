@@ -39,14 +39,14 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    let systemPrompt = `You are a witty, data-driven dating profile writer. You create engaging, authentic profiles that highlight someone's unique personality based on their data and preferences. You write in a warm, playful tone that feels genuine—never cheesy or try-hard.`;
+    let systemPrompt = `You are a witty, data-driven matchmaker. You create engaging, authentic profiles that highlight someone's unique personality based on their data and preferences. You write in a warm, playful tone that feels genuine—never cheesy or try-hard.`;
 
     let userPrompt = "";
 
     if (type === "generate") {
       userPrompt = `Create a dating profile for someone with these characteristics:
 
-**Target Audience (who they want to attract):** ${targetAudience}
+**Target Audience (who they want to connect with):** ${targetAudience}
 
 **About Themselves:** ${aboutMe || "Not provided"}
 
@@ -57,16 +57,16 @@ ${yellowcakeData ? JSON.stringify(yellowcakeData, null, 2) : "No data available"
 
 Generate a complete profile with:
 
-1. **bio**: A witty, authentic bio (2-3 sentences max) that would appeal to their target audience. Reference their data naturally.
+1. **bio**: A personal, authentic bio (CRITICAL: 200 character hard-limit) that must appeal to their target audience. CRITICAL: Reference their data naturally.
 
-2. **promptAnswers**: 3-4 Hinge-style prompt answers. Pick prompts that showcase their personality based on the data. Each should have:
+2. **promptAnswers**: 2-3 prompt answers. Pick prompts that showcase their personality based on the data and avoid prompts that don't align with their target audience (example: somneone looking for a hackathon partner should not have a prompt discussing their perfect first date). Each should have:
    - promptId: a snake_case identifier
    - promptText: the prompt question
-   - answerText: a clever, authentic answer (1-2 sentences)
+   - answerText: a clever, authentic answer (CRITICAL: keep it concise, 150 characters hard-limit)
 
-3. **funFacts**: 3-5 short, punchy one-liners derived from their data. Format as { label: "Category", value: "Specific thing" }. Examples: "Most played artist: Mitski", "Top language: TypeScript", "Films this year: 47"
+3. **funFacts**: 3-4 short, punchy one-liners derived from their data. Format as { label: "Category", value: "Specific thing" }. Examples: "Most played artist: Mitski", "Top language: TypeScript", "Films this year: 47"
 
-4. **dataInsights**: 2-3 data-backed insights that would intrigue their target audience. Each has:
+4. **dataInsights**: 1-2 data-backed insights that would intrigue their target audience. Each has:
    - type: "stat" | "badge" | "chart"
    - title: short title
    - description: 1 sentence explanation
@@ -90,7 +90,7 @@ ${JSON.stringify(currentProfile, null, 2)}
 
 **User's Request:** ${tweakRequest}
 
-Make the requested changes while maintaining the same JSON structure. Keep what works, only modify what they asked for.
+Make the requested changes while maintaining the same JSON structure and target audience. Keep what works, only modify what they asked for.
 
 Return ONLY valid JSON with the full updated profile:
 {
