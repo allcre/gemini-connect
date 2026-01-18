@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Edit2, Check, X, ChevronLeft, ChevronRight, Sparkles, MapPin } from "lucide-react";
+import { Edit2, Check, X, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { UserProfile, PromptAnswer, FunFact, DataInsight } from "@/types/profile";
+import { PhotoCarousel } from "@/components/ui/photo-carousel";
+import type { UserProfile } from "@/types/profile";
 
 interface ProfilePreviewProps {
   profile: UserProfile;
@@ -19,7 +20,6 @@ interface ProfilePreviewProps {
 export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = true, isInitialSetup = false }: ProfilePreviewProps) => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const startEdit = (field: string, value: string) => {
     if (!isEditable) return;
@@ -29,20 +29,20 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
 
   const saveEdit = () => {
     if (!editingField) return;
-    
+
     const updated = { ...profile };
-    
+
     if (editingField === "bio") {
       updated.bio = editValue;
     } else if (editingField === "displayName") {
       updated.displayName = editValue;
     } else if (editingField.startsWith("prompt-")) {
       const index = parseInt(editingField.split("-")[1]);
-      updated.promptAnswers = profile.promptAnswers.map((p, i) => 
+      updated.promptAnswers = profile.promptAnswers.map((p, i) =>
         i === index ? { ...p, answerText: editValue, source: "user" as const } : p
       );
     }
-    
+
     onSave(updated);
     setEditingField(null);
     setEditValue("");
@@ -53,69 +53,15 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
     setEditValue("");
   };
 
-  const nextPhoto = () => {
-    if (profile.photos.length > 0) {
-      setCurrentPhotoIndex((prev) => (prev + 1) % profile.photos.length);
-    }
-  };
-
-  const prevPhoto = () => {
-    if (profile.photos.length > 0) {
-      setCurrentPhotoIndex((prev) => (prev - 1 + profile.photos.length) % profile.photos.length);
-    }
-  };
-
   return (
     <div className="max-w-md mx-auto space-y-4 pb-24">
       {/* Header Photo Section */}
-      <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-muted">
-        {profile.photos.length > 0 ? (
-          <>
-            <img
-              src={profile.photos[currentPhotoIndex]?.url}
-              alt={profile.displayName}
-              className="w-full h-full object-cover"
-            />
-            {profile.photos.length > 1 && (
-              <>
-                <button
-                  onClick={prevPhoto}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-background/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-background/80 transition-colors"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={nextPhoto}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-background/50 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-background/80 transition-colors"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  {profile.photos.map((_, i) => (
-                    <div
-                      key={i}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        i === currentPhotoIndex ? "bg-primary" : "bg-background/50"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
-          </>
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="text-center text-muted-foreground">
-              <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-primary/10 flex items-center justify-center text-4xl">
-                👤
-              </div>
-              <p>No photos yet</p>
-            </div>
-          </div>
-        )}
-        
-        {/* Name overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
+      <PhotoCarousel
+        photos={profile.photos}
+        aspectRatio="portrait"
+        showDots
+        showNavigation
+        overlay={
           <div className="flex items-end justify-between">
             <div>
               {editingField === "displayName" ? (
@@ -134,8 +80,8 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
                   </Button>
                 </div>
               ) : (
-                <h2 
-                  className="font-display text-2xl font-semibold text-white cursor-pointer group flex items-center gap-2"
+                <h2
+                  className="text-heading text-white cursor-pointer group flex items-center gap-2"
                   onClick={() => startEdit("displayName", profile.displayName)}
                 >
                   {profile.displayName}{profile.age ? `, ${profile.age}` : ""}
@@ -150,13 +96,13 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
               )}
             </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Bio */}
       <Card className="p-4">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-sm text-muted-foreground">About</h3>
+          <h3 className="text-caption">About</h3>
           {isEditable && editingField !== "bio" && (
             <Button 
               variant="ghost" 
@@ -181,7 +127,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
             </div>
           </div>
         ) : (
-          <p className="text-foreground font-bio text-lg leading-relaxed">{profile.bio || "No bio yet"}</p>
+          <p className="text-body text-foreground">{profile.bio || "No bio yet"}</p>
         )}
       </Card>
 
@@ -201,7 +147,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
       {profile.promptAnswers.map((prompt, index) => (
         <Card key={prompt.id} className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <p className="text-sm font-medium font-display text-muted-foreground">{prompt.promptText}</p>
+            <p className="text-caption">{prompt.promptText}</p>
             {isEditable && editingField !== `prompt-${index}` && (
               <Button 
                 variant="ghost" 
@@ -226,7 +172,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
               </div>
             </div>
           ) : (
-            <p className="text-foreground text-lg">{prompt.answerText}</p>
+            <p className="text-body text-foreground">{prompt.answerText}</p>
           )}
         </Card>
       ))}
@@ -236,9 +182,9 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
         <div className="grid grid-cols-2 gap-3">
           {profile.dataInsights.map((insight) => (
             <Card key={insight.id} className="p-3 text-center">
-              <p className="text-2xl font-bold text-primary">{insight.metricValue}</p>
-              <p className="text-sm font-medium font-display">{insight.title}</p>
-              <p className="text-xs text-muted-foreground">{insight.description}</p>
+              <p className="text-caption text-primary">{insight.metricValue}</p>
+              <p className="text-caption">{insight.title}</p>
+              <p className="text-caption">{insight.description}</p>
             </Card>
           ))}
         </div>
@@ -247,7 +193,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
       {/* Best Features */}
       {profile.bestFeatures && profile.bestFeatures.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <p className="text-caption uppercase tracking-wide">
             Best Features
           </p>
           <div className="flex flex-wrap gap-2">
@@ -272,7 +218,7 @@ export const ProfilePreview = ({ profile, onSave, onStartMatching, isEditable = 
           {isInitialSetup ? "Start Matching" : "Keep Matching"}
         </Button>
         {isInitialSetup && (
-          <p className="text-center text-sm text-muted-foreground mt-2">
+          <p className="text-center text-caption mt-2">
             You can always edit your profile later
           </p>
         )}

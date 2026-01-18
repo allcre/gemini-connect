@@ -1,37 +1,35 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, Film, Music, Upload, ArrowRight, ArrowLeft, Sparkles, User, Target, X, MessageSquare, BookOpen, Gamepad2, Heart, Users, Code2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { OnboardingSteps } from "./OnboardingSteps";
 import { Logo } from "./Logo";
+import { IconCircle } from "@/components/ui/icon-circle";
+import {
+  BasicInfoStep,
+  basicInfoStepConfig,
+  PlatformsStep,
+  platformsStepConfig,
+  PersonalityStep,
+  personalityStepConfig,
+  PhotosStep,
+  photosStepConfig,
+  type OnboardingFormData,
+} from "./onboarding";
 import type { UserProfile, YellowcakeData, Photo } from "@/types/profile";
-import { extractSpotifyPlaylistsFromUsername, extractLetterboxdFilms, extractGitHubRepos, extractTweets, extractSubstackPosts, extractSteamGames, type PlaylistInfo } from "@/integrations/yellowcake/client";
+import {
+  extractSpotifyPlaylistsFromUsername,
+  extractLetterboxdFilms,
+  extractGitHubRepos,
+  extractTweets,
+  extractSubstackPosts,
+  extractSteamGames,
+  type PlaylistInfo,
+} from "@/integrations/yellowcake/client";
 
 interface OnboardingWizardProps {
   onComplete: (profile: UserProfile) => void;
-}
-
-interface OnboardingFormData {
-  displayName: string;
-  age: string;
-  location: string;
-  githubUsername: string;
-  letterboxdUsername: string;
-  spotifyUsername: string;
-  twitterUsername: string;
-  substackUsername: string;
-  steamUsername: string;
-  aboutMe: string;
-  targetAudience: string;
-  highlights: string;
-  lookingFor: string;
-  photos: string[];
 }
 
 const slideVariants = {
@@ -473,251 +471,38 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
 
   const steps = [
     {
-      title: "Let's Meet You",
-      subtitle: "The basics to get started",
-      content: (
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="Your name"
-                className="pl-12"
-                value={formData.displayName}
-                onChange={(e) => updateField("displayName", e.target.value)}
-              />
-            </div>
-            <div className="flex gap-3">
-              <Input
-                type="number"
-                placeholder="Age"
-                className="w-24"
-                value={formData.age}
-                onChange={(e) => updateField("age", e.target.value)}
-              />
-              <Input
-                placeholder="City, State"
-                className="flex-1"
-                value={formData.location}
-                onChange={(e) => updateField("location", e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-      ),
-      isValid: () => formData.displayName.length > 0,
+      ...basicInfoStepConfig,
+      content: <BasicInfoStep formData={formData} updateField={updateField} />,
+      isValid: () => basicInfoStepConfig.isValid(formData),
     },
     {
-      title: "Connect Your World",
-      subtitle: "Select which platforms to connect and analyze",
+      ...platformsStepConfig,
       content: (
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Select platforms to connect:</Label>
-            <div className="grid grid-cols-1 gap-3">
-              {[
-                { key: 'github', label: 'GitHub', icon: Github, placeholder: 'GitHub username' },
-                { key: 'letterboxd', label: 'Letterboxd', icon: Film, placeholder: 'Letterboxd username' },
-                { key: 'spotify', label: 'Spotify', icon: Music, placeholder: 'Spotify username' },
-                { key: 'twitter', label: 'X/Twitter', icon: MessageSquare, placeholder: 'X/Twitter username' },
-                { key: 'substack', label: 'Substack', icon: BookOpen, placeholder: 'Substack username' },
-                { key: 'steam', label: 'Steam', icon: Gamepad2, placeholder: 'Steam username' },
-              ].map((platform) => {
-                const Icon = platform.icon;
-                const isSelected = selectedPlatforms.includes(platform.key);
-                return (
-                  <div key={platform.key} className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id={platform.key}
-                        checked={isSelected}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedPlatforms([...selectedPlatforms, platform.key]);
-                          } else {
-                            setSelectedPlatforms(selectedPlatforms.filter(p => p !== platform.key));
-                            // Clear the username when unchecking
-                            if (platform.key === 'github') updateField('githubUsername', '');
-                            if (platform.key === 'letterboxd') updateField('letterboxdUsername', '');
-                            if (platform.key === 'spotify') updateField('spotifyUsername', '');
-                            if (platform.key === 'twitter') updateField('twitterUsername', '');
-                            if (platform.key === 'substack') updateField('substackUsername', '');
-                            if (platform.key === 'steam') updateField('steamUsername', '');
-                          }
-                        }}
-                      />
-                      <Label
-                        htmlFor={platform.key}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer"
-                      >
-                        <Icon className="w-4 h-4" />
-                        {platform.label}
-                      </Label>
-            </div>
-                    {isSelected && (
-                      <div className="relative pl-6">
-              <Input
-                          placeholder={platform.placeholder}
-                          className="pl-10"
-                          value={
-                            platform.key === 'github' ? formData.githubUsername :
-                            platform.key === 'letterboxd' ? formData.letterboxdUsername :
-                            platform.key === 'spotify' ? formData.spotifyUsername :
-                            platform.key === 'twitter' ? formData.twitterUsername :
-                            platform.key === 'substack' ? formData.substackUsername :
-                            platform.key === 'steam' ? formData.steamUsername : ''
-                          }
-                          onChange={(e) => {
-                            if (platform.key === 'github') updateField('githubUsername', e.target.value);
-                            if (platform.key === 'letterboxd') updateField('letterboxdUsername', e.target.value);
-                            if (platform.key === 'spotify') updateField('spotifyUsername', e.target.value);
-                            if (platform.key === 'twitter') updateField('twitterUsername', e.target.value);
-                            if (platform.key === 'substack') updateField('substackUsername', e.target.value);
-                            if (platform.key === 'steam') updateField('steamUsername', e.target.value);
-                          }}
-                        />
-                        <Icon className="absolute left-8 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      </div>
-                    )}
-            </div>
-                );
-              })}
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground text-center">
-            We'll use this to highlight your unique interests ✨
-          </p>
-        </div>
+        <PlatformsStep
+          formData={formData}
+          updateField={updateField}
+          selectedPlatforms={selectedPlatforms}
+          setSelectedPlatforms={setSelectedPlatforms}
+        />
       ),
-      isValid: () => true, // Optional step
+      isValid: platformsStepConfig.isValid,
     },
     {
-      title: "Tell Us More",
-      subtitle: "Help us craft the perfect profile for you",
-      content: (
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <div>
-              <label className="text-sm font-medium mb-2 block">
-                What are you looking for?
-              </label>
-              <RadioGroup
-                value={formData.lookingFor}
-                onValueChange={(value) => updateField("lookingFor", value)}
-                className="space-y-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="friend" id="friend" />
-                  <Label htmlFor="friend" className="flex items-center gap-2 cursor-pointer font-normal">
-                    <Users className="w-4 h-4" />
-                    Friend
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="romantic" id="romantic" />
-                  <Label htmlFor="romantic" className="flex items-center gap-2 cursor-pointer font-normal">
-                    <Heart className="w-4 h-4" />
-                    Romantic Partner
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="hackathon" id="hackathon" />
-                  <Label htmlFor="hackathon" className="flex items-center gap-2 cursor-pointer font-normal">
-                    <Code2 className="w-4 h-4" />
-                    Hackathon Buddy
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1.5 flex items-center gap-2">
-                <Target className="w-4 h-4 text-primary" />
-                Who are you trying to attract?
-              </label>
-              <Textarea
-                placeholder="e.g., Creative introverts who love A24 films, cozy coffee shops, and late-night coding sessions..."
-                className="min-h-[80px] resize-none"
-                value={formData.targetAudience}
-                onChange={(e) => updateField("targetAudience", e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1.5 block">
-                Anything else about yourself?
-              </label>
-              <Textarea
-                placeholder="Your vibe, hobbies, what makes you tick..."
-                className="min-h-[70px] resize-none"
-                value={formData.aboutMe}
-                onChange={(e) => updateField("aboutMe", e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-1.5 block">
-                What do you want to highlight?
-              </label>
-              <Input
-                placeholder="e.g., My indie film taste, open source projects..."
-                value={formData.highlights}
-                onChange={(e) => updateField("highlights", e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
-      ),
-      isValid: () => formData.lookingFor.length > 0 && formData.targetAudience.length > 0,
+      ...personalityStepConfig,
+      content: <PersonalityStep formData={formData} updateField={updateField} />,
+      isValid: () => personalityStepConfig.isValid(formData),
     },
     {
-      title: "Show Your Best Self",
-      subtitle: "Upload photos that capture who you are",
+      ...photosStepConfig,
       content: (
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-3">
-            {[...Array(6)].map((_, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ scale: formData.photos[i] ? 1 : 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="aspect-square rounded-2xl border-2 border-dashed border-border bg-muted/50 flex items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors relative overflow-hidden"
-              >
-                {formData.photos[i] ? (
-                  <>
-                    <img
-                      src={formData.photos[i]}
-                      alt={`Photo ${i + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removePhoto(i);
-                      }}
-                      className="absolute top-1 right-1 w-6 h-6 bg-background/80 rounded-full flex items-center justify-center hover:bg-destructive hover:text-destructive-foreground transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </>
-                ) : (
-                  <label className="w-full h-full flex items-center justify-center cursor-pointer">
-                    <Upload className="w-6 h-6 text-muted-foreground" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      className="hidden"
-                      onChange={handlePhotoUpload}
-                    />
-                  </label>
-                )}
-              </motion.div>
-            ))}
-          </div>
-          <p className="text-sm text-muted-foreground text-center">
-            Tip: Show your hobbies, smile, and be authentic!
-          </p>
-        </div>
+        <PhotosStep
+          formData={formData}
+          updateField={updateField}
+          onPhotoUpload={handlePhotoUpload}
+          onRemovePhoto={removePhoto}
+        />
       ),
-      isValid: () => true, // Photos optional
+      isValid: photosStepConfig.isValid,
     },
   ];
 
@@ -733,19 +518,18 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            className="w-24 h-24 gradient-primary rounded-full flex items-center justify-center shadow-elevated mx-auto"
           >
-            <Sparkles className="w-12 h-12 text-primary-foreground" />
+            <IconCircle variant="primary" size="xl" className="shadow-lg mx-auto">
+              <Sparkles className="w-12 h-12" />
+            </IconCircle>
           </motion.div>
           <div className="space-y-2">
-            <h2 className="font-display text-2xl font-semibold">Creating Your Profile...</h2>
-            <p className="text-muted-foreground">
-              {scrapingProgress || "Analyzing your data & crafting something special ✨"}
+            <h2 className="text-heading">Creating Your Profile...</h2>
+            <p className="text-caption">
+              {scrapingProgress || "Analyzing your data & crafting something special"}
             </p>
           </div>
-          <motion.div
-            className="w-64 h-2 bg-muted rounded-full overflow-hidden mx-auto"
-          >
+          <motion.div className="w-64 h-2 bg-muted rounded-full overflow-hidden mx-auto">
             <motion.div
               className="h-full gradient-primary"
               initial={{ width: "0%" }}
@@ -782,8 +566,8 @@ export const OnboardingWizard = ({ onComplete }: OnboardingWizardProps) => {
                   className="space-y-5"
                 >
                   <div className="text-center space-y-1">
-                    <h2 className="font-display text-xl font-semibold">{steps[step].title}</h2>
-                    <p className="text-sm text-muted-foreground">{steps[step].subtitle}</p>
+                    <h2 className="text-heading">{steps[step].title}</h2>
+                    <p className="text-caption">{steps[step].subtitle}</p>
                   </div>
                   {steps[step].content}
                   {error && (
