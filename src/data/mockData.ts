@@ -1,6 +1,7 @@
 import profile1 from "@/assets/profile-1.jpg";
 import profile2 from "@/assets/profile-2.jpg";
 import profile3 from "@/assets/profile-3.jpg";
+import profile4 from "@/data/candidate_data/Daniel.png";
 import type { DiscoverProfile, YellowcakeData, PromptAnswer, FunFact, DataInsight, Photo } from "@/types/profile";
 
 // Mock profiles using the new Hinge-style data model
@@ -244,6 +245,93 @@ export const mockProfiles: DiscoverProfile[] = [
     compatibilityScore: 91,
     bestFeatures: ["Viral pixel art creator", "Museum regular", "Makes the best playlists"],
     socialUsernames: { github: "alexkim", letterboxd: "pixelalex" },
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: "4",
+    displayName: "Daniel Byshkin",
+    age: 22,
+    location: "Ottawa, ON",
+    photos: [
+      { id: "p1", url: profile4, isPrimary: true, sortOrder: 0 },
+    ],
+    lookingFor: "Someone who gets the chaos",
+    targetAudience: "Tech rebels & rocket scientists",
+    bio: "Building rocket engines by day, breaking the internet by night. If you can't handle me cursing at Cursor at 3am, you can't handle me.",
+    promptAnswers: [
+      {
+        id: "pa1",
+        promptId: "life-motto",
+        promptText: "My life motto is...",
+        answerText: "Nobody knows my next move, not even me.",
+        source: "twitter",
+        sortOrder: 0,
+      },
+      {
+        id: "pa2",
+        promptId: "philosophy",
+        promptText: "I believe that...",
+        answerText: "If you don't break or plan to break things you won't make it.",
+        source: "twitter",
+        sortOrder: 1,
+      },
+      {
+        id: "pa3",
+        promptId: "typical-weekend",
+        promptText: "A typical weekend for me...",
+        answerText: "Writing scraping tutorials, contributing to Apache NuttX, and contemplating generational wealth over beers.",
+        source: "llm",
+        sortOrder: 2,
+      },
+    ],
+    funFacts: [
+      { id: "f1", label: "Top project", value: "Apache NuttX", source: "yellowcake", sortOrder: 0 },
+      { id: "f2", label: "Hack wins", value: "2nd Place uOttaHack", source: "yellowcake", sortOrder: 1 },
+      { id: "f3", label: "Latency king", value: "200ms Twitter bot", source: "yellowcake", sortOrder: 2 },
+      { id: "f4", label: "Current status", value: "It's manifesting", source: "twitter", sortOrder: 3 },
+    ],
+    dataInsights: [
+      {
+        id: "d1",
+        type: "badge",
+        title: "Rocket Scientist",
+        description: "Building hybrid rocket engines @ CuInSpace",
+        metricKey: "rocketry",
+        metricValue: "V2 Control System",
+        visualizationHint: "pill",
+        source: "yellowcake",
+        sortOrder: 0,
+      },
+      {
+        id: "d2",
+        type: "stat",
+        title: "Open Source Legend",
+        description: "Apache NuttX contributor",
+        metricKey: "opensource",
+        metricValue: "Pull Shark x2",
+        visualizationHint: "simple",
+        source: "yellowcake",
+        sortOrder: 1,
+      },
+    ],
+    yellowcakeData: {
+      topRepos: [
+        { name: "apache/nuttx", stars: 0, language: "C" },
+        { name: "tiny-os", stars: 0, language: "C" },
+        { name: "StopBeingCooked", stars: 0, language: "Python" },
+      ],
+      musicGenres: ["Unknown"],
+      recentReviews: [],
+      sentimentAnalysis: { mood: "Chaotic Energy", score: 0.88 },
+      codingHours: 50,
+      movieHours: 2,
+      topArtists: [],
+      commitCount: 450,
+    },
+    compatibilityScore: 89,
+    bestFeatures: ["Apache contributor", "Builds actual rockets", "Tweets like a poet-philosopher"],
+    socialUsernames: { github: "bskdany", twitter: "bskdany" },
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   },
