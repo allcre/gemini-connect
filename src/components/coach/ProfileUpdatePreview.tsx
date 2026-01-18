@@ -55,7 +55,7 @@ export const ProfileUpdatePreview = ({
       animate={{ opacity: 1, height: "auto" }}
       className="pb-2 space-y-2"
     >
-      <Card className="p-3 space-y-3 border-primary/30 bg-primary/5">
+      <Card className="p-3 space-y-3 border-primary/50 bg-card/90 backdrop-blur-md shadow-lg">
         <div className="flex items-center gap-2 text-caption text-primary">
           <Sparkles className="w-3.5 h-3.5" />
           <span className="text-xs font-medium">Preview Changes</span>

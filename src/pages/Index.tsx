@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Logo } from "@/components/Logo";
 import { BottomNav } from "@/components/BottomNav";
@@ -17,11 +17,39 @@ const Index = () => {
   const { profile, setProfile, updateProfile, isLoading, hasOnboarded, setOnboarded, resetProfile } = useLocalProfile();
   const [activeTab, setActiveTab] = useState("discover");
   const [showProfilePreview, setShowProfilePreview] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
 
   // Scroll to top when tab changes
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [activeTab]);
+
+  // Handle scroll to hide/show header
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show header when scrolling up, hide when scrolling down
+      if (currentScrollY < lastScrollY.current) {
+        // Scrolling up
+        setShowHeader(true);
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+        // Scrolling down (and past 50px threshold)
+        setShowHeader(false);
+      }
+      
+      // Always show at very top
+      if (currentScrollY < 10) {
+        setShowHeader(true);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleOnboardingComplete = (newProfile: UserProfile) => {
     setProfile(newProfile);
@@ -80,7 +108,7 @@ const Index = () => {
           <motion.div 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
-            className="h-[calc(100vh-9rem)] p-4"
+            className="h-[calc(100vh-4rem)] p-4"
           >
             <GeminiCoach profile={profile} onProfileUpdate={setProfile} />
           </motion.div>
@@ -127,12 +155,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="z-40 bg-transparent backdrop-blur-lg border-b border-border/30">
-        <div className="flex items-center justify-center p-4 max-w-md mx-auto">
-          <Logo />
-        </div>
-      </header>
-      <main className={activeTab === "coach" ? "w-full" : "max-w-md mx-auto"}>{renderContent()}</main>
+      {/* Header - hidden on coach and matches tabs, auto-hides on scroll on other tabs */}
+      {activeTab !== "coach" && activeTab !== "matches" && (
+        <header 
+          className={`fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-lg shadow-sm transition-transform duration-300 ${
+            showHeader ? 'translate-y-0' : '-translate-y-full'
+          }`}
+        >
+          <div className="flex items-center justify-center p-4 max-w-md mx-auto">
+            <Logo />
+          </div>
+        </header>
+      )}
+      {/* Spacer for fixed header */}
+      {activeTab !== "coach" && activeTab !== "matches" && <div className="h-[72px]" />}
+      <main className={activeTab === "coach" ? "w-full h-[calc(100vh-4rem)]" : "max-w-md mx-auto"}>{renderContent()}</main>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
